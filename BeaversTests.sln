@@ -10,6 +10,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionItems", "solutionIt
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{365B84E8-8AEA-4049-B01A-213EE141346B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{13DD5CAA-A70B-4FDF-AF32-16660D1DF259}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +23,10 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{365B84E8-8AEA-4049-B01A-213EE141346B} = {B30D88A3-8E46-4A40-87FA-6C342A043E97}
+		{13DD5CAA-A70B-4FDF-AF32-16660D1DF259} = {B30D88A3-8E46-4A40-87FA-6C342A043E97}
+		{58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC} = {B30D88A3-8E46-4A40-87FA-6C342A043E97}
 	EndGlobalSection
 EndGlobal
