@@ -1,13 +1,29 @@
-﻿using System.Reflection;
+﻿using System.Collections.Concurrent;
+using System.Reflection;
+using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Engine;
-using TestFilter = NUnit.Engine.TestFilter;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
 [Route("api/[controller]")]
 public class TestsController : ControllerBase
 {
+    private static readonly ConcurrentBag<TestPackage> TestPackages = new();
+
+    [HttpGet("[action]")]
+    public async Task<IActionResult> ExploreLoadedTests(CancellationToken ct)
+    {
+        var exploreNodes = await Task.Run(() => 
+            TestPackages.Select(p =>
+            XElement.Parse(TestEngineActivator.CreateInstance()
+                .GetRunner(p)
+                .Explore(TestFilter.Empty)
+                .OuterXml, LoadOptions.PreserveWhitespace).ToString()), ct);
+        
+        return Ok(exploreNodes);
+    }
+    
     [HttpPost("[action]")]
     public async Task<IActionResult> AddTestAssembly(IFormFile inputTestAssembly, CancellationToken ct)
     {
@@ -28,9 +44,10 @@ public class TestsController : ControllerBase
 
         var inputAsm = Assembly.LoadFrom(asmFullPath);
         var testPackage = new TestPackage(asmFullPath);
+        TestPackages.Add(testPackage);
         
-        var engine = TestEngineActivator.CreateInstance();
-        var runner = engine.GetRunner(testPackage);
+        using var engine = TestEngineActivator.CreateInstance();
+        using var runner = engine.GetRunner(testPackage);
         var testCount = runner.CountTestCases(TestFilter.Empty);
         
         return Ok($"Test count: {testCount}");
