@@ -33,9 +33,10 @@ public class TestsController : ControllerBase
         var bytesRead = await asmStream.ReadAsync(assemblyBuffer, 0, (int)asmStream.Length, ct);
         
         var asmFileName = inputTestAssembly.FileName;
-        
-        await using (var asmFile = System.IO.File.Create(asmFileName))
+
+        if (!System.IO.File.Exists(asmFileName))
         {
+            await using var asmFile = System.IO.File.Create(asmFileName);
             await asmFile.WriteAsync(assemblyBuffer, 0, bytesRead, ct);
             await asmFile.FlushAsync(ct);
         }
@@ -57,5 +58,24 @@ public class TestsController : ControllerBase
     public void AddTestFile(IFormFile testFile)
     {
         
+    }
+
+    [HttpPost("[action]")]
+    public async Task<IActionResult> RunTestAssembly(CancellationToken ct)
+    {
+        var testPackage = TestPackages.FirstOrDefault();
+
+        if (testPackage is null)
+        {
+            ModelState.AddModelError(nameof(testPackage), "TestPackages is empty.");
+            return BadRequest(ModelState);
+        }
+        
+        using var engine = TestEngineActivator.CreateInstance();
+        using var runner = engine.GetRunner(testPackage);
+        var testResultXml = runner.Run(null, TestFilter.Empty);
+        testResultXml.Normalize();
+
+        return Ok(XElement.Parse(testResultXml.OuterXml).ToString());
     }
 }
