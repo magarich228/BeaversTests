@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Reflection;
+using System.Text;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Engine;
@@ -14,14 +15,23 @@ public class TestsController : ControllerBase
     [HttpGet("[action]")]
     public async Task<IActionResult> ExploreLoadedTests(CancellationToken ct)
     {
-        var exploreNodes = await Task.Run(() => 
-            TestPackages.Select(p =>
-            XElement.Parse(TestEngineActivator.CreateInstance()
-                .GetRunner(p)
-                .Explore(TestFilter.Empty)
-                .OuterXml, LoadOptions.PreserveWhitespace).ToString()), ct);
+        var sb = new StringBuilder();
         
-        return Ok(exploreNodes);
+        foreach (var testPackage in TestPackages)
+        {
+            await Task.Run(() =>
+            {
+                var exploreXml = TestEngineActivator.CreateInstance()
+                    .GetRunner(testPackage)
+                    .Explore(TestFilter.Empty);
+
+                exploreXml.Normalize();
+
+                sb.Append(XElement.Parse(exploreXml.OuterXml, LoadOptions.PreserveWhitespace));
+            }, ct);
+        }
+        
+        return Ok(sb.ToString());
     }
     
     [HttpPost("[action]")]

@@ -1,3 +1,5 @@
+using NUnit.Framework.Legacy;
+
 namespace BeaversTests.TestsManager.UnitTests;
 
 [TestFixture]
@@ -17,6 +19,6 @@ public class Tests
     [Test]
     public void Test2()
     {
-        Assert.True(true);
+        ClassicAssert.True(true);
     }
 }
