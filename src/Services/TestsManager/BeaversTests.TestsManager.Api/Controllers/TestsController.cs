@@ -7,17 +7,17 @@ using NUnit.Engine;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 public class TestsController : ControllerBase
 {
-    private static readonly ConcurrentBag<TestPackage> TestPackages = new();
+    private static readonly ConcurrentDictionary<string, TestPackage> TestPackages = new();
 
-    [HttpGet("[action]")]
+    [HttpGet]
     public async Task<IActionResult> ExploreLoadedTests(CancellationToken ct)
     {
         var sb = new StringBuilder();
         
-        foreach (var testPackage in TestPackages)
+        foreach (var testPackage in TestPackages.Values)
         {
             await Task.Run(() =>
             {
@@ -34,7 +34,7 @@ public class TestsController : ControllerBase
         return Ok(sb.ToString());
     }
     
-    [HttpPost("[action]")]
+    [HttpPost]
     public async Task<IActionResult> AddTestAssembly(IFormFile inputTestAssembly, CancellationToken ct)
     {
         await using var asmStream = inputTestAssembly.OpenReadStream();
@@ -44,9 +44,8 @@ public class TestsController : ControllerBase
         
         var asmFileName = inputTestAssembly.FileName;
 
-        if (!System.IO.File.Exists(asmFileName))
+        await using (var asmFile = System.IO.File.Create(asmFileName))
         {
-            await using var asmFile = System.IO.File.Create(asmFileName);
             await asmFile.WriteAsync(assemblyBuffer, 0, bytesRead, ct);
             await asmFile.FlushAsync(ct);
         }
@@ -55,7 +54,20 @@ public class TestsController : ControllerBase
 
         var inputAsm = Assembly.LoadFrom(asmFullPath);
         var testPackage = new TestPackage(asmFullPath);
-        TestPackages.Add(testPackage);
+        TestPackages.AddOrUpdate(asmFileName, testPackage, (name, package) =>
+        {
+            if (TestPackages.TryGetValue(name, out var existTestPackage))
+            {
+                TestPackages.Remove(name, out existTestPackage);
+            }
+
+            if (!TestPackages.TryAdd(name, package))
+            {
+                throw new ApplicationException($"Test package with name: {name} has not been added.");
+            }
+
+            return package;
+        });
         
         using var engine = TestEngineActivator.CreateInstance();
         using var runner = engine.GetRunner(testPackage);
@@ -64,20 +76,18 @@ public class TestsController : ControllerBase
         return Ok($"Test count: {testCount}");
     }
 
-    [HttpPost("[action]")]
+    [HttpPost]
     public void AddTestFile(IFormFile testFile)
     {
         
     }
 
-    [HttpPost("[action]")]
-    public async Task<IActionResult> RunTestAssembly(CancellationToken ct)
+    [HttpPost]
+    public IActionResult RunTestAssembly(string testAssemblyName, CancellationToken ct)
     {
-        var testPackage = TestPackages.FirstOrDefault();
-
-        if (testPackage is null)
+        if (!TestPackages.TryGetValue(testAssemblyName, out var testPackage))
         {
-            ModelState.AddModelError(nameof(testPackage), "TestPackages is empty.");
+            ModelState.AddModelError(nameof(testPackage), "TestPackage not found.");
             return BadRequest(ModelState);
         }
         
