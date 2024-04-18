@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestsManager.U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestsManager.Infrastructure", "src\Services\TestsManager\BeaversTests.TestsManager.Infrastructure\BeaversTests.TestsManager.Infrastructure.csproj", "{9796828E-4222-44B1-8CD0-E1E58C61F9ED}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeavertsTests.Common.CQRS", "src\BuildingBlocks\BeavertsTests.Common.CQRS\BeavertsTests.Common.CQRS.csproj", "{77BBAF2B-26AD-4F4F-93D1-4927B912E674}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,7 @@ Global
 		{D267CBA3-4574-479D-BCF7-3DA400EEA846} = {A12123AE-C47F-473F-9005-7B3048C87A5F}
 		{73D3B5B4-ED03-4CE7-AC7A-EF13111F17F9} = {D267CBA3-4574-479D-BCF7-3DA400EEA846}
 		{9796828E-4222-44B1-8CD0-E1E58C61F9ED} = {A12123AE-C47F-473F-9005-7B3048C87A5F}
+		{77BBAF2B-26AD-4F4F-93D1-4927B912E674} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -97,5 +100,9 @@ Global
 		{9796828E-4222-44B1-8CD0-E1E58C61F9ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9796828E-4222-44B1-8CD0-E1E58C61F9ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9796828E-4222-44B1-8CD0-E1E58C61F9ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77BBAF2B-26AD-4F4F-93D1-4927B912E674}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77BBAF2B-26AD-4F4F-93D1-4927B912E674}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77BBAF2B-26AD-4F4F-93D1-4927B912E674}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77BBAF2B-26AD-4F4F-93D1-4927B912E674}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
