@@ -12,11 +12,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Common\" />
       <Folder Include="Queries\" />
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="AutoMapper" Version="13.0.1" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
     </ItemGroup>
 

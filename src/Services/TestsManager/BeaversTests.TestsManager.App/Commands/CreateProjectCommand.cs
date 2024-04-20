@@ -1,4 +1,5 @@
 ﻿using BeaversTests.Common.CQRS.Commands;
+using BeaversTests.TestsManager.App.Abstractions;
 using FluentValidation;
 
 namespace BeaversTests.TestsManager.App.Commands;
@@ -31,15 +32,10 @@ public class CreateProjectCommand
         }
     }
 
-    public class Handler : ICommandHandler<Command, Result>
+    public class Handler(ITestsManagerContext db) : ICommandHandler<Command, Result>
     {
-        private readonly ITestsManagerContext _db;
+        private readonly ITestsManagerContext _db = db;
 
-        public Handler(ITestsManagerContext db)
-        {
-            _db = db;
-        }
-        
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
             // TODO:
