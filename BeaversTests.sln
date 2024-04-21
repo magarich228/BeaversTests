@@ -52,6 +52,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{91
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Identity.Api", "src\Services\Identity\BeaversTests.Identity.Api\BeaversTests.Identity.Api.csproj", "{267585F8-ED55-4A71-BEDA-D5C25DF5D71D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.CLI", "src\Clients\CLI\BeaversTests.CLI\BeaversTests.CLI.csproj", "{4C8BEFB1-A738-4393-968E-6CE0B160503F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -82,6 +84,7 @@ Global
 		{D6CB0E5C-14BF-474D-B4A9-F60524100E2D} = {4C9A3793-BE31-489F-A5F3-771E272F64AF}
 		{91D7C596-DE78-4F88-9FEA-37D0B1864699} = {13DD5CAA-A70B-4FDF-AF32-16660D1DF259}
 		{267585F8-ED55-4A71-BEDA-D5C25DF5D71D} = {91D7C596-DE78-4F88-9FEA-37D0B1864699}
+		{4C8BEFB1-A738-4393-968E-6CE0B160503F} = {DB54F7BB-5041-42C1-BE9B-7220D4B555FF}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -124,5 +127,9 @@ Global
 		{267585F8-ED55-4A71-BEDA-D5C25DF5D71D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{267585F8-ED55-4A71-BEDA-D5C25DF5D71D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{267585F8-ED55-4A71-BEDA-D5C25DF5D71D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C8BEFB1-A738-4393-968E-6CE0B160503F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C8BEFB1-A738-4393-968E-6CE0B160503F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C8BEFB1-A738-4393-968E-6CE0B160503F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C8BEFB1-A738-4393-968E-6CE0B160503F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
