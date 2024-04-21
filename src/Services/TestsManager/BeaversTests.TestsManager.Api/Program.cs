@@ -12,7 +12,7 @@ services.AddSwaggerGen();
 
 services.AddDbContext<TestsManagerContext>(options =>
     options.UseNpgsql("Host=212.109.198.242;Port=5432;Database=BeaversTests.TestsManager;Username=postgres;Password=***",
-        npgopt => npgopt.MigrationsAssembly(typeof(TestsManagerContext).Assembly.GetName().Name)));
+        npgOptions => npgOptions.MigrationsAssembly(typeof(TestsManagerContext).Assembly.GetName().Name)));
 
 services.AddTestsManagerApp();
 
