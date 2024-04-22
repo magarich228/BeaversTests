@@ -12,4 +12,9 @@
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BeaversTests.Identity.App\BeaversTests.Identity.App.csproj" />
+      <ProjectReference Include="..\BeaversTests.Identity.Infrastructure\BeaversTests.Identity.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>
