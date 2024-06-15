@@ -10,21 +10,25 @@ public class ProjectsController : ControllerBase
         
     }
 
+    [HttpGet]
     public async Task<IActionResult> GetAll()
     {
         return Empty;
     }
 
+    [HttpGet]
     public async Task<IActionResult> GetById()
     {
         return NotFound();
     }
 
+    [HttpPost]
     public async Task<IActionResult> Create()
     {
         return Accepted();
     }
 
+    [HttpPut]
     public async Task<IActionResult> Update()
     {
         return Accepted();

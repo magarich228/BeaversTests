@@ -1,4 +1,5 @@
 using BeaversTests.TestsManager.App;
+using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,7 @@ services.AddDbContext<TestsManagerContext>(options =>
     options.UseNpgsql("Host=212.109.198.242;Port=5432;Database=BeaversTests.TestsManager;Username=postgres;Password=***",
         npgOptions => npgOptions.MigrationsAssembly(typeof(TestsManagerContext).Assembly.GetName().Name)));
 
-services.AddTestsManagerApp();
+// services.AddTestsManagerApp();
 
 var app = builder.Build();
 
