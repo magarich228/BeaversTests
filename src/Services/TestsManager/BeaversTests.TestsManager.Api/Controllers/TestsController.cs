@@ -4,6 +4,7 @@ using System.Text;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using NUnit.Engine;
+using NUnit.Framework.Api;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
@@ -97,5 +98,28 @@ public class TestsController : ControllerBase
         testResultXml.Normalize();
 
         return Ok(XElement.Parse(testResultXml.OuterXml).ToString());
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> OneTimeRun(IFormFile assemblyFile, CancellationToken ct)
+    {
+        await using var read = assemblyFile.OpenReadStream();
+        var fileLength = assemblyFile.Length;
+
+        var assemblyBuffer = new byte[fileLength];
+        
+        var bytesRead = await read.ReadAsync(assemblyBuffer, 0, (int)fileLength, ct);
+
+        if (bytesRead < fileLength)
+        {
+            return BadRequest();
+        }
+        
+        var testAssembly = Assembly.Load(assemblyBuffer);
+        var runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
+
+        var tests = runner.Load(testAssembly, new Dictionary<string, object>());
+        
+        return Ok(tests.TestCaseCount);
     }
 }
