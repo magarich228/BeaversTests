@@ -1,3 +1,4 @@
+using BeaversTests.Common.CQRS;
 using BeaversTests.TestsManager.App;
 using BeaversTests.TestsManager.Infrastructure;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
@@ -14,6 +15,7 @@ services.AddSwaggerGen();
 
 services.AddTestsManagerInfrastructure(configuration);
 services.AddTestsManagerApp();
+services.AddCqrsBusses();
 
 var app = builder.Build();
 

@@ -1,12 +1,13 @@
 ﻿using AutoMapper;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.Models;
 using FluentValidation;
 
 namespace BeaversTests.TestsManager.App.Commands;
 
-public class CreateProjectCommand
+public abstract class CreateProjectCommand
 {
     public class Command : ICommand<Result>
     {
@@ -43,6 +44,9 @@ public class CreateProjectCommand
             var project = mapper.Map<Command, TestProject>(request);
 
             var result = await db.TestProjects.AddAsync(project, cancellationToken);
+
+            if (await db.SaveChangesAsync(cancellationToken) == 0)
+                throw new TestsManagerException("Failed to create project.");
 
             return new Result {ProjectId = result.Entity.Id};
         }
