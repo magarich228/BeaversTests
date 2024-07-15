@@ -1,21 +1,19 @@
 using BeaversTests.TestsManager.App;
-using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.Infrastructure;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
+var configuration = builder.Configuration;
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
 
-services.AddDbContext<TestsManagerContext>(options =>
-    options.UseNpgsql("Host=212.109.198.242;Port=5432;Database=BeaversTests.TestsManager;Username=postgres;Password=***",
-        npgOptions => npgOptions.MigrationsAssembly(typeof(TestsManagerContext).Assembly.GetName().Name)));
-
-// services.AddTestsManagerApp();
+services.AddTestsManagerInfrastructure(configuration);
+services.AddTestsManagerApp();
 
 var app = builder.Build();
 

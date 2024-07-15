@@ -1,5 +1,7 @@
-﻿using BeaversTests.Common.CQRS.Commands;
+﻿using AutoMapper;
+using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.Core.Models;
 using FluentValidation;
 
 namespace BeaversTests.TestsManager.App.Commands;
@@ -32,14 +34,17 @@ public class CreateProjectCommand
         }
     }
 
-    public class Handler(ITestsManagerContext db) : ICommandHandler<Command, Result>
+    public class Handler(
+        ITestsManagerContext db,
+        IMapper mapper) : ICommandHandler<Command, Result>
     {
-        private readonly ITestsManagerContext _db = db;
-
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            // TODO:
-            throw new NotImplementedException("Implement create new project command logic.");
+            var project = mapper.Map<Command, TestProject>(request);
+
+            var result = await db.TestProjects.AddAsync(project, cancellationToken);
+
+            return new Result {ProjectId = result.Entity.Id};
         }
     }
 }

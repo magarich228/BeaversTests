@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\BeaversTests.TestsManager.App\BeaversTests.TestsManager.App.csproj" />
       <ProjectReference Include="..\BeaversTests.TestsManager.Core\BeaversTests.TestsManager.Core.csproj" />
     </ItemGroup>
 

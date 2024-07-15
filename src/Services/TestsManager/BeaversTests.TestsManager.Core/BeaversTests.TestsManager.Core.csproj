@@ -6,8 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="NUnit.Engine" Version="3.17.0" />
-    </ItemGroup>
-
 </Project>
