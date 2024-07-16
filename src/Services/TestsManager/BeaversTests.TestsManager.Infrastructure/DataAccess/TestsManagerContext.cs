@@ -1,5 +1,6 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Core.Models;
+using BeaversTests.TestsManager.Infrastructure.DataAccess.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeaversTests.TestsManager.Infrastructure.DataAccess;
@@ -16,6 +17,9 @@ public class TestsManagerContext(DbContextOptions<TestsManagerContext> options) 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfiguration(new TestPackageConfiguration());
+        modelBuilder.ApplyConfiguration(new TestProjectConfiguration());
+        
         base.OnModelCreating(modelBuilder);
     }
 }

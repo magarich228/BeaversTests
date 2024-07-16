@@ -8,6 +8,7 @@ using NUnit.Framework.Api;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
+[ApiController]
 [Route("api/[controller]/[action]")]
 public class TestsController : ControllerBase
 {

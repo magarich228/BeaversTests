@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
+[ApiController]
 [Route("[controller]/[action]")]
 public class ProjectsController(
     ICommandBus commandBus,
@@ -38,7 +39,7 @@ public class ProjectsController(
     {
         var commandResult = await commandBus.Send(createProjectInput, cancellationToken);
 
-        return Ok(commandResult.ProjectId);
+        return Ok(commandResult.TestProjectId);
     }
 
     [HttpPut]

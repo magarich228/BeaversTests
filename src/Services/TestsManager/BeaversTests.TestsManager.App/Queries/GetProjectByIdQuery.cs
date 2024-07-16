@@ -12,7 +12,7 @@ public abstract class GetProjectByIdQuery
 {
     public class Query : IQuery<Result>
     {
-        public required Guid ProjectId { get; set; }
+        public required Guid ProjectId { get; init; }
     }
 
     public class Result
