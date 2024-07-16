@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionItems", "solutionItems", "{6EF3162C-FEA3-466C-90E2-E7615DE2A07D}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{365B84E8-8AEA-4049-B01A-213EE141346B}"
@@ -42,7 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestsManager.U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestsManager.Infrastructure", "src\Services\TestsManager\BeaversTests.TestsManager.Infrastructure\BeaversTests.TestsManager.Infrastructure.csproj", "{9796828E-4222-44B1-8CD0-E1E58C61F9ED}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeavertsTests.Common.CQRS", "src\BuildingBlocks\BeavertsTests.Common.CQRS\BeavertsTests.Common.CQRS.csproj", "{77BBAF2B-26AD-4F4F-93D1-4927B912E674}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Common.CQRS", "src\BuildingBlocks\BeaversTests.Common.CQRS\BeaversTests.Common.CQRS.csproj", "{77BBAF2B-26AD-4F4F-93D1-4927B912E674}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ApiGateway", "ApiGateway", "{4C9A3793-BE31-489F-A5F3-771E272F64AF}"
 EndProject
@@ -59,6 +60,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Identity.Core", "src\Services\Identity\BeaversTests.Identity.Core\BeaversTests.Identity.Core.csproj", "{CE3A5850-9DCF-4452-84A3-E4A93610878D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Identity.Infrastructure", "src\Services\Identity\BeaversTests.Identity.Infrastructure\BeaversTests.Identity.Infrastructure.csproj", "{AB9CA13E-BECB-4376-8CD0-57AD97C174B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Common.Application", "src\BuildingBlocks\BeaversTests.Common.Application\BeaversTests.Common.Application.csproj", "{64D76B5D-9773-4224-BB56-D9A5184AC587}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Extensions", "src\BuildingBlocks\BeaversTests.Extensions\BeaversTests.Extensions.csproj", "{127A6E70-2A98-4186-BE6D-2FED6E093570}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -94,6 +99,8 @@ Global
 		{FADE96AB-A8F2-4F37-A29F-D1852A29B9EA} = {91D7C596-DE78-4F88-9FEA-37D0B1864699}
 		{CE3A5850-9DCF-4452-84A3-E4A93610878D} = {91D7C596-DE78-4F88-9FEA-37D0B1864699}
 		{AB9CA13E-BECB-4376-8CD0-57AD97C174B4} = {91D7C596-DE78-4F88-9FEA-37D0B1864699}
+		{64D76B5D-9773-4224-BB56-D9A5184AC587} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
+		{127A6E70-2A98-4186-BE6D-2FED6E093570} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -152,5 +159,13 @@ Global
 		{AB9CA13E-BECB-4376-8CD0-57AD97C174B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB9CA13E-BECB-4376-8CD0-57AD97C174B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB9CA13E-BECB-4376-8CD0-57AD97C174B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64D76B5D-9773-4224-BB56-D9A5184AC587}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64D76B5D-9773-4224-BB56-D9A5184AC587}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64D76B5D-9773-4224-BB56-D9A5184AC587}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64D76B5D-9773-4224-BB56-D9A5184AC587}.Release|Any CPU.Build.0 = Release|Any CPU
+		{127A6E70-2A98-4186-BE6D-2FED6E093570}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{127A6E70-2A98-4186-BE6D-2FED6E093570}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{127A6E70-2A98-4186-BE6D-2FED6E093570}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{127A6E70-2A98-4186-BE6D-2FED6E093570}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

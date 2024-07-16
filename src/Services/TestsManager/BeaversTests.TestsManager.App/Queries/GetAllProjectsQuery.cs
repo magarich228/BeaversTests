@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.Application.Models;
 using BeaversTests.Common.CQRS.Queries;
+using BeaversTests.Extensions;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
 using FluentValidation;
@@ -9,7 +11,7 @@ namespace BeaversTests.TestsManager.App.Queries;
 
 public abstract class GetAllProjectsQuery
 {
-    public class Query : IQuery<Result> { }
+    public class Query : PaginatedQuery, IQuery<Result>;
     
     public class Result
     {
@@ -27,7 +29,9 @@ public abstract class GetAllProjectsQuery
     {
         public async Task<Result> Handle(Query query, CancellationToken cancellationToken)
         {
-            var testProjects = db.TestProjects.AsNoTracking();
+            var testProjects = db.TestProjects
+                .PageBy(query)
+                .AsNoTracking();
             
             return new Result
             {

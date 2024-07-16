@@ -12,9 +12,11 @@ public class ProjectsController(
     IQueryBus queryBus) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken) // TODO: Add paging
+    public async Task<IActionResult> GetAll(
+        GetAllProjectsQuery.Query queryInput, 
+        CancellationToken cancellationToken)
     {
-        var queryResult = await queryBus.Send(new GetAllProjectsQuery.Query(), cancellationToken);
+        var queryResult = await queryBus.Send(queryInput, cancellationToken);
 
         return Ok(queryResult.TestProjects);
     }
@@ -25,11 +27,6 @@ public class ProjectsController(
         CancellationToken cancellationToken)
     {
         var queryResult = await queryBus.Send(queryInput, cancellationToken);
-
-        if (queryResult.TestProject is null)
-        {
-            return BadRequest();
-        }
 
         return Ok(queryResult.TestProject);
     }

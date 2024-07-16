@@ -22,10 +22,13 @@ public abstract class GetProjectByIdQuery
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        public Validator(ITestsManagerContext db)
         {
             RuleFor(q => q.ProjectId)
-                .NotEmpty();
+                .NotEmpty()
+                .MustAsync((id, token) => db.TestProjects
+                    .AnyAsync(x => x.Id == id, token))
+                .WithMessage("Project with this id does not exist");
         }
     }
 
