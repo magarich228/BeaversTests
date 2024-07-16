@@ -1,4 +1,5 @@
 using BeaversTests.Common.CQRS;
+using BeaversTests.TestsManager.Api;
 using BeaversTests.TestsManager.App;
 using BeaversTests.TestsManager.Infrastructure;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
@@ -23,6 +24,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapControllers();
+app.UseApi();
 
 using (var scope = app.Services.CreateScope())
 {
