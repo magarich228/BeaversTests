@@ -65,6 +65,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Common.Applica
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Extensions", "src\BuildingBlocks\BeaversTests.Extensions\BeaversTests.Extensions.csproj", "{127A6E70-2A98-4186-BE6D-2FED6E093570}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{A0A6453E-24BE-4373-A5CA-D2110EA3E7E2}"
+	ProjectSection(SolutionItems) = preProject
+		dev\docker-compose.yaml = dev\docker-compose.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

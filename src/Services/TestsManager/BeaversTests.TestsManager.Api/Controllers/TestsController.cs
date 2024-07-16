@@ -78,12 +78,6 @@ public class TestsController : ControllerBase
     }
 
     [HttpPost]
-    public void AddTestFile(IFormFile testFile)
-    {
-        
-    }
-
-    [HttpPost]
     public IActionResult RunTestAssembly(string testAssemblyName, CancellationToken ct)
     {
         if (!TestPackages.TryGetValue(testAssemblyName, out var testPackage))
