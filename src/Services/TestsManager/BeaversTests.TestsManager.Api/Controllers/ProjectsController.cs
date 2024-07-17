@@ -14,22 +14,22 @@ public class ProjectsController(
 {
     [HttpGet]
     public async Task<IActionResult> GetAll(
-        GetAllProjectsQuery.Query queryInput, 
+        [FromQuery] GetAllProjectsQuery.Query queryInput, 
         CancellationToken cancellationToken = default)
     {
         var queryResult = await queryBus.Send(queryInput, cancellationToken);
 
-        return Ok(queryResult.TestProjects);
+        return Ok(queryResult);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetById(
-        GetProjectByIdQuery.Query queryInput, 
+        [FromQuery] GetProjectByIdQuery.Query queryInput, 
         CancellationToken cancellationToken = default)
     {
         var queryResult = await queryBus.Send(queryInput, cancellationToken);
 
-        return Ok(queryResult.TestProject);
+        return Ok(queryResult);
     }
 
     [HttpPost]
@@ -39,7 +39,7 @@ public class ProjectsController(
     {
         var commandResult = await commandBus.Send(createProjectInput, cancellationToken);
 
-        return Ok(commandResult.TestProjectId);
+        return Ok(commandResult);
     }
 
     [HttpPut]
@@ -49,6 +49,6 @@ public class ProjectsController(
     {
         var commandResult = await commandBus.Send(updateProjectInput, cancellationToken);
         
-        return Ok(commandResult.TestProject);
+        return Ok(commandResult);
     }
 }

@@ -1,13 +1,7 @@
-﻿using System.Collections.Concurrent;
-using System.Reflection;
-using System.Text;
-using System.Xml.Linq;
-using BeaversTests.Common.CQRS.Commands;
+﻿using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App.Commands;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Engine;
-using NUnit.Framework.Api;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
@@ -41,7 +35,7 @@ public class TestsController(ICommandBus commandBus) : ControllerBase
         
         var commandResult = await commandBus.Send(command, cancellationToken);
         
-        return Ok(commandResult.TestPackageId);
+        return Ok(commandResult);
     }
     
     // private static readonly ConcurrentDictionary<string, TestPackage> TestPackages = new();

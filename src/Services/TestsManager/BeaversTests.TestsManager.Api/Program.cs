@@ -4,6 +4,7 @@ using BeaversTests.TestsManager.App;
 using BeaversTests.TestsManager.Infrastructure;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,12 @@ var configuration = builder.Configuration;
 
 services.AddControllers();
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
+services.AddSwaggerGen(c =>
+{
+    c.CustomSchemaIds(type => $"{type.FullName}");
+    
+    //c.IncludeXmlComments();
+});
 
 services.AddTestsManagerInfrastructure(configuration);
 services.AddTestsManagerApp();

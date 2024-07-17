@@ -41,7 +41,8 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
 
             var putTestPackageItemArgs = new PutObjectArgs()
                 .WithBucket(bucketName)
-                .WithFileName(assemblyPathsList[i])
+                .WithObject(assemblyPathsList[i])
+                .WithObjectSize(streamData.Length)
                 .WithContentType(TestPackageItemContentType)
                 .WithStreamData(streamData);
             
