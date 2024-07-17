@@ -43,7 +43,7 @@ public abstract class CreateProjectCommand
         ITestsManagerContext db,
         IMapper mapper) : ICommandHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command request, CancellationToken cancellationToken = default)
         {
             var project = mapper.Map<Command, TestProject>(request);
 

@@ -36,7 +36,7 @@ public abstract class GetProjectByIdQuery
         ITestsManagerContext db,
         IMapper mapper) : IQueryHandler<Query, Result>
     {
-        public async Task<Result> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Query query, CancellationToken cancellationToken = default)
         {
             var testProject = await db.TestProjects
                 .AsNoTracking()

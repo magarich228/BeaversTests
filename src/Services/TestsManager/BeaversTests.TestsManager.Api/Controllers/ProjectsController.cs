@@ -15,7 +15,7 @@ public class ProjectsController(
     [HttpGet]
     public async Task<IActionResult> GetAll(
         GetAllProjectsQuery.Query queryInput, 
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var queryResult = await queryBus.Send(queryInput, cancellationToken);
 
@@ -25,7 +25,7 @@ public class ProjectsController(
     [HttpGet]
     public async Task<IActionResult> GetById(
         GetProjectByIdQuery.Query queryInput, 
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var queryResult = await queryBus.Send(queryInput, cancellationToken);
 
@@ -35,7 +35,7 @@ public class ProjectsController(
     [HttpPost]
     public async Task<IActionResult> Create(
         CreateProjectCommand.Command createProjectInput,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var commandResult = await commandBus.Send(createProjectInput, cancellationToken);
 
@@ -45,7 +45,7 @@ public class ProjectsController(
     [HttpPut]
     public async Task<IActionResult> Update(
         UpdateProjectCommand.Command updateProjectInput,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var commandResult = await commandBus.Send(updateProjectInput, cancellationToken);
         

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.Models;
 using BeaversTests.TestsManager.Core.Models.Enums;
 using FluentValidation;
@@ -14,14 +15,15 @@ public abstract class AddTestPackageCommand
     {
         public required string Name { get; init; }
         public string? Description { get; init; }
-        public required byte[] TestAssemblyBytes { get; init; }
+        public required IEnumerable<byte[]> TestAssemblies { get; init; }
+        public required IEnumerable<string> ItemPaths { get; init; }
         public string? TestPackageType { get; init; }
         public required Guid TestProjectId { get; init; }
     }
 
     public class Result
     {
-        public Guid AssemblyId { get; init; }
+        public Guid TestPackageId { get; init; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -44,9 +46,15 @@ public abstract class AddTestPackageCommand
                 .MaximumLength(50)
                 .IsEnumName(typeof(TestPackageType), false);
 
-            RuleFor(c => c.TestAssemblyBytes)
+            RuleFor(c => c.ItemPaths)
                 .NotEmpty()
                 .NotNull();
+            
+            RuleFor(c => c.TestAssemblies)
+                .NotEmpty()
+                .NotNull()
+                .Must((c, files) => files.Count().Equals(c.ItemPaths.Count()))
+                .WithMessage("Test assemblies count doesn't match item paths count.");
             
             RuleFor(c => c.TestProjectId)
                 .NotEmpty()
@@ -61,15 +69,29 @@ public abstract class AddTestPackageCommand
         ITestsManagerContext db,
         IMapper mapper) : ICommandHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
             var testPackage = mapper.Map<Command, BeaversTestPackage>(command);
 
             var addedTestPackage = await db.TestPackages.AddAsync(testPackage, cancellationToken);
 
-            await testsStorageService.AddTestAssembly(command.Name, command.TestAssemblyBytes, command.TestProjectId);
+            var testPackageId = addedTestPackage.Entity.Id;
             
-            throw new NotImplementedException();
+            await testsStorageService.AddTestAssemblyAsync(
+                testPackageId,
+                command.TestAssemblies,
+                command.ItemPaths,
+                cancellationToken);
+
+            if (await db.SaveChangesAsync(cancellationToken) < 1)
+            {
+                throw new TestsManagerException("Test package not added.");
+            }
+
+            return new Result
+            {
+                TestPackageId = testPackageId
+            };
         }
     }
 }

@@ -27,7 +27,7 @@ public abstract class GetAllProjectsQuery
         ITestsManagerContext db,
         IMapper mapper) : IQueryHandler<Query, Result>
     {
-        public async Task<Result> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Query query, CancellationToken cancellationToken = default)
         {
             var testProjects = db.TestProjects
                 .PageBy(query)

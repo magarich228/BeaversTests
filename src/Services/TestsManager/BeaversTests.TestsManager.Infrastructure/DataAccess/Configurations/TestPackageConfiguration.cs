@@ -28,9 +28,6 @@ public class TestPackageConfiguration : IEntityTypeConfiguration<BeaversTestPack
                 t => t.ToString(),
                 t => Enum.Parse<TestPackageType>(t));
 
-        builder.Property(t => t.TestPackage)
-            .IsRequired();
-
         builder.Property(t => t.TestProjectId)
             .IsRequired();
 

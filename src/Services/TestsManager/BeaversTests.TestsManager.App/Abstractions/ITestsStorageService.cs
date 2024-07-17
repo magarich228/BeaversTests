@@ -2,5 +2,9 @@
 
 public interface ITestsStorageService
 {
-    public Task AddTestAssembly(string name, byte[] testProject, Guid projectId);
+    public Task AddTestAssemblyAsync(
+        Guid testPackageId, 
+        IEnumerable<byte[]> testAssemblies, 
+        IEnumerable<string> assemblyPaths, 
+        CancellationToken cancellationToken = default);
 }

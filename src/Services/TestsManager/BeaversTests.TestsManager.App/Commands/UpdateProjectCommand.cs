@@ -54,7 +54,7 @@ public abstract class UpdateProjectCommand
         ITestsManagerContext db,
         IMapper mapper) : ICommandHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
             var testProject = mapper.Map<Command, TestProject>(command);
 
