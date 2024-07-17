@@ -38,6 +38,15 @@ public class TestsController(ICommandBus commandBus) : ControllerBase
         return Ok(commandResult);
     }
     
+    [HttpDelete]
+    public async Task<IActionResult> RemoveTestPackage(
+        [FromQuery] RemoveTestPackageCommand.Command commandInput,
+        CancellationToken cancellationToken)
+    {
+        var commandResult = await commandBus.Send(commandInput, cancellationToken);
+        
+        return Ok(commandResult);
+    }
     // private static readonly ConcurrentDictionary<string, TestPackage> TestPackages = new();
     //
     // [HttpGet]

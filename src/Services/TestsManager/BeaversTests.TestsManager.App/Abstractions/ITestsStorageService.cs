@@ -7,4 +7,8 @@ public interface ITestsStorageService
         IEnumerable<byte[]> testAssemblies, 
         IEnumerable<string> assemblyPaths, 
         CancellationToken cancellationToken = default);
+
+    Task RemoveTestAssemblyAsync(
+        Guid testPackageId,
+        CancellationToken cancellationToken = default);
 }

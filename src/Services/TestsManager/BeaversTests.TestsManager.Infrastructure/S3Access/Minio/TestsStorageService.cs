@@ -49,6 +49,19 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
             _ = await minioClient.PutObjectAsync(putTestPackageItemArgs, cancellationToken);
         }
     }
+    
+    public async Task RemoveTestAssemblyAsync(
+        Guid testPackageId, 
+        CancellationToken cancellationToken = default)
+    {
+        var bucketName = GetBucketName(testPackageId);
+        
+        // TODO: learn locks and remove buckets
+        await minioClient.RemoveBucketAsync(
+            new RemoveBucketArgs()
+                .WithBucket(bucketName), 
+            cancellationToken);
+    }
 
     private string GetBucketName(Guid assemblyId) => $"tests-{assemblyId}";
 }

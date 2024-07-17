@@ -29,6 +29,7 @@ public abstract class GetAllProjectsQuery
     {
         public async Task<Result> Handle(Query query, CancellationToken cancellationToken = default)
         {
+            // TODO: add order
             var testProjects = db.TestProjects
                 .PageBy(query)
                 .AsNoTracking();

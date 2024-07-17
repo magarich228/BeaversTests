@@ -34,20 +34,30 @@ public class ProjectsController(
 
     [HttpPost]
     public async Task<IActionResult> Create(
-        CreateProjectCommand.Command createProjectInput,
+        CreateProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
-        var commandResult = await commandBus.Send(createProjectInput, cancellationToken);
+        var commandResult = await commandBus.Send(commandInput, cancellationToken);
 
         return Ok(commandResult);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update(
-        UpdateProjectCommand.Command updateProjectInput,
+        UpdateProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
-        var commandResult = await commandBus.Send(updateProjectInput, cancellationToken);
+        var commandResult = await commandBus.Send(commandInput, cancellationToken);
+        
+        return Ok(commandResult);
+    }
+    
+    [HttpDelete]
+    public async Task<IActionResult> Delete(
+        [FromQuery] RemoveProjectCommand.Command commandInput,
+        CancellationToken cancellationToken = default)
+    {
+        var commandResult = await commandBus.Send(commandInput, cancellationToken);
         
         return Ok(commandResult);
     }
