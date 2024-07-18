@@ -2,5 +2,5 @@
 
 public interface IQueryBus
 {
-    Task<TResponse> Send<TResponse>(IQuery<TResponse> query, CancellationToken cancellationToken = default(CancellationToken));
+    Task<TResponse> SendAsync<TResponse>(IQuery<TResponse> query, CancellationToken cancellationToken = default(CancellationToken));
 }

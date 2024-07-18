@@ -36,7 +36,7 @@ public abstract class GetProjectTestPackagesQuery
         ITestsManagerContext db,
         IMapper mapper) : IQueryHandler<Query, Result>
     {
-        public async Task<Result> Handle(Query query, CancellationToken cancellationToken)
+        public Task<Result> Handle(Query query, CancellationToken cancellationToken)
         {
             var testPackages = db.TestProjects
                 .Include(t => t.TestPackages)
@@ -46,10 +46,10 @@ public abstract class GetProjectTestPackagesQuery
 
             var testPackagesDto = mapper.ProjectTo<TestPackageDto>(testPackages);
             
-            return new Result
+            return Task.FromResult(new Result
             {
                 TestPackages = testPackagesDto
-            };
+            });
         }
     }
 }

@@ -17,7 +17,7 @@ public class ProjectsController(
         [FromQuery] GetAllProjectsQuery.Query queryInput, 
         CancellationToken cancellationToken = default)
     {
-        var queryResult = await queryBus.Send(queryInput, cancellationToken);
+        var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
 
         return Ok(queryResult);
     }
@@ -27,7 +27,7 @@ public class ProjectsController(
         [FromQuery] GetProjectByIdQuery.Query queryInput, 
         CancellationToken cancellationToken = default)
     {
-        var queryResult = await queryBus.Send(queryInput, cancellationToken);
+        var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
 
         return Ok(queryResult);
     }
@@ -37,7 +37,7 @@ public class ProjectsController(
         CreateProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
-        var commandResult = await commandBus.Send(commandInput, cancellationToken);
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
 
         return Ok(commandResult);
     }
@@ -47,7 +47,7 @@ public class ProjectsController(
         UpdateProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
-        var commandResult = await commandBus.Send(commandInput, cancellationToken);
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
         
         return Ok(commandResult);
     }
@@ -57,7 +57,7 @@ public class ProjectsController(
         [FromQuery] RemoveProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
-        var commandResult = await commandBus.Send(commandInput, cancellationToken);
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
         
         return Ok(commandResult);
     }

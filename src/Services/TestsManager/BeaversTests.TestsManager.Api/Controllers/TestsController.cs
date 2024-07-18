@@ -18,7 +18,7 @@ public class TestsController(
         [FromQuery] GetProjectTestPackagesQuery.Query queryInput,
         CancellationToken cancellationToken)
     {
-        var queryResult = await queryBus.Send(queryInput, cancellationToken);
+        var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
         
         return Ok(queryResult);
     }
@@ -47,7 +47,7 @@ public class TestsController(
             Description = testPackageInput.Description
         };
         
-        var commandResult = await commandBus.Send(command, cancellationToken);
+        var commandResult = await commandBus.SendAsync(command, cancellationToken);
         
         return Ok(commandResult);
     }
@@ -57,7 +57,7 @@ public class TestsController(
         [FromQuery] RemoveTestPackageCommand.Command commandInput,
         CancellationToken cancellationToken)
     {
-        var commandResult = await commandBus.Send(commandInput, cancellationToken);
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
         
         return Ok(commandResult);
     }
