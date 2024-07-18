@@ -1,4 +1,5 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.App.Exceptions;
 using Minio;
 using Minio.DataModel.Args;
 
@@ -55,6 +56,24 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
         CancellationToken cancellationToken = default)
     {
         var bucketName = GetBucketName(testPackageId);
+
+        var items = minioClient.ListObjectsEnumAsync(new ListObjectsArgs()
+            .WithBucket(bucketName)
+            .WithRecursive(true), cancellationToken)
+            .ToBlockingEnumerable();
+        
+        var deleteErrors = await minioClient.RemoveObjectsAsync(
+            new RemoveObjectsArgs()
+                .WithBucket(bucketName)
+                .WithObjects(items.Select(i => i.Key)
+                    .ToList()), 
+            cancellationToken);
+        
+        if (deleteErrors.Any())
+        {
+            // TODO: Log errors
+            throw new TestsManagerException("Failed to remove test assemblies from S3");
+        }
         
         // TODO: learn locks and remove buckets
         await minioClient.RemoveBucketAsync(

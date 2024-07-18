@@ -12,6 +12,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddTestsManagerInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        // TODO: Create configuration keys type
         var connectionString = configuration.GetConnectionString("TestManagerNpgsql");
         
         services.AddDbContext<TestsManagerContext>(options =>
@@ -28,10 +29,9 @@ public static class DependencyInjection
         services.AddMinio(c => c
             .WithEndpoint(minioConfiguration.Endpoint)
             .WithCredentials(minioConfiguration.AccessKey, minioConfiguration.SecretKey)
-            .WithSSL(minioConfiguration.UseSsl), 
-            ServiceLifetime.Scoped);
+            .WithSSL(minioConfiguration.UseSsl));
 
-        services.AddScoped<ITestsStorageService, TestsStorageService>();
+        services.AddSingleton<ITestsStorageService, TestsStorageService>();
         
         return services;
     }

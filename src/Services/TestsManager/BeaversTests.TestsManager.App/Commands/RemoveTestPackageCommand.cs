@@ -1,5 +1,6 @@
 ﻿using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.App.Exceptions;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -47,8 +48,11 @@ public abstract class RemoveTestPackageCommand
             db.TestPackages.Remove(removedTestPackage);
             
             await testsStorageService.RemoveTestAssemblyAsync(removedTestPackage.Id, cancellationToken);
-            
-            await db.SaveChangesAsync(cancellationToken);
+
+            if (await db.SaveChangesAsync(cancellationToken) < 1)
+            {
+                throw new TestsManagerException("Failed to remove test package.");
+            }
 
             return new Result();
         }
