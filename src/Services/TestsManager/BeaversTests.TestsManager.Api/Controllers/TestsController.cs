@@ -1,14 +1,28 @@
 ﻿using BeaversTests.Common.CQRS.Commands;
+using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App.Commands;
+using BeaversTests.TestsManager.App.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
-public class TestsController(ICommandBus commandBus) : ControllerBase
+public class TestsController(
+    IQueryBus queryBus, 
+    ICommandBus commandBus) : ControllerBase
 {
+    [HttpGet]
+    public async Task<IActionResult> GetProjectTestPackages(
+        [FromQuery] GetProjectTestPackagesQuery.Query queryInput,
+        CancellationToken cancellationToken)
+    {
+        var queryResult = await queryBus.Send(queryInput, cancellationToken);
+        
+        return Ok(queryResult);
+    }
+    
     [HttpPost]
     public async Task<IActionResult> AddTestPackage(
         TestPackageDto testPackageInput,
@@ -47,7 +61,7 @@ public class TestsController(ICommandBus commandBus) : ControllerBase
         
         return Ok(commandResult);
     }
-    // private static readonly ConcurrentDictionary<string, TestPackage> TestPackages = new();
+    // private static readonly ConcurrentDictionary<string, TestPackages> TestPackages = new();
     //
     // [HttpGet]
     // public async Task<IActionResult> ExploreLoadedTests(CancellationToken cancellationToken)
@@ -90,7 +104,7 @@ public class TestsController(ICommandBus commandBus) : ControllerBase
     //     var asmFullPath = Path.GetFullPath(asmFileName);
     //
     //     var inputAsm = Assembly.LoadFrom(asmFullPath);
-    //     var testPackage = new TestPackage(asmFullPath);
+    //     var testPackage = new TestPackages(asmFullPath);
     //     TestPackages.AddOrUpdate(asmFileName, testPackage, (name, package) =>
     //     {
     //         if (TestPackages.TryGetValue(name, out var existTestPackage))
@@ -118,7 +132,7 @@ public class TestsController(ICommandBus commandBus) : ControllerBase
     // {
     //     if (!TestPackages.TryGetValue(testAssemblyName, out var testPackage))
     //     {
-    //         ModelState.AddModelError(nameof(testPackage), "TestPackage not found.");
+    //         ModelState.AddModelError(nameof(testPackage), "TestPackages not found.");
     //         return BadRequest(ModelState);
     //     }
     //     
