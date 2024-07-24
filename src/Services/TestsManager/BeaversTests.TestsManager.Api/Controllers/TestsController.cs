@@ -1,125 +1,74 @@
-﻿using System.Collections.Concurrent;
-using System.Reflection;
-using System.Text;
-using System.Xml.Linq;
+﻿using BeaversTests.Common.CQRS.Commands;
+using BeaversTests.Common.CQRS.Queries;
+using BeaversTests.TestsManager.Api.Dtos;
+using BeaversTests.TestsManager.App.Commands;
+using BeaversTests.TestsManager.App.Queries;
 using Microsoft.AspNetCore.Mvc;
-using NUnit.Engine;
-using NUnit.Framework.Api;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
+[ApiController]
 [Route("api/[controller]/[action]")]
-public class TestsController : ControllerBase
+public class TestsController(
+    IQueryBus queryBus, 
+    ICommandBus commandBus) : ControllerBase
 {
-    private static readonly ConcurrentDictionary<string, TestPackage> TestPackages = new();
-
     [HttpGet]
-    public async Task<IActionResult> ExploreLoadedTests(CancellationToken ct)
+    public async Task<IActionResult> GetProjectTestPackages(
+        [FromQuery] GetProjectTestPackagesQuery.Query queryInput,
+        CancellationToken cancellationToken)
     {
-        var sb = new StringBuilder();
+        var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
         
-        foreach (var testPackage in TestPackages.Values)
-        {
-            await Task.Run(() =>
-            {
-                var exploreXml = TestEngineActivator.CreateInstance()
-                    .GetRunner(testPackage)
-                    .Explore(TestFilter.Empty);
-
-                exploreXml.Normalize();
-
-                sb.Append(XElement.Parse(exploreXml.OuterXml, LoadOptions.PreserveWhitespace));
-            }, ct);
-        }
+        return Ok(queryResult);
+    }
+    
+    [HttpGet]
+    public async Task<IActionResult> GetTestPackageInfo(
+        [FromQuery] GetTestPackageInfoQuery.Query queryInput,
+        CancellationToken cancellationToken)
+    {
+        var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
         
-        return Ok(sb.ToString());
+        return Ok(queryResult);
     }
     
     [HttpPost]
-    public async Task<IActionResult> AddTestAssembly(IFormFile inputTestAssembly, CancellationToken ct)
+    public async Task<IActionResult> AddTestPackage(
+        TestPackageDto testPackageInput,
+        CancellationToken cancellationToken)
     {
-        await using var asmStream = inputTestAssembly.OpenReadStream();
-        
-        var assemblyBuffer = new byte[inputTestAssembly.Length];
-        var bytesRead = await asmStream.ReadAsync(assemblyBuffer, 0, (int)asmStream.Length, ct);
-        
-        var asmFileName = inputTestAssembly.FileName;
-
-        await using (var asmFile = System.IO.File.Create(asmFileName))
-        {
-            await asmFile.WriteAsync(assemblyBuffer, 0, bytesRead, ct);
-            await asmFile.FlushAsync(ct);
-        }
-
-        var asmFullPath = Path.GetFullPath(asmFileName);
-
-        var inputAsm = Assembly.LoadFrom(asmFullPath);
-        var testPackage = new TestPackage(asmFullPath);
-        TestPackages.AddOrUpdate(asmFileName, testPackage, (name, package) =>
-        {
-            if (TestPackages.TryGetValue(name, out var existTestPackage))
+        var testPackageAssemblies = testPackageInput.TestAssemblies
+            .Select(a =>
             {
-                TestPackages.Remove(name, out existTestPackage);
-            }
-
-            if (!TestPackages.TryAdd(name, package))
-            {
-                throw new ApplicationException($"Test package with name: {name} has not been added.");
-            }
-
-            return package;
-        });
+                using var ms = new MemoryStream();
+                a.CopyTo(ms);
+                return ms.ToArray();
+            });
         
-        using var engine = TestEngineActivator.CreateInstance();
-        using var runner = engine.GetRunner(testPackage);
-        var testCount = runner.CountTestCases(TestFilter.Empty);
-        
-        return Ok($"Test count: {testCount}");
-    }
-
-    [HttpPost]
-    public void AddTestFile(IFormFile testFile)
-    {
-        
-    }
-
-    [HttpPost]
-    public IActionResult RunTestAssembly(string testAssemblyName, CancellationToken ct)
-    {
-        if (!TestPackages.TryGetValue(testAssemblyName, out var testPackage))
+        // TODO: map dto to command
+        var command = new AddTestPackageCommand.Command
         {
-            ModelState.AddModelError(nameof(testPackage), "TestPackage not found.");
-            return BadRequest(ModelState);
-        }
+            Name = testPackageInput.Name,
+            TestAssemblies = testPackageAssemblies,
+            ItemPaths = testPackageInput.ItemPaths,
+            TestProjectId = testPackageInput.TestProjectId,
+            TestPackageType = testPackageInput.TestPackageType,
+            Description = testPackageInput.Description
+        };
         
-        using var engine = TestEngineActivator.CreateInstance();
-        using var runner = engine.GetRunner(testPackage);
-        var testResultXml = runner.Run(null, TestFilter.Empty);
-        testResultXml.Normalize();
-
-        return Ok(XElement.Parse(testResultXml.OuterXml).ToString());
+        var commandResult = await commandBus.SendAsync(command, cancellationToken);
+        
+        return Ok(commandResult);
     }
     
-    [HttpPost]
-    public async Task<IActionResult> OneTimeRun(IFormFile assemblyFile, CancellationToken ct)
+    [HttpDelete]
+    public async Task<IActionResult> RemoveTestPackage(
+        [FromQuery] RemoveTestPackageCommand.Command commandInput,
+        CancellationToken cancellationToken)
     {
-        await using var read = assemblyFile.OpenReadStream();
-        var fileLength = assemblyFile.Length;
-
-        var assemblyBuffer = new byte[fileLength];
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
         
-        var bytesRead = await read.ReadAsync(assemblyBuffer, 0, (int)fileLength, ct);
-
-        if (bytesRead < fileLength)
-        {
-            return BadRequest();
-        }
-        
-        var testAssembly = Assembly.Load(assemblyBuffer);
-        var runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
-
-        var tests = runner.Load(testAssembly, new Dictionary<string, object>());
-        
-        return Ok(tests.TestCaseCount);
+        return Ok(commandResult);
     }
 }

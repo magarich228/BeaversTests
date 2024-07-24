@@ -12,7 +12,7 @@ public abstract class GetProjectByIdQuery
 {
     public class Query : IQuery<Result>
     {
-        public required Guid ProjectId { get; set; }
+        public required Guid ProjectId { get; init; }
     }
 
     public class Result
@@ -22,10 +22,13 @@ public abstract class GetProjectByIdQuery
 
     public class Validator : AbstractValidator<Query>
     {
-        public Validator()
+        public Validator(ITestsManagerContext db)
         {
             RuleFor(q => q.ProjectId)
-                .NotEmpty();
+                .NotEmpty()
+                .MustAsync((id, token) => db.TestProjects
+                    .AnyAsync(x => x.Id == id, token))
+                .WithMessage("Project with this id does not exist");
         }
     }
 
@@ -33,7 +36,7 @@ public abstract class GetProjectByIdQuery
         ITestsManagerContext db,
         IMapper mapper) : IQueryHandler<Query, Result>
     {
-        public async Task<Result> Handle(Query query, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Query query, CancellationToken cancellationToken = default)
         {
             var testProject = await db.TestProjects
                 .AsNoTracking()

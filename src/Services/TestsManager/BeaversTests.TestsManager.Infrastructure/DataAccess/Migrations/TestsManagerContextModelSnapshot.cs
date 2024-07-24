@@ -22,6 +22,38 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.BeaversTestPackage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("TestPackageType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<Guid>("TestProjectId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("Name", "TestProjectId");
+
+                    b.HasIndex("TestProjectId");
+
+                    b.ToTable("TestPackages");
+                });
+
             modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.TestProject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -29,15 +61,35 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Description")
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
+                    b.HasAlternateKey("Name");
+
                     b.ToTable("TestProjects");
+                });
+
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.BeaversTestPackage", b =>
+                {
+                    b.HasOne("BeaversTests.TestsManager.Core.Models.TestProject", "TestProject")
+                        .WithMany("TestPackages")
+                        .HasForeignKey("TestProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestProject");
+                });
+
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.TestProject", b =>
+                {
+                    b.Navigation("TestPackages");
                 });
 #pragma warning restore 612, 618
         }

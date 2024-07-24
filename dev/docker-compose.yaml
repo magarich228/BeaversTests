@@ -1,0 +1,76 @@
+version: '3.9'
+
+services:
+  minio:
+    image: minio/minio
+    container_name: minio
+    restart: always
+    command: server --console-address ":9001" /data/
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: kirill
+      MINIO_ROOT_PASSWORD: minio123
+    volumes:
+      - ./data:/data
+      - ./config:/root/.minio
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks: 
+      tests-manager:
+  
+  postgres.testsmanager:
+    container_name: postgres.testsmanager
+    image: postgres:14
+    environment:
+      POSTGRES_DB: "BeaversTests.TestsManager"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "qwerty123"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - tests-manager-ngp-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d BeaversTests.TestsManager" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+    networks: 
+      tests-manager:
+  
+  beaverstests.testsmanager.api:
+    image: beaverstests.testsmanager.api
+    build:
+      context: ../.
+      dockerfile: src/Services/TestsManager/BeaversTests.TestsManager.Api/Dockerfile
+    ports:
+      - "5174:5174"
+    environment:
+      ASPNETCORE_URLS: http://+:5174
+      ASPNETCORE_HTTP_PORT: 5174
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__TestManagerNpgsql: Server=postgres.testsmanager:5432;Database=BeaversTests.TestsManager;Username=postgres;Password=qwerty123
+    depends_on:
+      - minio
+      - postgres.testsmanager
+    networks: 
+      tests-manager:
+
+volumes:
+  tests-manager-ngp-data:
+    driver: local
+    
+networks:
+  tests-manager:

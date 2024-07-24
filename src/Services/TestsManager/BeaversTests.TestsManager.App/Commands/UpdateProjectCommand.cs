@@ -9,13 +9,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BeaversTests.TestsManager.App.Commands;
 
-public class UpdateProjectCommand
+public abstract class UpdateProjectCommand
 {
     public class Command : ICommand<Result>
     {
-        public required Guid Id { get; set; }
-        public required string Name { get; set; }
-        public string? Description { get; set; }
+        public required Guid Id { get; init; }
+        public required string Name { get; init; }
+        public string? Description { get; init; }
     }
     
     public class Result
@@ -25,7 +25,7 @@ public class UpdateProjectCommand
     
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(ITestsManagerContext db)
+        public Validator(ITestsManagerContext db) // TODO: Lay out the in shared rules
         {
             RuleFor(c => c)
                 .NotNull();
@@ -34,7 +34,10 @@ public class UpdateProjectCommand
                 .NotEmpty()
                 .NotNull()
                 .MinimumLength(1)
-                .MaximumLength(50);
+                .MaximumLength(50)
+                .MustAsync(async (c, name, token) => !await db.TestProjects
+                    .AnyAsync(t => t.Name == name, token))
+                .WithMessage("Test project with this name already exists.");
 
             RuleFor(c => c.Description)
                 .MaximumLength(1000);
@@ -51,7 +54,7 @@ public class UpdateProjectCommand
         ITestsManagerContext db,
         IMapper mapper) : ICommandHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
             var testProject = mapper.Map<Command, TestProject>(command);
 

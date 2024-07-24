@@ -5,9 +5,9 @@ using BeaversTests.TestsManager.Core.Models;
 
 namespace BeaversTests.TestsManager.App.Mappings;
 
-public class ProjectMappingProfile : Profile
+public class TestProjectMappingProfile : Profile
 {
-    public ProjectMappingProfile()
+    public TestProjectMappingProfile()
     {
         CreateMap<TestProject, CreateProjectCommand.Command>().ReverseMap();
         CreateMap<TestProject, UpdateProjectCommand.Command>().ReverseMap();

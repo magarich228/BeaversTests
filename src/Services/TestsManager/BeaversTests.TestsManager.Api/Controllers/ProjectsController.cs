@@ -6,51 +6,59 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
+[ApiController]
 [Route("[controller]/[action]")]
 public class ProjectsController(
     ICommandBus commandBus,
     IQueryBus queryBus) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(CancellationToken cancellationToken) // TODO: Add paging
+    public async Task<IActionResult> GetAll(
+        [FromQuery] GetAllProjectsQuery.Query queryInput, 
+        CancellationToken cancellationToken = default)
     {
-        var queryResult = await queryBus.Send(new GetAllProjectsQuery.Query(), cancellationToken);
+        var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
 
-        return Ok(queryResult.TestProjects);
+        return Ok(queryResult);
     }
 
     [HttpGet]
     public async Task<IActionResult> GetById(
-        GetProjectByIdQuery.Query queryInput, 
-        CancellationToken cancellationToken)
+        [FromQuery] GetProjectByIdQuery.Query queryInput, 
+        CancellationToken cancellationToken = default)
     {
-        var queryResult = await queryBus.Send(queryInput, cancellationToken);
+        var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
 
-        if (queryResult.TestProject is null)
-        {
-            return BadRequest();
-        }
-
-        return Ok(queryResult.TestProject);
+        return Ok(queryResult);
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(
-        CreateProjectCommand.Command createProjectInput,
-        CancellationToken cancellationToken)
+        CreateProjectCommand.Command commandInput,
+        CancellationToken cancellationToken = default)
     {
-        var commandResult = await commandBus.Send(createProjectInput, cancellationToken);
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
 
-        return Ok(commandResult.ProjectId);
+        return Ok(commandResult);
     }
 
     [HttpPut]
     public async Task<IActionResult> Update(
-        UpdateProjectCommand.Command updateProjectInput,
-        CancellationToken cancellationToken)
+        UpdateProjectCommand.Command commandInput,
+        CancellationToken cancellationToken = default)
     {
-        var commandResult = await commandBus.Send(updateProjectInput, cancellationToken);
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
         
-        return Ok(commandResult.TestProject);
+        return Ok(commandResult);
+    }
+    
+    [HttpDelete]
+    public async Task<IActionResult> Delete(
+        [FromQuery] RemoveProjectCommand.Command commandInput,
+        CancellationToken cancellationToken = default)
+    {
+        var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
+        
+        return Ok(commandResult);
     }
 }
