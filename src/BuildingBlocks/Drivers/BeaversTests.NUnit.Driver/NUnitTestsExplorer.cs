@@ -23,14 +23,20 @@ public class NUnitTestsExplorer : ITestsExplorer
         {
             return ArraySegment<TestSuite>.Empty;
         }
-        
-        var testSuites = GetTestSuitesInternal(loadedTest);
 
+        var loadedTests = loadedTest.ToFullList();
+        
+        var testSuites = GetTestSuitesInternal(loadedTests);
+        
         var result = testSuites.Select(s => new TestSuite
         {
             Id = s.Id,
             Name = s.Name,
-            Tests = null // TODO: GetTestCases
+            Tests = GetTestCasesInternal(s)
+                .Select(t => new Test
+            {
+                Name = t.Name
+            })
         });
 
         return result;
@@ -45,19 +51,16 @@ public class NUnitTestsExplorer : ITestsExplorer
         return GetTestSuites(testAssembly);
     }
 
-    private IEnumerable<ITest> GetTestSuitesInternal(params ITest[] tests)
+    private IEnumerable<ITest> GetTestSuitesInternal(IEnumerable<ITest> tests)
     {
-        List<ITest> resultTests = new List<ITest>();
-        
-        foreach (var test in tests)
-        {
-            if ((test.TestType == "TestFixture" || test.TestType == "TestSuite") && test.IsSuite)
-            {
-                resultTests.AddRange(GetTestSuitesInternal(test.Tests.ToArray()));
-            }
-        }
-
-        return resultTests;
+        return tests.Where(TestsExtensions.IsTestSuite);
+    }
+    
+    private IEnumerable<ITest> GetTestCasesInternal(ITest testSuite)
+    {
+        return testSuite
+            .ToChildList()
+            .Where(TestsExtensions.IsTestCase);
     }
 }
 
