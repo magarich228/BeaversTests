@@ -31,7 +31,9 @@ public static class TestsExtensions
         
         var root = test;
         
-        while (!root!.IsRoot())
+        while (!(root ?? 
+                 throw new NUnitDriverException("Root test of argument is null."))
+               .IsRoot())
         {
             root = root.Parent;
         }
