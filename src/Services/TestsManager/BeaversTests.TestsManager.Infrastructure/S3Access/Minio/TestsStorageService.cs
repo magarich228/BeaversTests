@@ -5,11 +5,50 @@ using Minio.DataModel.Args;
 
 namespace BeaversTests.TestsManager.Infrastructure.S3Access.Minio;
 
+// TODO: Сделать фасадом и выделить?
+// TODO: Абстрагироваться от Minio.
+// TODO: Организовать бакеты по проектам.
 public class TestsStorageService(IMinioClient minioClient) : ITestsStorageService
 {
     private const string TestPackageItemContentType = "application/octet-stream";
+
+    public async Task<IDictionary<string, byte[]>> GetTestPackageAsync(
+        Guid testPackageId,
+        CancellationToken cancellationToken = default)
+    {
+        var bucketName = GetBucketName(testPackageId);
+        
+        if (!await minioClient.BucketExistsAsync(
+                new BucketExistsArgs()
+                    .WithBucket(bucketName), 
+                cancellationToken))
+        {
+            throw new ApplicationException("Bucket with this testPackageId does not exists");
+        }
+
+        var testPackageItems = minioClient.ListObjectsEnumAsync(
+            new ListObjectsArgs().WithBucket(bucketName),
+            cancellationToken);
+
+        var testPackageItemDatas = new Dictionary<string, byte[]>();
+        
+        await foreach (var testPackageItem in testPackageItems)
+        {
+            var objectKey = testPackageItem.Key;
+            
+            var stat = await minioClient.GetObjectAsync(
+                new GetObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(objectKey)
+                    .WithCallbackStream(async (stream, token) => 
+                        testPackageItemDatas.Add(objectKey, await GetObjectData(stream, token))),
+                cancellationToken);
+        }
+
+        return testPackageItemDatas;
+    }
     
-    public async Task AddTestAssemblyAsync(
+    public async Task AddTestPackageAsync(
         Guid testPackageId,
         IEnumerable<byte[]> testAssemblies,
         IEnumerable<string> assemblyPaths,
@@ -28,7 +67,10 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
 
         var bucketName = GetBucketName(testPackageId);
 
-        if (await minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName), cancellationToken))
+        if (await minioClient.BucketExistsAsync(
+                new BucketExistsArgs()
+                    .WithBucket(bucketName), 
+                cancellationToken))
         {
             throw new ApplicationException("Bucket with this testPackageId already exists");
         }
@@ -51,7 +93,7 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
         }
     }
     
-    public async Task RemoveTestAssemblyAsync(
+    public async Task RemoveTestPackageAsync(
         Guid testPackageId, 
         CancellationToken cancellationToken = default)
     {
@@ -83,4 +125,19 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
     }
 
     private string GetBucketName(Guid assemblyId) => $"tests-{assemblyId}";
+
+    private async Task<byte[]> GetObjectData(
+        Stream objectStream, 
+        CancellationToken cancellationToken)
+    {
+        await using var ms = new MemoryStream();
+
+        objectStream.Position = 0;
+        await objectStream.CopyToAsync(ms, cancellationToken);
+        await objectStream.FlushAsync(cancellationToken);
+
+        await objectStream.DisposeAsync();
+
+        return ms.ToArray();
+    }
 }

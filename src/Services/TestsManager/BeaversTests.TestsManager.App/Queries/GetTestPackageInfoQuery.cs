@@ -14,13 +14,15 @@ public abstract class GetTestPackageInfoQuery
 
     public class Result
     {
-        
+        public object Tests { get; init; }
     }
 
     public class Validator : AbstractValidator<Query>
     {
         public Validator(ITestsManagerContext db)
         {
+            // TODO: check relation to current user project
+            
             RuleFor(q => q.TestPackageId)
                 .NotEmpty()
                 .MustAsync(async (id, token) => 
@@ -29,11 +31,24 @@ public abstract class GetTestPackageInfoQuery
         }
     }
 
-    public class Handler : IQueryHandler<Query, Result>
+    public class Handler(
+        ITestsManagerContext db,
+        ITestsStorageService testsStorageService) : IQueryHandler<Query, Result>
     {
-        public Task<Result> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            var testPackage = await db.TestPackages.FirstOrDefaultAsync(
+                t => t.Id == request.TestPackageId, 
+                cancellationToken);
+            
+            // TODO: get test package info logic
+            
+            if (testPackage is null)
+            {
+                return new Result();
+            }
+
+            return new Result();
         }
     }
 }

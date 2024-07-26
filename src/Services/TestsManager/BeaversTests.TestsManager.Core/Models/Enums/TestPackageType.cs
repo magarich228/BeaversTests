@@ -1,5 +1,6 @@
 ﻿namespace BeaversTests.TestsManager.Core.Models.Enums;
 
+// TODO: Продумать расширяемость
 public enum TestPackageType : int
 {
     NUnit = 0,
