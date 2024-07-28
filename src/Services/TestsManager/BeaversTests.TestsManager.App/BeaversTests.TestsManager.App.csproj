@@ -10,6 +10,7 @@
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.Application\BeaversTests.Common.Application.csproj" />
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.CQRS\BeaversTests.Common.CQRS.csproj" />
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Extensions\BeaversTests.Extensions.csproj" />
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.TestDrivers\BeaversTests.TestDrivers.csproj" />
       <ProjectReference Include="..\BeaversTests.TestsManager.Core\BeaversTests.TestsManager.Core.csproj" />
     </ItemGroup>
 

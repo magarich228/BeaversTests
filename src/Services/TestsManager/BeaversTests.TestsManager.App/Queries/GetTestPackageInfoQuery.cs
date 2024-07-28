@@ -1,8 +1,11 @@
 ﻿using BeaversTests.Common.CQRS.Queries;
+using BeaversTests.TestDrivers;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.Core.Models.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace BeaversTests.TestsManager.App.Queries;
 
@@ -34,7 +37,8 @@ public abstract class GetTestPackageInfoQuery
 
     public class Handler(
         ITestsManagerContext db,
-        ITestsStorageService testsStorageService) : IQueryHandler<Query, Result>
+        ITestsStorageService testsStorageService,
+        TestDriversResolver testDriversResolver) : IQueryHandler<Query, Result>
     {
         public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
         {
@@ -42,15 +46,17 @@ public abstract class GetTestPackageInfoQuery
                 t => t.Id == request.TestPackageId, 
                 cancellationToken);
             
-            
-            
             // TODO: get test package info logic
             
             if (testPackage is null)
             {
                 return new Result();
             }
+            
+            var testsExplorer = testDriversResolver.ResolveTestsExplorer(testPackage.TestPackageType.ToString());
 
+            // testsExplorer.GetTestSuites();
+            
             return new Result();
         }
     }
