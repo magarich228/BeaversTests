@@ -1,5 +1,6 @@
 ﻿using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.App.Dtos;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,7 @@ public abstract class GetTestPackageInfoQuery
 
     public class Result
     {
-        public object Tests { get; init; }
+        public TestPackageItemsInfoDto? TestPackageItemsInfo { get; init; }
     }
 
     public class Validator : AbstractValidator<Query>
@@ -40,6 +41,8 @@ public abstract class GetTestPackageInfoQuery
             var testPackage = await db.TestPackages.FirstOrDefaultAsync(
                 t => t.Id == request.TestPackageId, 
                 cancellationToken);
+            
+            
             
             // TODO: get test package info logic
             

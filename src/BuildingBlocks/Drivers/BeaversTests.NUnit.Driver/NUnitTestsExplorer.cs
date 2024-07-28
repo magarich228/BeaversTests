@@ -6,8 +6,10 @@ using NUnit.Framework.Interfaces;
 
 namespace BeaversTests.NUnit.Driver;
 
-public class NUnitTestsExplorer : ITestsExplorer
+public class NUnitTestsExplorer : ITestsExplorer<NUnitDriverKey>
 {
+    public DriverKey<NUnitDriverKey> DriverKey { get; } = new();
+
     public IEnumerable<TestSuite> GetTestSuites(Assembly testsAssembly)
     {
         ArgumentNullException.ThrowIfNull(testsAssembly);
