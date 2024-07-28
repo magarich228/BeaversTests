@@ -62,6 +62,7 @@ services:
       ASPNETCORE_HTTP_PORT: 5174
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__TestManagerNpgsql: Server=postgres.testsmanager:5432;Database=BeaversTests.TestsManager;Username=postgres;Password=qwerty123
+      TestDriversDirectory: drivers
     depends_on:
       - minio
       - postgres.testsmanager

@@ -1,5 +1,6 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Exceptions;
+using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
 
@@ -8,7 +9,9 @@ namespace BeaversTests.TestsManager.Infrastructure.S3Access.Minio;
 // TODO: Сделать фасадом и выделить?
 // TODO: Абстрагироваться от Minio.
 // TODO: Организовать бакеты по проектам.
-public class TestsStorageService(IMinioClient minioClient) : ITestsStorageService
+public class TestsStorageService(
+    IMinioClient minioClient,
+    ILogger<TestsStorageService> logger) : ITestsStorageService
 {
     private const string TestPackageItemContentType = "application/octet-stream";
 
@@ -67,12 +70,19 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
 
         var bucketName = GetBucketName(testPackageId);
 
+        logger.LogInformation(
+            "Test package {testPackageId} bucket name: {BucketName}", 
+            testPackageId, 
+            bucketName);
+        
+        // bug https://github.com/minio/minio-dotnet/issues/1041
+        // find stable version of minio or choose another client
         if (await minioClient.BucketExistsAsync(
                 new BucketExistsArgs()
                     .WithBucket(bucketName), 
                 cancellationToken))
         {
-            throw new ApplicationException("Bucket with this testPackageId already exists");
+            //throw new ApplicationException("Bucket with this testPackageId already exists");
         }
 
         // TODO: Configure bucket access, lifecycle, versioning...
