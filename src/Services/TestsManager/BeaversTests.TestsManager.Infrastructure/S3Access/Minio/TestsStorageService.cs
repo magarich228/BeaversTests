@@ -141,8 +141,7 @@ public class TestsStorageService(
         CancellationToken cancellationToken)
     {
         await using var ms = new MemoryStream();
-
-        objectStream.Position = 0;
+        
         await objectStream.CopyToAsync(ms, cancellationToken);
         await objectStream.FlushAsync(cancellationToken);
 

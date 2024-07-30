@@ -17,14 +17,7 @@ public class NUnitTestsExplorer : ITestsExplorer<NUnitDriverKey>
         var nunitRunner = new NUnitTestAssemblyRunner(
             new DefaultTestAssemblyBuilder());
 
-        nunitRunner.Load(testsAssembly, new Dictionary<string, object>());
-
-        var loadedTest = nunitRunner.LoadedTest;
-
-        if (loadedTest is null)
-        {
-            return ArraySegment<TestSuite>.Empty;
-        }
+        var loadedTest = nunitRunner.Load(testsAssembly, new Dictionary<string, object>());
 
         var loadedTests = loadedTest.ToFullList();
         
