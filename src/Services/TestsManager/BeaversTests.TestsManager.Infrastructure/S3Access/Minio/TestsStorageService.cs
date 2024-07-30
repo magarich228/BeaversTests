@@ -1,15 +1,57 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Exceptions;
+using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
 
 namespace BeaversTests.TestsManager.Infrastructure.S3Access.Minio;
 
-public class TestsStorageService(IMinioClient minioClient) : ITestsStorageService
+// TODO: Сделать фасадом и выделить?
+// TODO: Абстрагироваться от Minio.
+// TODO: Организовать бакеты по проектам.
+public class TestsStorageService(
+    IMinioClient minioClient,
+    ILogger<TestsStorageService> logger) : ITestsStorageService
 {
     private const string TestPackageItemContentType = "application/octet-stream";
+
+    public async Task<IDictionary<string, byte[]>> GetTestPackageAsync(
+        Guid testPackageId,
+        CancellationToken cancellationToken = default)
+    {
+        var bucketName = GetBucketName(testPackageId);
+        
+        if (!await minioClient.BucketExistsAsync(
+                new BucketExistsArgs()
+                    .WithBucket(bucketName), 
+                cancellationToken))
+        {
+            throw new ApplicationException("Bucket with this testPackageId does not exists");
+        }
+
+        var testPackageItems = minioClient.ListObjectsEnumAsync(
+            new ListObjectsArgs().WithBucket(bucketName),
+            cancellationToken);
+
+        var testPackageItemDatas = new Dictionary<string, byte[]>();
+        
+        await foreach (var testPackageItem in testPackageItems)
+        {
+            var objectKey = testPackageItem.Key;
+            
+            var stat = await minioClient.GetObjectAsync(
+                new GetObjectArgs()
+                    .WithBucket(bucketName)
+                    .WithObject(objectKey)
+                    .WithCallbackStream(async (stream, token) => 
+                        testPackageItemDatas.Add(objectKey, await GetObjectData(stream, token))),
+                cancellationToken);
+        }
+
+        return testPackageItemDatas;
+    }
     
-    public async Task AddTestAssemblyAsync(
+    public async Task AddTestPackageAsync(
         Guid testPackageId,
         IEnumerable<byte[]> testAssemblies,
         IEnumerable<string> assemblyPaths,
@@ -28,9 +70,19 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
 
         var bucketName = GetBucketName(testPackageId);
 
-        if (await minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(bucketName), cancellationToken))
+        logger.LogInformation(
+            "Test package {testPackageId} bucket name: {BucketName}", 
+            testPackageId, 
+            bucketName);
+        
+        // bug https://github.com/minio/minio-dotnet/issues/1041
+        // find stable version of minio or choose another client
+        if (await minioClient.BucketExistsAsync(
+                new BucketExistsArgs()
+                    .WithBucket(bucketName), 
+                cancellationToken))
         {
-            throw new ApplicationException("Bucket with this testPackageId already exists");
+            //throw new ApplicationException("Bucket with this testPackageId already exists");
         }
 
         // TODO: Configure bucket access, lifecycle, versioning...
@@ -51,7 +103,7 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
         }
     }
     
-    public async Task RemoveTestAssemblyAsync(
+    public async Task RemoveTestPackageAsync(
         Guid testPackageId, 
         CancellationToken cancellationToken = default)
     {
@@ -83,4 +135,18 @@ public class TestsStorageService(IMinioClient minioClient) : ITestsStorageServic
     }
 
     private string GetBucketName(Guid assemblyId) => $"tests-{assemblyId}";
+
+    private async Task<byte[]> GetObjectData(
+        Stream objectStream, 
+        CancellationToken cancellationToken)
+    {
+        await using var ms = new MemoryStream();
+        
+        await objectStream.CopyToAsync(ms, cancellationToken);
+        await objectStream.FlushAsync(cancellationToken);
+
+        await objectStream.DisposeAsync();
+
+        return ms.ToArray();
+    }
 }

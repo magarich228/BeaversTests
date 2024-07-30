@@ -54,7 +54,7 @@ public abstract class RemoveProjectCommand
 
             foreach (var testPackagesId in testPackagesIds)
             {
-                await testsStorageService.RemoveTestAssemblyAsync(testPackagesId, cancellationToken);
+                await testsStorageService.RemoveTestPackageAsync(testPackagesId, cancellationToken);
             }
 
             if (await db.SaveChangesAsync(cancellationToken) < 1)

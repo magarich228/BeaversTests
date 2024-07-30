@@ -6,8 +6,10 @@ using NUnit.Framework.Interfaces;
 
 namespace BeaversTests.NUnit.Driver;
 
-public class NUnitTestsExplorer : ITestsExplorer
+public class NUnitTestsExplorer : ITestsExplorer<NUnitDriverKey>
 {
+    public DriverKey<NUnitDriverKey> DriverKey { get; } = new();
+
     public IEnumerable<TestSuite> GetTestSuites(Assembly testsAssembly)
     {
         ArgumentNullException.ThrowIfNull(testsAssembly);
@@ -15,14 +17,7 @@ public class NUnitTestsExplorer : ITestsExplorer
         var nunitRunner = new NUnitTestAssemblyRunner(
             new DefaultTestAssemblyBuilder());
 
-        nunitRunner.Load(testsAssembly, new Dictionary<string, object>());
-
-        var loadedTest = nunitRunner.LoadedTest;
-
-        if (loadedTest is null)
-        {
-            return ArraySegment<TestSuite>.Empty;
-        }
+        var loadedTest = nunitRunner.Load(testsAssembly, new Dictionary<string, object>());
 
         var loadedTests = loadedTest.ToFullList();
         

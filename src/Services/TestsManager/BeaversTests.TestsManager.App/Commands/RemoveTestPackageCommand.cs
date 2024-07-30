@@ -47,7 +47,7 @@ public abstract class RemoveTestPackageCommand
             
             db.TestPackages.Remove(removedTestPackage);
             
-            await testsStorageService.RemoveTestAssemblyAsync(removedTestPackage.Id, cancellationToken);
+            await testsStorageService.RemoveTestPackageAsync(removedTestPackage.Id, cancellationToken);
 
             if (await db.SaveChangesAsync(cancellationToken) < 1)
             {

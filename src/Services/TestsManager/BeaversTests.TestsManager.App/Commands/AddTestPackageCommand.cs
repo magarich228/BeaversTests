@@ -71,13 +71,13 @@ public abstract class AddTestPackageCommand
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
-            var testPackage = mapper.Map<Command, BeaversTestPackage>(command);
-
+            var testPackage = mapper.Map<Command, BeaversTestPackage>(command); // TODO: set TestPackageType
+            
             var addedTestPackage = await db.TestPackages.AddAsync(testPackage, cancellationToken);
 
             var testPackageId = addedTestPackage.Entity.Id;
             
-            await testsStorageService.AddTestAssemblyAsync(
+            await testsStorageService.AddTestPackageAsync(
                 testPackageId,
                 command.TestAssemblies,
                 command.ItemPaths,
