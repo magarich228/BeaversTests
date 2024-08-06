@@ -5,7 +5,6 @@ using BeaversTests.TestsManager.App;
 using BeaversTests.TestsManager.Infrastructure;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
