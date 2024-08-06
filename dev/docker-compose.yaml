@@ -67,6 +67,7 @@ services:
       S3__Minio__AccessKey: kirill
       S3__Minio__SecretKey: minio123
       S3__Minio__UseSSL: false
+      Logging__LogLevel__Default: Debug
     depends_on:
       - minio
       - postgres.testsmanager

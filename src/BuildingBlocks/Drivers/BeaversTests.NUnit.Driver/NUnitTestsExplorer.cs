@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
 using BeaversTests.TestDrivers;
 using BeaversTests.TestDrivers.Models;
+using Microsoft.Extensions.Logging;
 using NUnit.Framework.Api;
 using NUnit.Framework.Interfaces;
 
 namespace BeaversTests.NUnit.Driver;
 
-public class NUnitTestsExplorer : ITestsExplorer<NUnitDriverKey>
+public class NUnitTestsExplorer(ILogger<NUnitTestsExplorer> logger) : ITestsExplorer<NUnitDriverKey>
 {
     public DriverKey<NUnitDriverKey> DriverKey { get; } = new();
 
@@ -18,8 +19,10 @@ public class NUnitTestsExplorer : ITestsExplorer<NUnitDriverKey>
             new DefaultTestAssemblyBuilder());
 
         var loadedTest = nunitRunner.Load(testsAssembly, new Dictionary<string, object>());
+        logger.LogDebug("Loaded {TestsCount} tests by nunit framework.", loadedTest.TestCaseCount);
 
         var loadedTests = loadedTest.ToFullList();
+        logger.LogDebug("Loaded {TestsCount} tests list by explorer.", loadedTests.Count);
         
         var testSuites = GetTestSuitesInternal(loadedTests);
         
