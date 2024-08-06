@@ -15,6 +15,9 @@ public class NUnitTestsExplorer(ILogger<NUnitTestsExplorer> logger) : ITestsExpl
     {
         ArgumentNullException.ThrowIfNull(testsAssembly);
         
+        logger.LogDebug("Exploring assembly location: {AssemblyLocation}", testsAssembly.Location);
+        logger.LogDebug("Assembly exists: {AssemblyExists}", File.Exists(testsAssembly.Location));
+        
         var nunitRunner = new NUnitTestAssemblyRunner(
             new DefaultTestAssemblyBuilder());
 
