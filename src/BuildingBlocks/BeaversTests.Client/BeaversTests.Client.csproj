@@ -8,8 +8,4 @@
         <OutputType>Exe</OutputType>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Spectre.Console.Cli" Version="0.49.2-preview.0.15" />
-    </ItemGroup>
-
 </Project>
