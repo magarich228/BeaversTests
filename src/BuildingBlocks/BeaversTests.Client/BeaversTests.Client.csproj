@@ -5,7 +5,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyName>btests</AssemblyName>
-        <OutputType>Exe</OutputType>
     </PropertyGroup>
 
 </Project>
