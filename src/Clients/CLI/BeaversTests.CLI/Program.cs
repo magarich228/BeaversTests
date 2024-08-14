@@ -1,10 +1,13 @@
 ﻿using BeaversTests.CLI.TestsManagement;
 using Spectre.Console.Cli;
+using Spectre.Console.Cli.Help;
 
 var app = new CommandApp();
 
 app.Configure(c =>
 {
+    c.SetApplicationName("bvr");
+    
     // c.AddBranch("projects", configurator =>
     // {
     //     
@@ -14,6 +17,8 @@ app.Configure(c =>
     {
         configurator.AddCommand<AddTestPackageCommand>("add");
     });
+
+    c.SetHelpProvider(new HelpProvider(c.Settings));
 });
 
-return await app.RunAsync(args);
+await app.RunAsync(args);

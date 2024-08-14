@@ -4,7 +4,7 @@ namespace BeaversTests.CLI;
 
 public static class TestsManagerExtensions
 {
-    public static async Task<TestPackageIdResponse?> AddTestPackageFromDirectory(
+    public static async Task<TestPackageIdResponse?> AddTestPackageFromDirectoryAsync(
         this ITestsManagerClient testsManagerClient,
         NewTestPackageFromDirectoryDto newTestPackageDto,
         CancellationToken cancellationToken = default)

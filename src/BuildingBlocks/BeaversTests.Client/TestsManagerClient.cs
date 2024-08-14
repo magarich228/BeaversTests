@@ -8,6 +8,8 @@ public interface ITestsManagerClient
     Task<TestPackageIdResponse?> AddTestPackageAsync(
         NewTestPackageDto newTestPackageDto,
         CancellationToken cancellationToken = default);
+
+    Task GetTestProjectsAsync(CancellationToken cancellationToken = default);
 }
 
 public class TestsManagerClient(Configuration configuration)
@@ -29,6 +31,14 @@ public class TestsManagerClient(Configuration configuration)
         return await response.Content.ReadFromJsonAsync<TestPackageIdResponse>(cancellationToken);
     }
 
+    public async Task GetTestProjectsAsync(CancellationToken cancellationToken = default)
+    {
+        // // TODO: get url from OpenApi?
+        // var uri = new Uri("api/Projects/GetAll");
+        // var response = await HttpClient.GetAsync(uri, cancellationToken);
+        //
+        // response.EnsureSuccessStatusCode();
+    }
 }
 
 public class NewTestPackageDto
