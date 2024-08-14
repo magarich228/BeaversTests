@@ -1,10 +1,19 @@
-﻿using BeaversTests.Client;
+﻿using BeaversTests.CLI.TestsManagement;
 using Spectre.Console.Cli;
 
-// var client = new TestsManagerClient();
 var app = new CommandApp();
 
 app.Configure(c =>
 {
+    // c.AddBranch("projects", configurator =>
+    // {
+    //     
+    // });
     
+    c.AddBranch("tests", configurator =>
+    {
+        configurator.AddCommand<AddTestPackageCommand>("add");
+    });
 });
+
+return await app.RunAsync(args);
