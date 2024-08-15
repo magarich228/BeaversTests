@@ -8,10 +8,10 @@ app.Configure(c =>
 {
     c.SetApplicationName("bvr");
     
-    // c.AddBranch("projects", configurator =>
-    // {
-    //     
-    // });
+    c.AddBranch("projects", configurator =>
+    {
+        configurator.AddCommand<GetAllProjectsCommand>("list");
+    });
     
     c.AddBranch("tests", configurator =>
     {

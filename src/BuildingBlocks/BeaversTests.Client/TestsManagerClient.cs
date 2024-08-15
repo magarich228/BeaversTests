@@ -9,7 +9,7 @@ public interface ITestsManagerClient
         NewTestPackageDto newTestPackageDto,
         CancellationToken cancellationToken = default);
 
-    Task GetTestProjectsAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<TestProjectResponse>?> GetTestProjectsAsync(CancellationToken cancellationToken = default);
 }
 
 public class TestsManagerClient(Configuration configuration)
@@ -31,14 +31,24 @@ public class TestsManagerClient(Configuration configuration)
         return await response.Content.ReadFromJsonAsync<TestPackageIdResponse>(cancellationToken);
     }
 
-    public async Task GetTestProjectsAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<TestProjectResponse>?> GetTestProjectsAsync(
+        CancellationToken cancellationToken = default)
     {
-        // // TODO: get url from OpenApi?
-        // var uri = new Uri("api/Projects/GetAll");
-        // var response = await HttpClient.GetAsync(uri, cancellationToken);
-        //
-        // response.EnsureSuccessStatusCode();
+        // TODO: get url from OpenApi?
+        var uri = new Uri("api/Projects/GetAll");
+        var response = await HttpClient.GetAsync(uri, cancellationToken);
+        
+        response.EnsureSuccessStatusCode();
+        
+        return await response.Content.ReadFromJsonAsync<IEnumerable<TestProjectResponse>>(cancellationToken);
     }
+}
+
+public class TestProjectResponse
+{
+    public required Guid Id { get; init; }
+    public required string Name { get; init; } = null!;
+    public string? Description { get; init; }
 }
 
 public class NewTestPackageDto
