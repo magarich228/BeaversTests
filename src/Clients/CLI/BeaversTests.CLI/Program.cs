@@ -1,14 +1,24 @@
-﻿using Minio;
-using Minio.DataModel.Args;
+﻿using BeaversTests.CLI.TestsManagement;
+using Spectre.Console.Cli;
+using Spectre.Console.Cli.Help;
 
-var client = new MinioClient()
-    .WithCredentials("kirill", "minio123")
-    .WithSSL(false)
-    .WithEndpoint("localhost:9000")
-    .Build();
+var app = new CommandApp();
 
-await client.MakeBucketAsync(new MakeBucketArgs().WithBucket("test"));
+app.Configure(c =>
+{
+    c.SetApplicationName("bvr");
+    
+    c.AddBranch("projects", configurator =>
+    {
+        configurator.AddCommand<GetAllProjectsCommand>("list");
+    });
+    
+    c.AddBranch("tests", configurator =>
+    {
+        configurator.AddCommand<AddTestPackageCommand>("add");
+    });
 
-var list = await client.ListBucketsAsync();
+    c.SetHelpProvider(new HelpProvider(c.Settings));
+});
 
-Console.WriteLine(list.Buckets.Count);
+await app.RunAsync(args);
