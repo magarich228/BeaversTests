@@ -25,14 +25,14 @@ public class GetAllProjectsCommand : Command<GetAllProjectsCommand.GetAllProject
         // TODO: DI?
         var client = new TestsManagerClient(configuration);
 
-        var projects = client.GetTestProjectsAsync().Result;
+        var projectsResponse = client.GetTestProjectsAsync().Result;
 
-        if (projects is null || !projects.Any())
+        if (projectsResponse is null || !projectsResponse.TestProjects.Any())
         {
             Console.WriteLine("No projects found.");
         }
         
-        foreach (var project in projects)
+        foreach (var project in projectsResponse!.TestProjects)
         {
             Console.WriteLine($"{project.Id} - {project.Name} - {project.Description}");
         }
