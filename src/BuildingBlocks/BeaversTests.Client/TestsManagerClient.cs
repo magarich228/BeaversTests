@@ -22,9 +22,9 @@ public class TestsManagerClient(Configuration configuration)
     {
         ArgumentNullException.ThrowIfNull(newTestPackageDto);
         
+        // TODO: fix bad request (Name, TestAssemblies, ItemPaths are required)
         // TODO: get url from OpenApi?
-        var uri = new Uri("api/Tests/AddTestPackage");
-        var response = await HttpClient.PostAsJsonAsync(uri, newTestPackageDto, cancellationToken);
+        var response = await HttpClient.PostAsJsonAsync("/api/Tests/AddTestPackage", newTestPackageDto, cancellationToken);
         
         response.EnsureSuccessStatusCode();
         

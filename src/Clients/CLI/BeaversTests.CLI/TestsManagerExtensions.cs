@@ -9,6 +9,7 @@ public static class TestsManagerExtensions
         NewTestPackageFromDirectoryDto newTestPackageDto,
         CancellationToken cancellationToken = default)
     {
+        // TODO: Get dirs
         var directoryFiles = newTestPackageDto.Directory
             .GetFiles();
         
