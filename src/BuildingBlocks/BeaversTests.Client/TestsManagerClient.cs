@@ -43,6 +43,7 @@ public class TestsManagerClient(Configuration configuration)
     }
 }
 
+// TODO: move to contrancts?
 public class TestProjectsResponse
 {
     public IEnumerable<TestProjectItemResponse> TestProjects { get; init; } = new List<TestProjectItemResponse>();
@@ -59,6 +60,7 @@ public class NewTestPackageDto
 {
     public required string Name { get; init; }
     public string? Description { get; init; }
+    // TODO: change to FormFileCollection
     public required IEnumerable<byte[]> TestAssemblies { get; init; }
     public required IEnumerable<string> ItemPaths { get; init; }
     public string? TestPackageType { get; init; }

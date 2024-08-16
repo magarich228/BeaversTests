@@ -35,7 +35,7 @@ public class TestsController(
     
     [HttpPost]
     public async Task<IActionResult> AddTestPackage(
-        TestPackageDto testPackageInput,
+        [FromBody] TestPackageDto testPackageInput,
         CancellationToken cancellationToken)
     {
         var testPackageAssemblies = testPackageInput.TestAssemblies
