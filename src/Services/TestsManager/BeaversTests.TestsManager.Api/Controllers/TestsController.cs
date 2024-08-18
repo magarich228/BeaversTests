@@ -38,6 +38,7 @@ public class TestsController(
         [FromBody] TestPackageDto testPackageInput,
         CancellationToken cancellationToken)
     {
+        // Переделать на DTO с вложенными объектами поддиректорий (имя директории, IFormFileCollection)
         var testPackageAssemblies = testPackageInput.TestAssemblies
             .Select(a =>
             {

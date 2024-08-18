@@ -1,4 +1,5 @@
 ﻿using BeaversTests.Client;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace BeaversTests.CLI;
 
@@ -12,6 +13,14 @@ public static class TestsManagerExtensions
         // TODO: Get dirs
         var directoryFiles = newTestPackageDto.Directory
             .GetFiles();
+        var fileCollection = new FormFileCollection();
+
+        foreach (var file in directoryFiles)
+        {
+            await using var fs = File.OpenRead(file.FullName);
+            var formFile = new FormFile(fs, 0, fs.Length, file.Name, file.Name);
+            fileCollection.Add(formFile);
+        }
         
         var testPackageDto = new NewTestPackageDto()
         {
@@ -19,7 +28,7 @@ public static class TestsManagerExtensions
             TestProjectId = newTestPackageDto.TestProjectId,
             TestPackageType = newTestPackageDto.TestPackageType,
             Description = newTestPackageDto.Description,
-            TestAssemblies = directoryFiles.Select(f => File.ReadAllBytes(f.FullName)),
+            TestAssemblies = fileCollection,
             ItemPaths = directoryFiles.Select(f => f.FullName)
         };
 
