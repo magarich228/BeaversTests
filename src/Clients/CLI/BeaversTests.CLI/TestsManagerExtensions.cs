@@ -17,7 +17,7 @@ public static class TestsManagerExtensions
 
         foreach (var file in directoryFiles)
         {
-            await using var fs = File.OpenRead(file.FullName);
+            var fs = File.OpenRead(file.FullName);
             var formFile = new FormFile(fs, 0, fs.Length, file.Name, file.Name);
             fileCollection.Add(formFile);
         }

@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Json;
+﻿using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Http;
 
 namespace BeaversTests.Client;
@@ -14,7 +15,7 @@ public interface ITestsManagerClient
 }
 
 public class TestsManagerClient(Configuration configuration)
-    : BeaversServiceClientBase(configuration), 
+    : BeaversServiceClientBase(configuration),
         ITestsManagerClient
 {
     public async Task<TestPackageIdResponse?> AddTestPackageAsync(
@@ -22,13 +23,41 @@ public class TestsManagerClient(Configuration configuration)
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(newTestPackageDto);
-        
+
         // TODO: fix bad request (Name, TestAssemblies, ItemPaths are required)
         // TODO: get url from OpenApi?
-        var response = await HttpClient.PostAsJsonAsync("/api/Tests/AddTestPackage", newTestPackageDto, cancellationToken);
-        
+        var content = new MultipartFormDataContent();
+
+        content.Add(new StringContent(newTestPackageDto.Name), nameof(newTestPackageDto.Name));
+        content.Add(new StringContent(newTestPackageDto.TestProjectId.ToString()),
+            nameof(newTestPackageDto.TestProjectId));
+
+        if (!string.IsNullOrWhiteSpace(newTestPackageDto.Description))
+            content.Add(new StringContent(newTestPackageDto.Description),
+                nameof(newTestPackageDto.Description));
+
+        if (!string.IsNullOrWhiteSpace(newTestPackageDto.TestPackageType))
+            content.Add(new StringContent(newTestPackageDto.TestPackageType),
+                nameof(newTestPackageDto.TestPackageType));
+
+        foreach (var itemPath in newTestPackageDto.ItemPaths)
+        {
+            content.Add(new StringContent(itemPath), nameof(newTestPackageDto.ItemPaths));
+        }
+
+        foreach (var file in newTestPackageDto.TestAssemblies)
+        {
+            var ms = new MemoryStream();
+            await file.CopyToAsync(ms, cancellationToken);
+            var streamContent = new StreamContent(ms);
+            streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+            content.Add(streamContent, nameof(newTestPackageDto.TestAssemblies), file.FileName);
+        }
+
+        var response = await HttpClient.PostAsync("/api/Tests/AddTestPackage", content, cancellationToken);
+
         response.EnsureSuccessStatusCode();
-        
+
         return await response.Content.ReadFromJsonAsync<TestPackageIdResponse>(cancellationToken);
     }
 
@@ -37,9 +66,9 @@ public class TestsManagerClient(Configuration configuration)
     {
         // TODO: get url from OpenApi?
         var response = await HttpClient.GetAsync("api/Projects/GetAll", cancellationToken);
-        
+
         response.EnsureSuccessStatusCode();
-        
+
         return await response.Content.ReadFromJsonAsync<TestProjectsResponse>(cancellationToken);
     }
 }
