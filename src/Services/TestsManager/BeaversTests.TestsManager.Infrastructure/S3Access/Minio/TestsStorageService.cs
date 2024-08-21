@@ -91,13 +91,26 @@ public class TestsStorageService(
         for (int i = 0; i < testAssembliesList.Count; i++)
         {
             using var streamData = new MemoryStream(testAssembliesList[i]);
+            logger.LogDebug("Object {ObjectKey} with size {ObjectSize} put it {BucketName}", 
+                assemblyPathsList[i], streamData.Length, bucketName);
 
+            if (streamData.Length == 0)
+            {
+                logger.LogWarning("Object {ObjectKey} with size {ObjectSize} for bucket {BucketName} skipped because of zero size", 
+                    assemblyPathsList[i], streamData.Length, bucketName);
+                continue;
+            }
+            
+            
             var putTestPackageItemArgs = new PutObjectArgs()
                 .WithBucket(bucketName)
                 .WithObject(assemblyPathsList[i])
                 .WithObjectSize(streamData.Length)
                 .WithContentType(TestPackageItemContentType)
                 .WithStreamData(streamData);
+            
+            if (streamData.Length == 0)
+                putTestPackageItemArgs.WithObjectSize(1);
             
             _ = await minioClient.PutObjectAsync(putTestPackageItemArgs, cancellationToken);
         }

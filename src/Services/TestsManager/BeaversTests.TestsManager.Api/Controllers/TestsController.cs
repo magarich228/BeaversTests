@@ -35,7 +35,7 @@ public class TestsController(
     
     [HttpPost]
     public async Task<IActionResult> AddTestPackage(
-        [FromBody] TestPackageDto testPackageInput,
+        TestPackageDto testPackageInput,
         CancellationToken cancellationToken)
     {
         // Переделать на DTO с вложенными объектами поддиректорий (имя директории, IFormFileCollection)

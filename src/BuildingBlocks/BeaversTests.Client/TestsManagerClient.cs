@@ -47,10 +47,10 @@ public class TestsManagerClient(Configuration configuration)
 
         foreach (var file in newTestPackageDto.TestAssemblies)
         {
-            var ms = new MemoryStream();
-            await file.CopyToAsync(ms, cancellationToken);
-            var streamContent = new StreamContent(ms);
-            streamContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
+            // var ms = new MemoryStream();
+            // await file.CopyToAsync(ms, cancellationToken);
+            var streamContent = new StreamContent(file.OpenReadStream());
+            streamContent.Headers.ContentLength = file.Length;
             content.Add(streamContent, nameof(newTestPackageDto.TestAssemblies), file.FileName);
         }
 
