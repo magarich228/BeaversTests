@@ -2,8 +2,10 @@
 using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App.Commands;
+using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Queries;
 using Microsoft.AspNetCore.Mvc;
+using TestPackageDto = BeaversTests.TestsManager.Api.Dtos.TestPackageDto;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
@@ -14,7 +16,7 @@ public class TestsController(
     ICommandBus commandBus) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetProjectTestPackages(
+    public async Task<IActionResult> GetProjectTestPackagesAsync(
         [FromQuery] GetProjectTestPackagesQuery.Query queryInput,
         CancellationToken cancellationToken)
     {
@@ -24,7 +26,7 @@ public class TestsController(
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetTestPackageInfo(
+    public async Task<IActionResult> GetTestPackageInfoAsync(
         [FromQuery] GetTestPackageInfoQuery.Query queryInput,
         CancellationToken cancellationToken)
     {
@@ -34,28 +36,23 @@ public class TestsController(
     }
     
     [HttpPost]
-    public async Task<IActionResult> AddTestPackage(
+    public async Task<IActionResult> AddTestPackageAsync(
         TestPackageDto testPackageInput,
         CancellationToken cancellationToken)
     {
-        // Переделать на DTO с вложенными объектами поддиректорий (имя директории, IFormFileCollection)
-        var testPackageAssemblies = testPackageInput.TestAssemblies
-            .Select(a =>
-            {
-                using var ms = new MemoryStream();
-                a.CopyTo(ms);
-                return ms.ToArray();
-            });
+        var (testFiles, directories) = GetTestFilesAndDirectories(testPackageInput);
         
-        // TODO: map dto to command
-        var command = new AddTestPackageCommand.Command
+        var command = new AddTestPackageCommand.Command()
         {
-            Name = testPackageInput.Name,
-            TestAssemblies = testPackageAssemblies,
-            ItemPaths = testPackageInput.ItemPaths,
-            TestProjectId = testPackageInput.TestProjectId,
-            TestPackageType = testPackageInput.TestPackageType,
-            Description = testPackageInput.Description
+            TestPackage = new NewTestPackageDto()
+            {
+                Name = testPackageInput.Name,
+                Description = testPackageInput.Description,
+                TestPackageType = testPackageInput.TestPackageType,
+                TestProjectId = testPackageInput.TestProjectId,
+                TestFiles = testFiles,
+                Directories = directories
+            }
         };
         
         var commandResult = await commandBus.SendAsync(command, cancellationToken);
@@ -64,12 +61,65 @@ public class TestsController(
     }
     
     [HttpDelete]
-    public async Task<IActionResult> RemoveTestPackage(
+    public async Task<IActionResult> RemoveTestPackageAsync(
         [FromQuery] RemoveTestPackageCommand.Command commandInput,
         CancellationToken cancellationToken)
     {
         var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
         
         return Ok(commandResult);
+    }
+
+    [NonAction]
+    private (IEnumerable<TestPackageFileInfo> testFiles, IEnumerable<NewTestPackageDirectoryDto> directories) GetTestFilesAndDirectories(
+            TestPackageDto testPackageInput)
+    {
+        List<TestPackageFileInfo> files = new();
+        List<NewTestPackageDirectoryDto> directories = new();
+        
+        files.AddRange(GetTestFiles(testPackageInput.TestFiles));
+        
+        foreach (var directory in testPackageInput.Directories)
+        {
+            var newTestPackageDirectory = GetDirectory(directory);
+            directories.Add(newTestPackageDirectory);
+        }
+        
+        return (files, directories);
+    }
+    
+    [NonAction]
+    private List<TestPackageFileInfo> GetTestFiles(IFormFileCollection testFiles)
+    {
+        List<TestPackageFileInfo> files = new();
+        
+        foreach (var file in testFiles)
+        {
+            using var ms = new MemoryStream();
+            file.CopyTo(ms);
+            
+            files.Add(new TestPackageFileInfo
+            {
+                Name = file.FileName,
+                Length = file.Length,
+                Content = ms.ToArray(),
+                MediaType = file.ContentType
+            });
+        }
+        
+        return files;
+    }
+
+    [NonAction]
+    private NewTestPackageDirectoryDto GetDirectory(TestPackageDirectoryDto testPackageDirectory)
+    {
+        NewTestPackageDirectoryDto newTestPackageDirectory = new()
+        {
+            DirectoryName = testPackageDirectory.DirectoryName,
+            TestFiles = GetTestFiles(testPackageDirectory.TestFiles),
+            Directories = testPackageDirectory.Directories.Select(GetDirectory)
+        };
+
+        return newTestPackageDirectory;
     }
 }
