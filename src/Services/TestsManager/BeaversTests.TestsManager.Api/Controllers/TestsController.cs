@@ -12,7 +12,7 @@ namespace BeaversTests.TestsManager.Api.Controllers;
 [ApiController]
 [Route("api/[controller]/[action]")]
 public class TestsController(
-    IQueryBus queryBus, 
+    IQueryBus queryBus,
     ICommandBus commandBus) : ControllerBase
 {
     [HttpGet]
@@ -21,27 +21,27 @@ public class TestsController(
         CancellationToken cancellationToken)
     {
         var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
-        
+
         return Ok(queryResult);
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetTestPackageInfoAsync(
         [FromQuery] GetTestPackageInfoQuery.Query queryInput,
         CancellationToken cancellationToken)
     {
         var queryResult = await queryBus.SendAsync(queryInput, cancellationToken);
-        
+
         return Ok(queryResult);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> AddTestPackageAsync(
-        TestPackageDto testPackageInput,
+        [FromForm] TestPackageDto testPackageInput,
         CancellationToken cancellationToken)
     {
         var (testFiles, directories) = GetTestFilesAndDirectories(testPackageInput);
-        
+
         var command = new AddTestPackageCommand.Command()
         {
             TestPackage = new NewTestPackageDto()
@@ -50,55 +50,59 @@ public class TestsController(
                 Description = testPackageInput.Description,
                 TestPackageType = testPackageInput.TestPackageType,
                 TestProjectId = testPackageInput.TestProjectId,
-                TestFiles = testFiles,
-                Directories = directories
+                Content = new NewTestPackageContentDto()
+                {
+                    TestFiles = testFiles,
+                    Directories = directories
+                }
             }
         };
-        
+
         var commandResult = await commandBus.SendAsync(command, cancellationToken);
-        
+
         return Ok(commandResult);
     }
-    
+
     [HttpDelete]
     public async Task<IActionResult> RemoveTestPackageAsync(
         [FromQuery] RemoveTestPackageCommand.Command commandInput,
         CancellationToken cancellationToken)
     {
         var commandResult = await commandBus.SendAsync(commandInput, cancellationToken);
-        
+
         return Ok(commandResult);
     }
 
     [NonAction]
-    private (IEnumerable<TestPackageFileInfo> testFiles, IEnumerable<NewTestPackageDirectoryDto> directories) GetTestFilesAndDirectories(
+    private (IEnumerable<NewTestPackageFileInfo> testFiles, IEnumerable<NewTestPackageDirectoryDto> directories)
+        GetTestFilesAndDirectories(
             TestPackageDto testPackageInput)
     {
-        List<TestPackageFileInfo> files = new();
+        List<NewTestPackageFileInfo> files = new();
         List<NewTestPackageDirectoryDto> directories = new();
-        
-        files.AddRange(GetTestFiles(testPackageInput.TestFiles));
-        
-        foreach (var directory in testPackageInput.Directories)
+
+        files.AddRange(GetTestFiles(testPackageInput.Content.TestFiles));
+
+        foreach (var directory in testPackageInput.Content.Directories)
         {
             var newTestPackageDirectory = GetDirectory(directory);
             directories.Add(newTestPackageDirectory);
         }
-        
+
         return (files, directories);
     }
-    
+
     [NonAction]
-    private List<TestPackageFileInfo> GetTestFiles(IFormFileCollection testFiles)
+    private List<NewTestPackageFileInfo> GetTestFiles(IFormFileCollection testFiles)
     {
-        List<TestPackageFileInfo> files = new();
-        
+        List<NewTestPackageFileInfo> files = new();
+
         foreach (var file in testFiles)
         {
             using var ms = new MemoryStream();
             file.CopyTo(ms);
-            
-            files.Add(new TestPackageFileInfo
+
+            files.Add(new NewTestPackageFileInfo
             {
                 Name = file.FileName,
                 Length = file.Length,
@@ -106,7 +110,7 @@ public class TestsController(
                 MediaType = file.ContentType
             });
         }
-        
+
         return files;
     }
 

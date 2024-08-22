@@ -45,29 +45,33 @@ public abstract class AddTestPackageCommand
             RuleFor(c => c.TestPackage.Description)
                 .MaximumLength(1000);
 
+            // TODO: add rule for contains in test package types list
             RuleFor(c => c.TestPackage.TestPackageType)
+                .NotNull()
+                .NotEmpty()
                 .MaximumLength(50)
                 .IsEnumName(typeof(TestPackageType), false);
 
-            RuleFor(c => c.TestPackage.TestFiles)
+            RuleFor(c => c.TestPackage.Content)
+                .NotNull();
+            
+            RuleFor(c => c.TestPackage.Content.TestFiles)
                 .NotEmpty()
                 .NotNull();
             
-            RuleForEach(c => c.TestPackage.TestFiles)
+            RuleForEach(c => c.TestPackage.Content.TestFiles)
                 .NotEmpty()
                 .NotNull()
                 .ChildRules(TestPackageFileRules);
 
-            RuleFor(c => c.TestPackage.Directories)
+            RuleFor(c => c.TestPackage.Content.Directories)
                 .NotNull()
                 .NotEmpty();
             
-            RuleForEach(c => c.TestPackage.Directories)
+            RuleForEach(c => c.TestPackage.Content.Directories)
                 .NotNull()
                 .NotEmpty()
                 .ChildRules(TestPackageDirectoryRules);
-
-            RuleForEach(c => c.TestPackage.Directories);
             
             RuleFor(c => c.TestPackage.TestProjectId)
                 .NotEmpty()
@@ -93,7 +97,7 @@ public abstract class AddTestPackageCommand
                 .ChildRules(TestPackageDirectoryRules);
         }
         
-        private static void TestPackageFileRules(InlineValidator<TestPackageFileInfo> validator)
+        private static void TestPackageFileRules(InlineValidator<NewTestPackageFileInfo> validator)
         {
             validator.RuleFor(t => t.Name)
                 .NotNull()
@@ -112,27 +116,25 @@ public abstract class AddTestPackageCommand
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
-            // TODO: переделать добавление пакетов на новые dto
-            // var testPackage = mapper.Map<Command, BeaversTestPackage>(command); // TODO: set TestPackageType
-            //
-            // var addedTestPackage = await db.TestPackages.AddAsync(testPackage, cancellationToken);
-            //
-            // var testPackageId = addedTestPackage.Entity.Id;
-            //
-            // await testsStorageService.AddTestPackageAsync(
-            //     testPackageId,
-            //     command.TestAssemblies,
-            //     command.ItemPaths,
-            //     cancellationToken);
-            //
-            // if (await db.SaveChangesAsync(cancellationToken) < 1)
-            // {
-            //     throw new TestsManagerException("Test package not added.");
-            // }
-            //
+            var testPackage = mapper.Map<NewTestPackageDto, BeaversTestPackage>(command.TestPackage);
+            var testPackageContent = mapper.Map<NewTestPackageContentDto, TestPackageContent>(command.TestPackage.Content);
+
+            var addedTestPackage = await db.TestPackages.AddAsync(testPackage, cancellationToken);
+            var testPackageId = addedTestPackage.Entity.Id;
+            
+            await testsStorageService.AddTestPackageAsync(
+                testPackageId,
+                testPackageContent,
+                cancellationToken);
+            
+            if (await db.SaveChangesAsync(cancellationToken) < 1)
+            {
+                throw new TestsManagerException("Test package not added.");
+            }
+            
             return new Result
             {
-                TestPackageId = default//testPackageId
+                TestPackageId = testPackageId
             };
         }
     }

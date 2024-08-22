@@ -1,6 +1,6 @@
-﻿namespace BeaversTests.TestsManager.App.Dtos;
+﻿namespace BeaversTests.TestsManager.Core.Models;
 
-public class TestPackageFileInfo
+public class TestPackageFile
 {
     public required string Name { get; init; }
     public required long Length { get; init; }

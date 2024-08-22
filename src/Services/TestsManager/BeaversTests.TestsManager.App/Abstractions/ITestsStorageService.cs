@@ -1,4 +1,6 @@
-﻿namespace BeaversTests.TestsManager.App.Abstractions;
+﻿using BeaversTests.TestsManager.Core.Models;
+
+namespace BeaversTests.TestsManager.App.Abstractions;
 
 public interface ITestsStorageService
 {
@@ -8,8 +10,7 @@ public interface ITestsStorageService
     
     public Task AddTestPackageAsync(
         Guid testPackageId, 
-        IEnumerable<byte[]> testAssemblies, 
-        IEnumerable<string> assemblyPaths, 
+        TestPackageContent testPackageContent,
         CancellationToken cancellationToken = default);
 
     Task RemoveTestPackageAsync(

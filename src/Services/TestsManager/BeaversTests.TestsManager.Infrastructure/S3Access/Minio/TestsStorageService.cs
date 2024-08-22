@@ -1,5 +1,6 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Exceptions;
+using BeaversTests.TestsManager.Core.Models;
 using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;
@@ -53,20 +54,10 @@ public class TestsStorageService(
     
     public async Task AddTestPackageAsync(
         Guid testPackageId,
-        IEnumerable<byte[]> testAssemblies,
-        IEnumerable<string> assemblyPaths,
+        TestPackageContent testPackageContent,
         CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(testAssemblies, nameof(testAssemblies));
-        ArgumentNullException.ThrowIfNull(assemblyPaths, nameof(assemblyPaths));
-
-        var testAssembliesList = testAssemblies as List<byte[]> ?? testAssemblies.ToList();
-        var assemblyPathsList = assemblyPaths as List<string> ?? assemblyPaths.ToList();
-
-        if (testAssembliesList.Count != assemblyPathsList.Count)
-        {
-            throw new ArgumentException("Test assemblies and assembly paths count must be equal");
-        }
+        ArgumentNullException.ThrowIfNull(testPackageContent, nameof(testPackageContent));
 
         var bucketName = GetBucketName(testPackageId);
 
@@ -88,32 +79,7 @@ public class TestsStorageService(
         // TODO: Configure bucket access, lifecycle, versioning...
         await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName), cancellationToken);
 
-        for (int i = 0; i < testAssembliesList.Count; i++)
-        {
-            using var streamData = new MemoryStream(testAssembliesList[i]);
-            logger.LogDebug("Object {ObjectKey} with size {ObjectSize} put it {BucketName}", 
-                assemblyPathsList[i], streamData.Length, bucketName);
-
-            if (streamData.Length == 0)
-            {
-                logger.LogWarning("Object {ObjectKey} with size {ObjectSize} for bucket {BucketName} skipped because of zero size", 
-                    assemblyPathsList[i], streamData.Length, bucketName);
-                continue;
-            }
-            
-            
-            var putTestPackageItemArgs = new PutObjectArgs()
-                .WithBucket(bucketName)
-                .WithObject(assemblyPathsList[i])
-                .WithObjectSize(streamData.Length)
-                .WithContentType(TestPackageItemContentType)
-                .WithStreamData(streamData);
-            
-            if (streamData.Length == 0)
-                putTestPackageItemArgs.WithObjectSize(1);
-            
-            _ = await minioClient.PutObjectAsync(putTestPackageItemArgs, cancellationToken);
-        }
+        
     }
     
     public async Task RemoveTestPackageAsync(
@@ -161,5 +127,58 @@ public class TestsStorageService(
         await objectStream.DisposeAsync();
 
         return ms.ToArray();
+    }
+
+    private async Task AddTestPackageInternalAsync(TestPackageContent content, string bucketName, CancellationToken cancellationToken)
+    {
+        var root = new TestPackageContentDirectory()
+        {
+            DirectoryName = string.Empty, //root
+            Directories = content.Directories,
+            TestFiles = content.TestFiles
+        };
+
+        await AddTestDirectoryAsync(root, string.Empty, bucketName, cancellationToken);
+    }
+    
+    private async Task AddTestDirectoryAsync(TestPackageContentDirectory rootDirectory, string previousPath, string bucketName, CancellationToken cancellationToken)
+    {
+        foreach (var file in rootDirectory.TestFiles)
+        {
+            await AddTestFileAsync(file, previousPath, bucketName, cancellationToken);
+        }
+        
+        foreach (var subDir in rootDirectory.Directories)
+        {
+            await AddTestDirectoryAsync(subDir, Path.Combine(previousPath, subDir.DirectoryName), bucketName, cancellationToken);
+        }
+    }
+    
+    private async Task AddTestFileAsync(TestPackageFile file, string dirPath, string bucketName, CancellationToken cancellationToken)
+    {
+        using var streamData = new MemoryStream(file.Content);
+        var fullPath = Path.Combine(dirPath, file.Name);
+
+        logger.LogDebug("Object {ObjectKey} with size {ObjectSize} put it {BucketName}", 
+            fullPath, streamData.Length, bucketName);
+        
+        if (file.Length == 0)
+        {
+            logger.LogWarning("Object {ObjectKey} with size {ObjectSize} for bucket {BucketName} skipped because of zero size", 
+                fullPath, streamData.Length, bucketName);
+            return;
+        }
+        
+        var putTestPackageItemArgs = new PutObjectArgs()
+            .WithBucket(bucketName)
+            .WithObject(fullPath)
+            .WithObjectSize(streamData.Length)
+            .WithContentType(TestPackageItemContentType)
+            .WithStreamData(streamData);
+            
+        var response = await minioClient.PutObjectAsync(putTestPackageItemArgs, cancellationToken);
+        
+        logger.LogDebug("Argument file {fullPath} size: {ObjectSize} and actual size: {ActualObjectSize}", 
+            fullPath, streamData.Length, response.Size);
     }
 }

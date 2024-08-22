@@ -10,29 +10,30 @@ public static class TestsManagerExtensions
         NewTestPackageFromDirectoryDto newTestPackageDto,
         CancellationToken cancellationToken = default)
     {
-        // TODO: Get dirs
-        var directoryFiles = newTestPackageDto.Directory
-            .GetFiles();
-        var fileCollection = new FormFileCollection();
-
-        foreach (var file in directoryFiles)
-        {
-            var fs = File.OpenRead(file.FullName);
-            var formFile = new FormFile(fs, 0, fs.Length, file.Name, file.Name);
-            fileCollection.Add(formFile);
-        }
-        
-        var testPackageDto = new NewTestPackageDto()
-        {
-            Name = newTestPackageDto.Name,
-            TestProjectId = newTestPackageDto.TestProjectId,
-            TestPackageType = newTestPackageDto.TestPackageType,
-            Description = newTestPackageDto.Description,
-            TestAssemblies = fileCollection,
-            ItemPaths = directoryFiles.Select(f => f.FullName)
-        };
-
-        return await testsManagerClient.AddTestPackageAsync(testPackageDto, cancellationToken);
+        // // TODO: Get dirs
+        // var directoryFiles = newTestPackageDto.Directory
+        //     .GetFiles();
+        // var fileCollection = new FormFileCollection();
+        //
+        // foreach (var file in directoryFiles)
+        // {
+        //     var fs = File.OpenRead(file.FullName);
+        //     var formFile = new FormFile(fs, 0, fs.Length, file.Name, file.Name);
+        //     fileCollection.Add(formFile);
+        // }
+        //
+        // var testPackageDto = new NewTestPackageDto()
+        // {
+        //     Name = newTestPackageDto.Name,
+        //     TestProjectId = newTestPackageDto.TestProjectId,
+        //     TestPackageType = newTestPackageDto.TestPackageType,
+        //     Description = newTestPackageDto.Description,
+        //     TestAssemblies = fileCollection,
+        //     ItemPaths = directoryFiles.Select(f => f.FullName)
+        // };
+        //
+        // return await testsManagerClient.AddTestPackageAsync(testPackageDto, cancellationToken);
+        throw new NotImplementedException();
     }
 }
 
