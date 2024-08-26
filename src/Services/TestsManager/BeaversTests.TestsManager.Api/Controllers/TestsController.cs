@@ -13,7 +13,8 @@ namespace BeaversTests.TestsManager.Api.Controllers;
 [Route("api/[controller]/[action]")]
 public class TestsController(
     IQueryBus queryBus,
-    ICommandBus commandBus) : ControllerBase
+    ICommandBus commandBus,
+    ILogger<TestsController> logger) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetProjectTestPackagesAsync(
@@ -35,11 +36,13 @@ public class TestsController(
         return Ok(queryResult);
     }
 
+    // TODO: swagger doesn't support files graph dto. fix it.
     [HttpPost]
     public async Task<IActionResult> AddTestPackageAsync(
         [FromForm] TestPackageDto testPackageInput,
         CancellationToken cancellationToken)
     {
+        logger.LogInformation("Adding test package {Name} to Project {Id}", testPackageInput.Name, testPackageInput.TestProjectId);
         var (testFiles, directories) = GetTestFilesAndDirectories(testPackageInput);
 
         var command = new AddTestPackageCommand.Command()
