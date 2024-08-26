@@ -23,7 +23,7 @@ public class GetAllProjectsCommand : Command<GetAllProjectsCommand.GetAllProject
         };
 
         // TODO: DI?
-        var client = new TestsManagerClient(configuration);
+        ITestsManagerClient client = new TestsManagerClient(configuration);
 
         var projectsResponse = client.GetTestProjectsAsync().Result;
 

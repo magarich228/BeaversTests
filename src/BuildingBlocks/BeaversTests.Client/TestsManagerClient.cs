@@ -22,45 +22,47 @@ public class TestsManagerClient(Configuration configuration)
         NewTestPackageDto newTestPackageDto,
         CancellationToken cancellationToken = default)
     {
-        // ArgumentNullException.ThrowIfNull(newTestPackageDto);
-        //
-        // // TODO: fix bad request (Name, TestAssemblies, ItemPaths are required)
-        // // TODO: get url from OpenApi?
-        // var content = new MultipartFormDataContent();
-        //
-        // content.Add(new StringContent(newTestPackageDto.Name), nameof(newTestPackageDto.Name));
-        // content.Add(new StringContent(newTestPackageDto.TestProjectId.ToString()),
-        //     nameof(newTestPackageDto.TestProjectId));
-        //
-        // if (!string.IsNullOrWhiteSpace(newTestPackageDto.Description))
-        //     content.Add(new StringContent(newTestPackageDto.Description),
-        //         nameof(newTestPackageDto.Description));
-        //
-        // if (!string.IsNullOrWhiteSpace(newTestPackageDto.TestPackageType))
-        //     content.Add(new StringContent(newTestPackageDto.TestPackageType),
-        //         nameof(newTestPackageDto.TestPackageType));
-        //
-        // foreach (var itemPath in newTestPackageDto.ItemPaths)
-        // {
-        //     content.Add(new StringContent(itemPath), nameof(newTestPackageDto.ItemPaths));
-        // }
-        //
-        // foreach (var file in newTestPackageDto.TestAssemblies)
-        // {
-        //     // var ms = new MemoryStream();
-        //     // await file.CopyToAsync(ms, cancellationToken);
-        //     var streamContent = new StreamContent(file.OpenReadStream());
-        //     streamContent.Headers.ContentLength = file.Length;
-        //     content.Add(streamContent, nameof(newTestPackageDto.TestAssemblies), file.FileName);
-        // }
-        //
-        // var response = await HttpClient.PostAsync("/api/Tests/AddTestPackage", content, cancellationToken);
-        //
-        // response.EnsureSuccessStatusCode();
-        //
-        // return await response.Content.ReadFromJsonAsync<TestPackageIdResponse>(cancellationToken);
+        ArgumentNullException.ThrowIfNull(newTestPackageDto);
         
-        throw new NotImplementedException();
+        // TODO: fix bad request (Content is required) 
+        // TODO: get url from OpenApi?
+        var requestContent = new MultipartFormDataContent();
+        
+        requestContent.Add(new StringContent(newTestPackageDto.Name), nameof(newTestPackageDto.Name));
+        requestContent.Add(new StringContent(newTestPackageDto.TestProjectId.ToString()),
+            nameof(newTestPackageDto.TestProjectId));
+        
+        if (!string.IsNullOrWhiteSpace(newTestPackageDto.Description))
+            requestContent.Add(new StringContent(newTestPackageDto.Description),
+                nameof(newTestPackageDto.Description));
+        
+        if (!string.IsNullOrWhiteSpace(newTestPackageDto.TestPackageType))
+            requestContent.Add(new StringContent(newTestPackageDto.TestPackageType),
+                nameof(newTestPackageDto.TestPackageType));
+        
+        var testPackageContent = new MultipartFormDataContent();
+        
+        foreach (var file in newTestPackageDto.Content.TestFiles)
+        {
+            AddFileToContent(testPackageContent, file, string.Empty);
+        }
+
+        foreach (var directory in newTestPackageDto.Content.Directories)
+        {
+            var directoryFormContent = new MultipartFormDataContent();
+            
+            AddDirectoryToContent(directoryFormContent, directory, string.Empty);
+
+            testPackageContent.Add(directoryFormContent, nameof(NewTestPackageContentDto.Directories));
+        }
+        
+        requestContent.Add(testPackageContent, nameof(newTestPackageDto.Content));
+        
+        var response = await HttpClient.PostAsync("/api/Tests/AddTestPackage", requestContent, cancellationToken);
+        
+        response.EnsureSuccessStatusCode();
+        
+        return await response.Content.ReadFromJsonAsync<TestPackageIdResponse>(cancellationToken);
     }
 
     public async Task<TestProjectsResponse?> GetTestProjectsAsync(
@@ -72,6 +74,33 @@ public class TestsManagerClient(Configuration configuration)
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<TestProjectsResponse>(cancellationToken);
+    }
+
+    private void AddDirectoryToContent(
+        MultipartFormDataContent content, 
+        NewTestPackageDirectoryDto directory,
+        string dirPath)
+    {
+        var directoryPath = Path.Combine(dirPath, directory.DirectoryName);
+        
+        foreach (var file in directory.TestFiles)
+        {
+            AddFileToContent(content, file, directoryPath);
+        }
+
+        foreach (var subDirectory in directory.Directories)
+        {
+            var subDirectoryContent = new MultipartFormDataContent();
+            AddDirectoryToContent(content, subDirectory, directoryPath);
+            content.Add(subDirectoryContent, nameof(NewTestPackageContentDto.Directories));
+        }
+    }
+    
+    private void AddFileToContent(MultipartFormDataContent content, IFormFile file, string dirPath)
+    {
+        var streamContent = new StreamContent(file.OpenReadStream());
+        streamContent.Headers.ContentLength = file.Length;
+        content.Add(streamContent, file.Name, Path.Combine(dirPath, file.FileName));
     }
 }
 
@@ -99,22 +128,14 @@ public class NewTestPackageDto
 
 public class NewTestPackageContentDto
 {
-    public required IEnumerable<NewTestPackageFileInfo> TestFiles { get; init; }
+    public required IFormFileCollection TestFiles { get; init; }
     public required IEnumerable<NewTestPackageDirectoryDto> Directories { get; init; }
-}
-
-public class NewTestPackageFileInfo
-{
-    public required string Name { get; init; }
-    public required long Length { get; init; }
-    public required byte[] Content { get; init; }
-    public string? MediaType { get; init; }
 }
 
 public class NewTestPackageDirectoryDto
 {
     public required string DirectoryName { get; init; }
-    public required IEnumerable<NewTestPackageFileInfo> TestFiles { get; init; }
+    public required IFormFileCollection TestFiles { get; init; }
     public required IEnumerable<NewTestPackageDirectoryDto> Directories { get; init; }
 }
 
