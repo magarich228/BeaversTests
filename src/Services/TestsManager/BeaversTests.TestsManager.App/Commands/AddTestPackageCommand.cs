@@ -4,7 +4,6 @@ using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.Models;
-using BeaversTests.TestsManager.Core.Models.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -46,11 +45,12 @@ public abstract class AddTestPackageCommand
                 .MaximumLength(1000);
 
             // TODO: add rule for contains in test package types list
-            RuleFor(c => c.TestPackage.TestPackageType)
+            RuleFor(c => c.TestPackage.TestDriver)
                 .NotNull()
                 .NotEmpty()
-                .MaximumLength(50)
-                .IsEnumName(typeof(TestPackageType), false);
+                .MaximumLength(25)
+                .MustAsync(async (c, driver, token) => await db.TestDrivers
+                    .AnyAsync(t => t.Key == driver, token));
 
             RuleFor(c => c.TestPackage.Content)
                 .NotNull();

@@ -1,5 +1,4 @@
 ﻿using BeaversTests.TestsManager.Core.Models;
-using BeaversTests.TestsManager.Core.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -22,15 +21,17 @@ public class TestPackageConfiguration : IEntityTypeConfiguration<BeaversTestPack
         builder.Property(t => t.Description)
             .HasMaxLength(1000);
 
-        builder.Property(t => t.TestPackageType)
-            .HasMaxLength(50)
-            .HasConversion(
-                t => t.ToString(),
-                t => Enum.Parse<TestPackageType>(t));
+        builder.Property(t => t.TestDriverKey)
+            .IsRequired()
+            .HasMaxLength(25);
 
         builder.Property(t => t.TestProjectId)
             .IsRequired();
 
+        // On delete?
+        builder.HasOne<TestDriver>(t => t.TestDriver)
+            .WithMany(d => d.TestPackages);
+        
         builder.HasOne<TestProject>(t => t.TestProject)
             .WithMany(t => t.TestPackages)
             .OnDelete(DeleteBehavior.Cascade);

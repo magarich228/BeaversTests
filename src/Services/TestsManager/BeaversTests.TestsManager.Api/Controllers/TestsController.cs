@@ -48,7 +48,7 @@ public class TestsController(
             {
                 Name = testPackageInput.Name,
                 Description = testPackageInput.Description,
-                TestPackageType = testPackageInput.TestPackageType,
+                TestDriver = testPackageInput.TestPackageType,
                 TestProjectId = testPackageInput.TestProjectId,
                 Content = new NewTestPackageContentDto()
                 {

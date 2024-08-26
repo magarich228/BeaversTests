@@ -9,6 +9,7 @@ public class TestsManagerContext(DbContextOptions<TestsManagerContext> options) 
 {
     public DbSet<TestProject> TestProjects { get; init; } = null!;
     public DbSet<BeaversTestPackage> TestPackages { get; init; } = null!;
+    public DbSet<TestDriver> TestDrivers { get; init; } = null!; // TODO: add migration
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -19,6 +20,7 @@ public class TestsManagerContext(DbContextOptions<TestsManagerContext> options) 
     {
         modelBuilder.ApplyConfiguration(new TestPackageConfiguration());
         modelBuilder.ApplyConfiguration(new TestProjectConfiguration());
+        modelBuilder.ApplyConfiguration(new TestDriverConfiguration());
         
         base.OnModelCreating(modelBuilder);
     }

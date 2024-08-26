@@ -25,6 +25,8 @@ services.AddTestsManagerApp();
 services.AddCqrsBusses();
 services.AddTestDrivers(configuration);
 
+services.AddApi();
+
 var app = builder.Build();
 
 app.UseSwagger();
