@@ -36,6 +36,10 @@ public class TestsController(
         return Ok(queryResult);
     }
 
+    // TODO: endpoint, dto for zipped test package
+    // TODO: endpoint, dto for test package in base64
+    // TODO: endpoint, 
+    
     // TODO: swagger doesn't support files graph dto. fix it.
     [HttpPost]
     public async Task<IActionResult> AddTestPackageAsync(
