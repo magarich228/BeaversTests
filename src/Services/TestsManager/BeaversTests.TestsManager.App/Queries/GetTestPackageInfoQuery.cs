@@ -53,7 +53,7 @@ public abstract class GetTestPackageInfoQuery
 
             var testPackageItems = await testsStorageService.GetTestPackageAsync(testPackageId, cancellationToken);
 
-            var testsExplorer = testDriversResolver.ResolveTestsExplorer(testPackage.TestDriver.ToString());
+            var testsExplorer = testDriversResolver.ResolveTestsExplorer(testPackage.TestDriverKey);
 
             var tempDirectory = new DirectoryInfo(Path.GetTempPath());
             var testPackageDirectory = tempDirectory.CreateSubdirectory(testPackageId.ToString());

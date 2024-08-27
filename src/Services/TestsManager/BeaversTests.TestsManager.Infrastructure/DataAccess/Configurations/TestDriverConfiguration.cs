@@ -13,6 +13,9 @@ public class TestDriverConfiguration : IEntityTypeConfiguration<TestDriver>
             .IsRequired()
             .HasMaxLength(25);
 
+        builder.Property(d => d.IsDefault)
+            .IsRequired();
+
         builder.Property(d => d.Description)
             .HasMaxLength(250);
     }

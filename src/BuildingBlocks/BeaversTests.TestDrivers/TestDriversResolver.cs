@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 namespace BeaversTests.TestDrivers;
 
 public class TestDriversResolver(
-    IServiceProvider serviceProvider,
+    TestDriversRegistry registry,
     ILogger<TestDriversResolver> logger)
 {
     public ITestsExplorer ResolveTestsExplorer(string testType)
@@ -12,7 +12,7 @@ public class TestDriversResolver(
         ArgumentException.ThrowIfNullOrWhiteSpace(testType, nameof(testType));
         logger.LogInformation("Resolving tests explorer for {TestType} testType", testType);
         
-        using var scope = serviceProvider.CreateScope();
+        using var scope = registry.ServiceProvider.CreateScope();
         return scope.ServiceProvider.GetRequiredKeyedService<ITestsExplorer>(testType);
     }
 }

@@ -23,7 +23,7 @@ services.AddSwaggerGen(c =>
 services.AddTestsManagerInfrastructure(configuration);
 services.AddTestsManagerApp();
 services.AddCqrsBusses();
-services.AddTestDrivers(configuration);
+services.AddTestDrivers();
 
 services.AddApi();
 
