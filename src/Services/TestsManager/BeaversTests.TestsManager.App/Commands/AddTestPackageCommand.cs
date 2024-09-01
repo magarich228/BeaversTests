@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.Models;
-using BeaversTests.TestsManager.Core.Models.Enums;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,12 +13,7 @@ public abstract class AddTestPackageCommand
 {
     public class Command : ICommand<Result>
     {
-        public required string Name { get; init; }
-        public string? Description { get; init; }
-        public required IEnumerable<byte[]> TestAssemblies { get; init; }
-        public required IEnumerable<string> ItemPaths { get; init; }
-        public string? TestPackageType { get; init; }
-        public required Guid TestProjectId { get; init; }
+        public required NewTestPackageDto TestPackage { get; init; }
     }
 
     public class Result
@@ -28,9 +23,16 @@ public abstract class AddTestPackageCommand
 
     public class Validator : AbstractValidator<Command>
     {
+        // TODO: move to configuration
+        public const long MaxFileSize = 5 * 1024 * 1024; // bytes
+        
         public Validator(ITestsManagerContext db)
         {
-            RuleFor(c => c.Name)
+            // TODO: test validator;
+            RuleFor(c => c.TestPackage)
+                .NotNull();
+            
+            RuleFor(c => c.TestPackage.Name)
                 .NotNull()
                 .NotEmpty()
                 .MinimumLength(1)
@@ -39,28 +41,71 @@ public abstract class AddTestPackageCommand
                     .AnyAsync(t => t.Name == name, token))
                 .WithMessage("Test package with this name already exists.");
 
-            RuleFor(c => c.Description)
+            RuleFor(c => c.TestPackage.Description)
                 .MaximumLength(1000);
 
-            RuleFor(c => c.TestPackageType)
-                .MaximumLength(50)
-                .IsEnumName(typeof(TestPackageType), false);
+            // TODO: add rule for contains in test package types list
+            RuleFor(c => c.TestPackage.TestDriver)
+                .NotNull()
+                .NotEmpty()
+                .MaximumLength(25)
+                .MustAsync(async (c, driver, token) => await db.TestDrivers
+                    .AnyAsync(t => t.Key == driver, token));
 
-            RuleFor(c => c.ItemPaths)
+            RuleFor(c => c.TestPackage.Content)
+                .NotNull();
+            
+            RuleFor(c => c.TestPackage.Content.TestFiles)
                 .NotEmpty()
                 .NotNull();
             
-            RuleFor(c => c.TestAssemblies)
+            RuleForEach(c => c.TestPackage.Content.TestFiles)
                 .NotEmpty()
                 .NotNull()
-                .Must((c, files) => files.Count().Equals(c.ItemPaths.Count()))
-                .WithMessage("Test assemblies count doesn't match item paths count.");
+                .ChildRules(TestPackageFileRules);
+
+            RuleFor(c => c.TestPackage.Content.Directories)
+                .NotNull()
+                .NotEmpty();
             
-            RuleFor(c => c.TestProjectId)
+            RuleForEach(c => c.TestPackage.Content.Directories)
+                .NotNull()
+                .NotEmpty()
+                .ChildRules(TestPackageDirectoryRules);
+            
+            RuleFor(c => c.TestPackage.TestProjectId)
                 .NotEmpty()
                 .MustAsync(async (c, id, token) => await db.TestProjects
                     .AnyAsync(t => t.Id == id, token))
                 .WithMessage("Test project not found.");
+        }
+
+        private static void TestPackageDirectoryRules(InlineValidator<NewTestPackageDirectoryDto> validator)
+        {
+            validator.RuleFor(t => t.DirectoryName)
+                .NotNull()
+                .NotEmpty();
+
+            validator.RuleForEach(t => t.TestFiles)
+                .NotEmpty()
+                .NotNull()
+                .ChildRules(TestPackageFileRules);
+            
+            validator.RuleForEach(t => t.Directories)
+                .NotNull()
+                .NotEmpty()
+                .ChildRules(TestPackageDirectoryRules);
+        }
+        
+        private static void TestPackageFileRules(InlineValidator<NewTestPackageFileInfo> validator)
+        {
+            validator.RuleFor(t => t.Name)
+                .NotNull()
+                .NotEmpty();
+
+            validator.RuleFor(t => t.Length)
+                .Must(l => l < MaxFileSize)
+                .WithMessage(t => $"Max file size exceeded. File name: {t.Name} size: {t.Length}.");
         }
     }
 
@@ -71,23 +116,22 @@ public abstract class AddTestPackageCommand
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
-            var testPackage = mapper.Map<Command, BeaversTestPackage>(command); // TODO: set TestPackageType
-            
-            var addedTestPackage = await db.TestPackages.AddAsync(testPackage, cancellationToken);
+            var testPackage = mapper.Map<NewTestPackageDto, BeaversTestPackage>(command.TestPackage);
+            var testPackageContent = mapper.Map<NewTestPackageContentDto, TestPackageContent>(command.TestPackage.Content);
 
+            var addedTestPackage = await db.TestPackages.AddAsync(testPackage, cancellationToken);
             var testPackageId = addedTestPackage.Entity.Id;
             
             await testsStorageService.AddTestPackageAsync(
                 testPackageId,
-                command.TestAssemblies,
-                command.ItemPaths,
+                testPackageContent,
                 cancellationToken);
-
+            
             if (await db.SaveChangesAsync(cancellationToken) < 1)
             {
                 throw new TestsManagerException("Test package not added.");
             }
-
+            
             return new Result
             {
                 TestPackageId = testPackageId

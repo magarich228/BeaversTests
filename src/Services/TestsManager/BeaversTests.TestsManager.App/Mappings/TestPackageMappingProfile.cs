@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BeaversTests.TestsManager.App.Commands;
 using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.Core.Models;
 
@@ -9,7 +8,12 @@ public class TestPackageMappingProfile : Profile
 {
     public TestPackageMappingProfile()
     {
-        CreateMap<BeaversTestPackage, AddTestPackageCommand.Command>().ReverseMap();
+        CreateMap<BeaversTestPackage, NewTestPackageDto>().ReverseMap();
+        
         CreateMap<BeaversTestPackage, TestPackageDto>().ReverseMap();
+
+        CreateMap<TestPackageFile, NewTestPackageFileInfo>().ReverseMap();
+        CreateMap<TestPackageContentDirectory, NewTestPackageDirectoryDto>();
+        CreateMap<TestPackageContent, NewTestPackageContentDto>().ReverseMap();
     }
 }

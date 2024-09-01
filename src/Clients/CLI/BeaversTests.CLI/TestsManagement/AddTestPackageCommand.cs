@@ -50,7 +50,7 @@ public class AddTestPackageCommand : Command<AddTestPackageCommand.AddTestPackag
         };
         
         // TODO: DI?
-        var client = new TestsManagerClient(configuration);
+        ITestsManagerClient client = new TestsManagerClient(configuration);
         
         var response = client.AddTestPackageFromDirectoryAsync(new NewTestPackageFromDirectoryDto()
         {

@@ -8,11 +8,11 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <OutputPath>..\Bin</OutputPath>
+      <OutputPath>..\Bin\NUnit</OutputPath>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <OutputPath>..\Bin</OutputPath>
+      <OutputPath>..\Bin\NUnit</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>

@@ -1,4 +1,6 @@
 ﻿using BeaversTests.Client;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace BeaversTests.CLI;
 
@@ -9,8 +11,8 @@ public static class TestsManagerExtensions
         NewTestPackageFromDirectoryDto newTestPackageDto,
         CancellationToken cancellationToken = default)
     {
-        var directoryFiles = newTestPackageDto.Directory
-            .GetFiles();
+        var rootFiles = new FormFileCollection();
+        var rootDirectories = new List<NewTestPackageDirectoryDto>();
         
         var testPackageDto = new NewTestPackageDto()
         {
@@ -18,19 +20,60 @@ public static class TestsManagerExtensions
             TestProjectId = newTestPackageDto.TestProjectId,
             TestPackageType = newTestPackageDto.TestPackageType,
             Description = newTestPackageDto.Description,
-            TestAssemblies = directoryFiles.Select(f => File.ReadAllBytes(f.FullName)),
-            ItemPaths = directoryFiles.Select(f => f.FullName)
+            Content = new NewTestPackageContentDto(){
+                TestFiles = rootFiles,
+                Directories = rootDirectories
+            }
         };
+        
+        var directoryFiles = newTestPackageDto.Directory
+            .GetFiles();
+        
+        foreach (var file in directoryFiles)
+        {
+            AddFileToRequest(rootFiles, file);
+        }
+        
+        var subDirectories = newTestPackageDto.Directory
+            .GetDirectories();
 
+        foreach (var subDirectory in subDirectories)
+        {
+            AddDirectoryToRequest(rootDirectories, subDirectory);
+        }
+        
         return await testsManagerClient.AddTestPackageAsync(testPackageDto, cancellationToken);
     }
-}
 
-public class NewTestPackageFromDirectoryDto
-{
-    public required string Name { get; init; }
-    public string? Description { get; init; }
-    public required DirectoryInfo Directory { get; init; }
-    public string? TestPackageType { get; init; }
-    public required Guid TestProjectId { get; init; }
+    private static void AddDirectoryToRequest(List<NewTestPackageDirectoryDto> directories, DirectoryInfo directory)
+    {
+        var directoryFiles = new FormFileCollection();
+        var subDirectories = new List<NewTestPackageDirectoryDto>();
+        
+        foreach (var file in directory.GetFiles())
+        {
+            AddFileToRequest(directoryFiles, file);
+        }
+
+        foreach (var subDirectory in directory.GetDirectories())
+        {
+            AddDirectoryToRequest(subDirectories, subDirectory);
+        }
+        
+        var newTestPackageDirectory = new NewTestPackageDirectoryDto()
+        {
+            DirectoryName = directory.Name,
+            TestFiles = directoryFiles,
+            Directories = subDirectories
+        };
+        
+        directories.Add(newTestPackageDirectory);
+    }
+    
+    private static void AddFileToRequest(FormFileCollection files, FileInfo file)
+    {
+        var fs = File.OpenRead(file.FullName);
+        var formFile = new FormFile(fs, 0, fs.Length, file.Name, file.Name);
+        files.Add(formFile);
+    }
 }

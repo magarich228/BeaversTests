@@ -13,7 +13,7 @@ public class ProjectsController(
     IQueryBus queryBus) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll(
+    public async Task<IActionResult> GetAllAsync(
         [FromQuery] GetAllProjectsQuery.Query queryInput, 
         CancellationToken cancellationToken = default)
     {
@@ -23,7 +23,7 @@ public class ProjectsController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetById(
+    public async Task<IActionResult> GetByIdAsync(
         [FromQuery] GetProjectByIdQuery.Query queryInput, 
         CancellationToken cancellationToken = default)
     {
@@ -33,7 +33,7 @@ public class ProjectsController(
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(
+    public async Task<IActionResult> CreateAsync(
         CreateProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
@@ -43,7 +43,7 @@ public class ProjectsController(
     }
 
     [HttpPut]
-    public async Task<IActionResult> Update(
+    public async Task<IActionResult> UpdateAsync(
         UpdateProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
@@ -53,7 +53,7 @@ public class ProjectsController(
     }
     
     [HttpDelete]
-    public async Task<IActionResult> Delete(
+    public async Task<IActionResult> DeleteAsync(
         [FromQuery] RemoveProjectCommand.Command commandInput,
         CancellationToken cancellationToken = default)
     {
