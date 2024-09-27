@@ -13,7 +13,7 @@ public class TestPackageMappingProfile : Profile
         CreateMap<BeaversTestPackage, TestPackageDto>().ReverseMap();
 
         CreateMap<TestPackageFile, NewTestPackageFileInfo>().ReverseMap();
-        CreateMap<TestPackageContentDirectory, NewTestPackageDirectoryDto>();
+        CreateMap<TestPackageContentDirectory, NewTestPackageDirectoryInfo>();
         CreateMap<TestPackageContent, NewTestPackageContentDto>().ReverseMap();
     }
 }

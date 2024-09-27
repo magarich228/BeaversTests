@@ -1,6 +1,7 @@
 ﻿using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.Api.Dtos;
+using BeaversTests.TestsManager.App;
 using BeaversTests.TestsManager.App.Commands;
 using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Queries;
@@ -14,7 +15,8 @@ namespace BeaversTests.TestsManager.Api.Controllers;
 public class TestsController(
     IQueryBus queryBus,
     ICommandBus commandBus,
-    ILogger<TestsController> logger) : ControllerBase
+    ILogger<TestsController> logger,
+    TestPackageExtractor extractor) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetProjectTestPackagesAsync(
@@ -35,8 +37,19 @@ public class TestsController(
 
         return Ok(queryResult);
     }
-
-    // TODO: endpoint, dto for zipped test package
+    
+    [HttpPost]
+    public async Task<IActionResult> AddTestPackageZipAsync(
+        TestPackageZipDto testPackageInput,
+        CancellationToken cancellationToken)
+    {
+        logger.LogInformation("Adding test package {Name} to Project {Id}", testPackageInput.Name, testPackageInput.TestProjectId);
+        
+        var newTestPackageDto = extractor.ExtractTestPackage(testPackageInput);
+        
+        return Ok(newTestPackageDto);
+    }
+    
     // TODO: endpoint, dto for test package in base64
     // TODO: endpoint, 
     
@@ -81,12 +94,12 @@ public class TestsController(
     }
 
     [NonAction]
-    private (IEnumerable<NewTestPackageFileInfo> testFiles, IEnumerable<NewTestPackageDirectoryDto> directories)
+    private (IEnumerable<NewTestPackageFileInfo> testFiles, IEnumerable<NewTestPackageDirectoryInfo> directories)
         GetTestFilesAndDirectories(
             TestPackageDto testPackageInput)
     {
         List<NewTestPackageFileInfo> files = new();
-        List<NewTestPackageDirectoryDto> directories = new();
+        List<NewTestPackageDirectoryInfo> directories = new();
 
         files.AddRange(GetTestFiles(testPackageInput.Content.TestFiles));
 
@@ -122,9 +135,9 @@ public class TestsController(
     }
 
     [NonAction]
-    private NewTestPackageDirectoryDto GetDirectory(TestPackageDirectoryDto testPackageDirectory)
+    private NewTestPackageDirectoryInfo GetDirectory(TestPackageDirectoryDto testPackageDirectory)
     {
-        NewTestPackageDirectoryDto newTestPackageDirectory = new()
+        NewTestPackageDirectoryInfo newTestPackageDirectory = new()
         {
             DirectoryName = testPackageDirectory.DirectoryName,
             TestFiles = GetTestFiles(testPackageDirectory.TestFiles),

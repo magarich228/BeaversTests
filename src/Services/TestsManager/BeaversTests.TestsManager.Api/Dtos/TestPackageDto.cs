@@ -1,12 +1,10 @@
-﻿namespace BeaversTests.TestsManager.Api.Dtos;
+﻿using BeaversTests.TestsManager.App.Abstractions;
 
-public class TestPackageDto
+namespace BeaversTests.TestsManager.Api.Dtos;
+
+public class TestPackageDto : TestPackageBase
 {
-    public required string Name { get; init; }
-    public string? Description { get; init; }
     public required TestPackageContentDto Content { get; init; }
-    public required string TestPackageType { get; init; }
-    public required Guid TestProjectId { get; init; }
 }
 
 public class TestPackageContentDto

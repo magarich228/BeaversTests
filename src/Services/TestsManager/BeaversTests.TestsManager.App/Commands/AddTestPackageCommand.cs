@@ -80,7 +80,7 @@ public abstract class AddTestPackageCommand
                 .WithMessage("Test project not found.");
         }
 
-        private static void TestPackageDirectoryRules(InlineValidator<NewTestPackageDirectoryDto> validator)
+        private static void TestPackageDirectoryRules(InlineValidator<NewTestPackageDirectoryInfo> validator)
         {
             validator.RuleFor(t => t.DirectoryName)
                 .NotNull()
