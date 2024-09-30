@@ -9,7 +9,7 @@ public class TestsManagerContext(DbContextOptions<TestsManagerContext> options) 
 {
     public DbSet<TestProject> TestProjects { get; init; } = null!;
     public DbSet<BeaversTestPackage> TestPackages { get; init; } = null!;
-    public DbSet<TestDriver> TestDrivers { get; init; } = null!; // TODO: add migration
+    public DbSet<TestDriver> TestDrivers { get; init; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

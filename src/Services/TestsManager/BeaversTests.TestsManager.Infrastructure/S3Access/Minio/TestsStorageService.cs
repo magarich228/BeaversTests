@@ -27,14 +27,16 @@ public class TestsStorageService(
                     .WithBucket(bucketName), 
                 cancellationToken))
         {
-            throw new ApplicationException("Bucket with this testPackageId does not exists");
+            // throw new ApplicationException("Bucket with this testPackageId does not exists");
         }
 
         var testPackageItems = minioClient.ListObjectsEnumAsync(
-            new ListObjectsArgs().WithBucket(bucketName),
+            new ListObjectsArgs()
+                .WithBucket(bucketName)
+                .WithRecursive(true),
             cancellationToken);
 
-        var testPackageItemDatas = new Dictionary<string, byte[]>();
+        var testPackageItemData = new Dictionary<string, byte[]>();
         
         await foreach (var testPackageItem in testPackageItems)
         {
@@ -45,11 +47,18 @@ public class TestsStorageService(
                     .WithBucket(bucketName)
                     .WithObject(objectKey)
                     .WithCallbackStream(async (stream, token) => 
-                        testPackageItemDatas.Add(objectKey, await GetObjectData(stream, token))),
+                        testPackageItemData.Add(objectKey, await GetObjectData(stream, token))),
                 cancellationToken);
+            
+            // var putTestPackageItemArgs = new PutObjectArgs()
+            //     .WithBucket(bucketName)
+            //     .WithObject(fullPath)
+            //     .WithObjectSize(streamData.Length)
+            //     .WithContentType(TestPackageItemContentType)
+            //     .WithStreamData(streamData);
         }
 
-        return testPackageItemDatas;
+        return testPackageItemData;
     }
     
     public async Task AddTestPackageAsync(
@@ -79,7 +88,7 @@ public class TestsStorageService(
         // TODO: Configure bucket access, lifecycle, versioning...
         await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName), cancellationToken);
 
-        
+        await AddTestPackageInternalAsync(testPackageContent, bucketName, cancellationToken);
     }
     
     public async Task RemoveTestPackageAsync(
@@ -119,6 +128,7 @@ public class TestsStorageService(
         Stream objectStream, 
         CancellationToken cancellationToken)
     {
+        // TODO: Убрать MemoryStream
         await using var ms = new MemoryStream();
         
         await objectStream.CopyToAsync(ms, cancellationToken);

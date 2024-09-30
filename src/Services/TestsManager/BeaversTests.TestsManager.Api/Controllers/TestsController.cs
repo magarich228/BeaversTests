@@ -2,11 +2,11 @@
 using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App;
+using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Commands;
 using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Queries;
 using Microsoft.AspNetCore.Mvc;
-using TestPackageDto = BeaversTests.TestsManager.Api.Dtos.TestPackageDto;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
@@ -37,50 +37,21 @@ public class TestsController(
 
         return Ok(queryResult);
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> AddTestPackageZipAsync(
         TestPackageZipDto testPackageInput,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation("Adding test package {Name} to Project {Id}", testPackageInput.Name, testPackageInput.TestProjectId);
-        
-        var newTestPackageDto = extractor.ExtractTestPackage(testPackageInput);
-        
-        return Ok(newTestPackageDto);
+        return await AddTestPackageAsync(testPackageInput, cancellationToken);
     }
-    
-    // TODO: endpoint, dto for test package in base64
-    // TODO: endpoint, 
-    
-    // TODO: swagger doesn't support files graph dto. fix it.
+
     [HttpPost]
-    public async Task<IActionResult> AddTestPackageAsync(
-        [FromForm] TestPackageDto testPackageInput,
+    public async Task<IActionResult> AddTestPackageBase64Async(
+        Base64TestPackageDto testPackageInput,
         CancellationToken cancellationToken)
     {
-        logger.LogInformation("Adding test package {Name} to Project {Id}", testPackageInput.Name, testPackageInput.TestProjectId);
-        var (testFiles, directories) = GetTestFilesAndDirectories(testPackageInput);
-
-        var command = new AddTestPackageCommand.Command()
-        {
-            TestPackage = new NewTestPackageDto()
-            {
-                Name = testPackageInput.Name,
-                Description = testPackageInput.Description,
-                TestDriver = testPackageInput.TestPackageType,
-                TestProjectId = testPackageInput.TestProjectId,
-                Content = new NewTestPackageContentDto()
-                {
-                    TestFiles = testFiles,
-                    Directories = directories
-                }
-            }
-        };
-
-        var commandResult = await commandBus.SendAsync(command, cancellationToken);
-
-        return Ok(commandResult);
+        return await AddTestPackageAsync(testPackageInput, cancellationToken);
     }
 
     [HttpDelete]
@@ -94,56 +65,22 @@ public class TestsController(
     }
 
     [NonAction]
-    private (IEnumerable<NewTestPackageFileInfo> testFiles, IEnumerable<NewTestPackageDirectoryInfo> directories)
-        GetTestFilesAndDirectories(
-            TestPackageDto testPackageInput)
+    private async Task<IActionResult> AddTestPackageAsync<TInput>(
+        TInput testPackageInput,
+        CancellationToken cancellationToken)
+        where TInput : TestPackageBase
     {
-        List<NewTestPackageFileInfo> files = new();
-        List<NewTestPackageDirectoryInfo> directories = new();
+        logger.LogInformation("Adding test package {Name} to Project {Id}", testPackageInput.Name,
+            testPackageInput.TestProjectId);
 
-        files.AddRange(GetTestFiles(testPackageInput.Content.TestFiles));
-
-        foreach (var directory in testPackageInput.Content.Directories)
+        var newTestPackageDto = extractor.ExtractTestPackage(testPackageInput);
+        var command = new AddTestPackageCommand.Command()
         {
-            var newTestPackageDirectory = GetDirectory(directory);
-            directories.Add(newTestPackageDirectory);
-        }
-
-        return (files, directories);
-    }
-
-    [NonAction]
-    private List<NewTestPackageFileInfo> GetTestFiles(IFormFileCollection testFiles)
-    {
-        List<NewTestPackageFileInfo> files = new();
-
-        foreach (var file in testFiles)
-        {
-            using var ms = new MemoryStream();
-            file.CopyTo(ms);
-
-            files.Add(new NewTestPackageFileInfo
-            {
-                Name = file.FileName,
-                Length = file.Length,
-                Content = ms.ToArray(),
-                MediaType = file.ContentType
-            });
-        }
-
-        return files;
-    }
-
-    [NonAction]
-    private NewTestPackageDirectoryInfo GetDirectory(TestPackageDirectoryDto testPackageDirectory)
-    {
-        NewTestPackageDirectoryInfo newTestPackageDirectory = new()
-        {
-            DirectoryName = testPackageDirectory.DirectoryName,
-            TestFiles = GetTestFiles(testPackageDirectory.TestFiles),
-            Directories = testPackageDirectory.Directories.Select(GetDirectory)
+            TestPackage = newTestPackageDto
         };
 
-        return newTestPackageDirectory;
+        var commandResult = await commandBus.SendAsync(command, cancellationToken);
+
+        return Ok(commandResult);
     }
 }

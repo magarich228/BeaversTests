@@ -11,6 +11,7 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
     private const string ArchiveReadExceptionMessage =
         "When retrieving the contents of a package, its contet is not read completely";
     
+    // TODO: add async
     public NewTestPackageContentDto ExtractContent(TestPackageZipDto input)
     {
         ArgumentNullException.ThrowIfNull(input, nameof(input));
@@ -60,20 +61,29 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
             return;
         }
 
-        var entryLength = entry.Length;
-        byte[] buffer = new byte[entryLength];
-            
         using var readStream = entry.Open();
-        var bytesRead = readStream.Read(buffer, 0, buffer.Length);
+        using var ms = new MemoryStream();
+        
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        long totalBytesRead = 0;
 
-        if (bytesRead != entry.Length)
+        while ((bytesRead = readStream.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            totalBytesRead += bytesRead;
+            ms.Write(buffer);
+        }
+
+        if (totalBytesRead != entry.Length)
             throw new TestsManagerException(ArchiveReadExceptionMessage);
-                
+        
+        ms.Flush();
+        
         var file = new NewTestPackageFileInfo()
         {
             Name = entry.Name,
-            Content = buffer,
-            Length = bytesRead
+            Content = ms.ToArray(),
+            Length = totalBytesRead
         };
             
         context.AddFile(file, entry.FullName);

@@ -27,8 +27,8 @@ services.AddTestsManagerInfrastructure(configuration);
 services.AddTestsManagerApp();
 services.AddCqrsBusses();
 services.AddTestDrivers();
-
 services.AddApi();
+
 // TODO: Вынести
 services.AddTransient<ITestPackageContentExtractor<TestPackageZipDto>, ZipTestPackageContentExtractor>();
 

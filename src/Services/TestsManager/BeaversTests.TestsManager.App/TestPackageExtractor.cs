@@ -6,6 +6,7 @@ namespace BeaversTests.TestsManager.App;
 
 public class TestPackageExtractor(IServiceProvider serviceProvider)
 {
+    // TODO: add TryExtract
     public NewTestPackageDto ExtractTestPackage<TInput>(TInput input)
         where TInput : TestPackageBase
     {

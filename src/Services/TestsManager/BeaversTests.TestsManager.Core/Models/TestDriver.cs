@@ -5,7 +5,7 @@
 public class TestDriver
 {
     public required string Key { get; init; }
-    public bool IsDefault { get; init; }
+    public bool IsDefault { get; init; } // TODO: IsLocal
     public string? Description { get; init; }
     public IEnumerable<BeaversTestPackage>? TestPackages { get; init; }
 }

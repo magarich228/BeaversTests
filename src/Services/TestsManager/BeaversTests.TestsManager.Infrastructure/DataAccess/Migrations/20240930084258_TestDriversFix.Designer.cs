@@ -3,6 +3,7 @@ using System;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
 {
     [DbContext(typeof(TestsManagerContext))]
-    partial class TestsManagerContextModelSnapshot : ModelSnapshot
+    [Migration("20240930084258_TestDriversFix")]
+    partial class TestDriversFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

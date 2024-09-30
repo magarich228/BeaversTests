@@ -101,6 +101,10 @@ public class TestDriversRegistry
     private void RegisterLocalDrivers()
     {
         var driversDirectory = new DirectoryInfo(_configuration.TestDriversDirectory);
+        
+        if (string.IsNullOrWhiteSpace(_configuration.TestDriversDirectory) || !driversDirectory.Exists)
+            throw new ApplicationException(
+                "The mandatory test driver directory parameter is not provided from the configuration"); // TODO: add custom exception
 
         var driverFiles = GetDriverFiles(driversDirectory);
         

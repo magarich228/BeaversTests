@@ -73,10 +73,31 @@ services:
       - postgres.testsmanager
     networks: 
       tests-manager:
+        
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7.2
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "kirillgroshev52@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "qwerty123"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5400:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - tests-manager
 
 volumes:
   tests-manager-ngp-data:
     driver: local
+  pgadmin-data:
     
 networks:
   tests-manager:

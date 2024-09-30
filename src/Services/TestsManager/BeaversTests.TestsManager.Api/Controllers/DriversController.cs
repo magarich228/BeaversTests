@@ -11,7 +11,7 @@ public class DriversController(
 {
     [HttpGet]
     public async Task<IActionResult> ListAsync(
-        GetDriversListQuery.Query queryInput, 
+        [FromQuery] GetDriversListQuery.Query queryInput, 
         CancellationToken cancellationToken)
     {
         var result = await queryBus.SendAsync(queryInput, cancellationToken);
