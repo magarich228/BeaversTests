@@ -56,7 +56,7 @@ public class NUnitTestsExplorer() : ITestsExplorer<NUnitDriverKey>
 
     private IEnumerable<ITest> GetTestSuitesInternal(IEnumerable<ITest> tests)
     {
-        return tests.Where(TestsExtensions.IsTestSuite);
+        return tests.Where(TestsExtensions.IsTestFixture);
     }
     
     private IEnumerable<ITest> GetTestCasesInternal(ITest testSuite)

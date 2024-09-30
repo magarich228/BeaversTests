@@ -1,5 +1,6 @@
 ﻿namespace BeaversTests.TestDrivers.Models;
 
+// TODO: Подумать над вложенностью
 public class TestSuite
 {
     public required string Id { get; init; }
