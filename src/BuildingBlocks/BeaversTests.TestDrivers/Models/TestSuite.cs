@@ -1,9 +1,13 @@
-﻿namespace BeaversTests.TestDrivers.Models;
+﻿using System.Collections.Generic;
 
-// TODO: Подумать над вложенностью
-public class TestSuite
+namespace BeaversTests.TestDrivers
 {
-    public required string Id { get; init; }
-    public required string Name { get; init; }
-    public required IEnumerable<Test> Tests { get; init; }
+    // TODO: Подумать над вложенностью
+    public class TestSuite
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public IEnumerable<Test> Tests { get; set; }
+    }
 }
+

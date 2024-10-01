@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace BeaversTests.TestDrivers;
+namespace BeaversTests.TestDrivers.Internal;
 
 public class TestDriversRegistry
 {

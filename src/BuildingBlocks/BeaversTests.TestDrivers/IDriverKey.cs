@@ -1,7 +1,8 @@
-﻿namespace BeaversTests.TestDrivers;
-
-// TODO: add displayName
-public interface IDriverKey
+﻿namespace BeaversTests.TestDrivers
 {
-    string Key { get; }
+    // TODO: add displayName
+    public interface IDriverKey
+    {
+        string Key { get; }
+    }
 }

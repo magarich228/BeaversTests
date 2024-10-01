@@ -1,5 +1,6 @@
 using BeaversTests.Common.CQRS;
 using BeaversTests.TestDrivers;
+using BeaversTests.TestDrivers.Internal;
 using BeaversTests.TestsManager.Api;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.Api.Services;

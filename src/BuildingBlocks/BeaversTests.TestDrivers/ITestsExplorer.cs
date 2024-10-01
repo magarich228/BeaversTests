@@ -1,13 +1,14 @@
-﻿using System.Reflection;
-using BeaversTests.TestDrivers.Models;
+﻿using System.Collections.Generic;
+using System.Reflection;
 
-namespace BeaversTests.TestDrivers;
-
-public interface ITestsExplorer<TKey> : IKeyedDriverService<TKey>, ITestsExplorer where 
-    TKey : class, IDriverKey, new() { }
-
-public interface ITestsExplorer
+namespace BeaversTests.TestDrivers
 {
-    IEnumerable<TestSuite> GetTestSuites(Assembly testsAssembly);
-    IEnumerable<TestSuite> GetTestSuites(string testAssemblyPath);
+    public interface ITestsExplorer<TKey> : IKeyedDriverService<TKey>, ITestsExplorer where 
+        TKey : class, IDriverKey, new() { }
+
+    public interface ITestsExplorer
+    {
+        IEnumerable<TestSuite> GetTestSuites(Assembly testsAssembly);
+        IEnumerable<TestSuite> GetTestSuites(string testAssemblyPath);
+    }
 }

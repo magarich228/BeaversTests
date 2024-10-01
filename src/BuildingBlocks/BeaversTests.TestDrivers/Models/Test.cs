@@ -1,6 +1,7 @@
-﻿namespace BeaversTests.TestDrivers.Models;
-
-public class Test
+﻿namespace BeaversTests.TestDrivers
 {
-    public required string Name { get; init; }
+    public class Test
+    {
+        public string Name { get; set; }
+    }
 }

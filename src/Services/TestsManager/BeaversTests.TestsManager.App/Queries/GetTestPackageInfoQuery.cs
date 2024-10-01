@@ -1,6 +1,6 @@
 ﻿using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestDrivers;
-using BeaversTests.TestDrivers.Models;
+using BeaversTests.TestDrivers.Internal;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
 using FluentValidation;
@@ -59,6 +59,7 @@ public abstract class GetTestPackageInfoQuery
             var testsExplorer = testDriversResolver.ResolveTestsExplorer(testPackage.TestDriverKey);
 
             // TODO: Временное решение, перенести в создание пакета
+            // TODO: Освобождать файлы с тестами
             var tempDirectory = new DirectoryInfo(Path.GetTempPath());
             var testPackageDirectory = tempDirectory.CreateSubdirectory(testPackageId.ToString());
 

@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.TestDrivers;
+﻿namespace BeaversTests.TestDrivers.Internal;
 
 public class Configuration
 {

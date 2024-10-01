@@ -1,7 +1,8 @@
-﻿namespace BeaversTests.TestDrivers;
-
-public class DriverKey<TKey> where 
-    TKey : class, IDriverKey, new()
+﻿namespace BeaversTests.TestDrivers
 {
-    public string Key => new TKey().Key;
+    public class DriverKey<TKey> where 
+        TKey : class, IDriverKey, new()
+    {
+        public string Key => new TKey().Key;
+    }
 }

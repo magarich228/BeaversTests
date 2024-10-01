@@ -28,7 +28,7 @@ public abstract class AddTestPackageCommand
 
         public Validator(ITestsManagerContext db)
         {
-            // TODO: test validator;
+            // TODO: test package content validator;
             RuleFor(c => c.TestPackage)
                 .NotNull();
 
@@ -96,11 +96,11 @@ public abstract class AddTestPackageCommand
                        IsContentDirectoryValidAsync(context, d, cancellationToken).Result);
         
 
-        private static async Task<bool> IsContentFilesValidAsync(
+        private static Task<bool> IsContentFilesValidAsync(
             ContentValidationContext context,
             IEnumerable<NewTestPackageFileInfo> files,
             CancellationToken cancellationToken = default) =>
-            files.All(f => context.FileValidator.ValidateAsync(f, cancellationToken).Result.IsValid);
+            Task.FromResult(files.All(f => context.FileValidator.ValidateAsync(f, cancellationToken).Result.IsValid));
 
 
         private class FileValidator : AbstractValidator<NewTestPackageFileInfo>

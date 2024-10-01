@@ -1,8 +1,9 @@
-﻿namespace BeaversTests.TestDrivers;
-
-public interface IKeyedDriverService<TKey> where 
-    TKey : class, IDriverKey, new()
+﻿namespace BeaversTests.TestDrivers
 {
-    DriverKey<TKey> DriverKey { get; }
+    public interface IKeyedDriverService<TKey> where 
+        TKey : class, IDriverKey, new()
+    {
+        DriverKey<TKey> DriverKey { get; }
+    }
 }
 

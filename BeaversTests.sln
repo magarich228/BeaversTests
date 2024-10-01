@@ -70,13 +70,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{A0A6453E-24B
 		dev\docker-compose.yaml = dev\docker-compose.yaml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestDrivers", "src\BuildingBlocks\BeaversTests.TestDrivers\BeaversTests.TestDrivers.csproj", "{2BB250BA-3AE3-4D34-8B9F-D142E64EF225}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestDrivers.Internal", "src\BuildingBlocks\BeaversTests.TestDrivers.Internal\BeaversTests.TestDrivers.Internal.csproj", "{2BB250BA-3AE3-4D34-8B9F-D142E64EF225}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Drivers", "Drivers", "{201C7070-C73B-4507-9A15-AEFBE49CEEAC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.NUnit.Driver", "src\BuildingBlocks\Drivers\BeaversTests.NUnit.Driver\BeaversTests.NUnit.Driver.csproj", "{F5DC6024-1CBF-4CB4-BB0D-2F9305E24459}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Client", "src\BuildingBlocks\BeaversTests.Client\BeaversTests.Client.csproj", "{CAC1AD00-E321-4D02-87E5-9D43C059AB2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestDrivers", "src\BuildingBlocks\BeaversTests.TestDrivers\BeaversTests.TestDrivers.csproj", "{83218378-095F-44FC-9533-51BEAF305F0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,6 +120,7 @@ Global
 		{201C7070-C73B-4507-9A15-AEFBE49CEEAC} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 		{F5DC6024-1CBF-4CB4-BB0D-2F9305E24459} = {201C7070-C73B-4507-9A15-AEFBE49CEEAC}
 		{CAC1AD00-E321-4D02-87E5-9D43C059AB2F} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
+		{83218378-095F-44FC-9533-51BEAF305F0B} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -196,5 +199,9 @@ Global
 		{CAC1AD00-E321-4D02-87E5-9D43C059AB2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAC1AD00-E321-4D02-87E5-9D43C059AB2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAC1AD00-E321-4D02-87E5-9D43C059AB2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83218378-095F-44FC-9533-51BEAF305F0B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83218378-095F-44FC-9533-51BEAF305F0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83218378-095F-44FC-9533-51BEAF305F0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83218378-095F-44FC-9533-51BEAF305F0B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

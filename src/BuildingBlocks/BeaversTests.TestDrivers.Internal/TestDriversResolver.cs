@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace BeaversTests.TestDrivers;
+namespace BeaversTests.TestDrivers.Internal;
 
 public class TestDriversResolver(
     TestDriversRegistry registry,
