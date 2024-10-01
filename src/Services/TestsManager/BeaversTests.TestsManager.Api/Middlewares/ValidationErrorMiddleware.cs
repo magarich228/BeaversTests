@@ -1,6 +1,6 @@
 ﻿namespace BeaversTests.TestsManager.Api.Middlewares;
 
-public class ValidationMiddleware(RequestDelegate next)
+public class ValidationErrorMiddleware(RequestDelegate next)
 {
     public async Task InvokeAsync(HttpContext context)
     {

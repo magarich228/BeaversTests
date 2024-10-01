@@ -11,7 +11,7 @@ public static class DependencyInjection
     
     public static IApplicationBuilder UseApi(this IApplicationBuilder app)
     {
-        app.UseMiddleware<ValidationMiddleware>();
+        app.UseMiddleware<ValidationErrorMiddleware>();
         
         return app;
     }
