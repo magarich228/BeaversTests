@@ -1,6 +1,4 @@
-﻿using BeaversTests.EventStores;
-
-namespace BeaversTests.Common.CQRS.Events;
+﻿namespace BeaversTests.Common.CQRS.Events;
 
 public interface IEventBus
 {

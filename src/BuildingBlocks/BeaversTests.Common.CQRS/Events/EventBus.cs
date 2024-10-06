@@ -1,21 +1,28 @@
-﻿using BeaversTests.EventStores;
+﻿using MediatR;
 
 namespace BeaversTests.Common.CQRS.Events;
 
-public class EventBus : IEventBus
+public class EventBus(IMediator mediator, IMessageBroker messageBroker) : IEventBus
 {
-    public Task Pull(params IEvent[] events)
+    public virtual async Task Pull(params IEvent[] events)
     {
-        throw new NotImplementedException();
+        foreach (var @event in events)
+        {
+            await mediator.Publish(@event);
+        }
     }
 
-    public Task Commit(params IEvent[] events)
+    public async Task Commit(params IEvent[] events)
     {
-        throw new NotImplementedException();
+        foreach (var @event in events)
+        {
+            await messageBroker.Publish(@event);
+        }
     }
 
-    public Task Commit(StreamState stream)
+    public async Task Commit(StreamState stream)
     {
-        throw new NotImplementedException();
+        // TODO: Проверить, протестить достаточно ли данных
+        await messageBroker.Publish(stream.Data, stream.Type);
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.EventStores;
+﻿namespace BeaversTests.Common.CQRS;
 
 public class StreamState
 {

@@ -28,3 +28,4 @@ artifacts/
 
 # dev env volumes
 dev/data/
+dev/rabbitmq/
