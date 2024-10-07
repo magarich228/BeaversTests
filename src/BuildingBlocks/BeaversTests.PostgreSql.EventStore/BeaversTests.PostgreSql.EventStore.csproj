@@ -6,12 +6,4 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="RabbitMQ.Client" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\BeaversTests.Common.CQRS\BeaversTests.Common.CQRS.csproj" />
-    </ItemGroup>
-
 </Project>
