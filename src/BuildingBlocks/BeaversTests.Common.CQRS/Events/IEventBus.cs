@@ -2,7 +2,7 @@
 
 public interface IEventBus
 {
-    Task Pull(params IEvent[] events);
-    Task Commit(params IEvent[] events);
-    Task Commit(StreamState stream);
+    Task PullAsync(CancellationToken cancellationToken = default, params IEvent[] events);
+    Task CommitAsync(CancellationToken cancellationToken = default, params IEvent[] events);
+    Task CommitAsync(StreamState stream, CancellationToken cancellationToken = default);
 }

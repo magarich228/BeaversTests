@@ -4,25 +4,25 @@ namespace BeaversTests.Common.CQRS.Events;
 
 public class EventBus(IMediator mediator, IMessageBroker messageBroker) : IEventBus
 {
-    public virtual async Task Pull(params IEvent[] events)
+    public virtual async Task PullAsync(CancellationToken cancellationToken = default, params IEvent[] events)
     {
         foreach (var @event in events)
         {
-            await mediator.Publish(@event);
+            await mediator.Publish(@event, cancellationToken);
         }
     }
 
-    public async Task Commit(params IEvent[] events)
+    public async Task CommitAsync(CancellationToken cancellationToken = default, params IEvent[] events)
     {
         foreach (var @event in events)
         {
-            await messageBroker.Publish(@event);
+            await messageBroker.PublishAsync(@event, cancellationToken);
         }
     }
 
-    public async Task Commit(StreamState stream)
+    public async Task CommitAsync(StreamState stream, CancellationToken cancellationToken = default)
     {
         // TODO: Проверить, протестить достаточно ли данных
-        await messageBroker.Publish(stream.Data, stream.Type);
+        await messageBroker.PublishAsync(stream.Data, stream.Type, cancellationToken);
     }
 }

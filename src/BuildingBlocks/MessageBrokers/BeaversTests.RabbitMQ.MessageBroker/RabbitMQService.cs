@@ -1,45 +1,129 @@
-﻿using BeaversTests.Common.CQRS;
+﻿using System.Text;
+using System.Text.Json;
+using BeaversTests.Common.CQRS;
 using BeaversTests.Common.CQRS.Events;
+using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 
 namespace BeaversTests.RabbitMQ.MessageBroker;
 
-public class RabbitMQService : IMessageBroker
+public class RabbitMqService : IMessageBroker
 {
     private readonly IConnectionFactory _factory;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    private readonly string _mainExchangeName;
     
-    public RabbitMQService(RabbitMQConfiguration configuration)
+    public RabbitMqService(RabbitMQConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
     {
+        _serviceScopeFactory = serviceScopeFactory;
         var factory = new ConnectionFactory
         {
             Endpoint = new AmqpTcpEndpoint(configuration.Host, configuration.Port),
             UserName = configuration.UserName,
-            Password = configuration.Password
+            Password = configuration.Password,
         };
 
         _factory = factory;
+
+        _mainExchangeName = configuration.Exchange.Name;
     }
     
-    public async void Subscribe(Type type)
+    public async Task SubscribeAsync(Type type, CancellationToken cancellationToken = default)
     {
-        using var connection = await _factory.CreateConnectionAsync();
-        using var channel = await connection.CreateChannelAsync();
+        // TODO: type validation
         
-        throw new NotImplementedException();
+        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
+        using var channel = await connection.CreateChannelAsync(
+            null, 
+            cancellationToken);
+
+        await channel.ExchangeDeclareAsync(
+            _mainExchangeName, 
+            ExchangeType.Fanout,
+            cancellationToken: cancellationToken);
+
+        var queueName = GetQueueName(type);
+        await channel.QueueDeclareAsync(
+            queueName,
+            cancellationToken: cancellationToken);
+
+        await channel.QueueBindAsync(
+            queueName,
+            _mainExchangeName,
+            string.Empty, 
+            cancellationToken: cancellationToken);
+        
+        var consumer = new AsyncEventingBasicConsumer(channel);
+        
+        // TODO: move to method
+        consumer.Received += async (sender, @event) =>
+        {
+            await using var scope = _serviceScopeFactory.CreateAsyncScope();
+            var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+            
+            var body = @event.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+
+            // TODO: add custom exception, logging
+            var deserializedEvent = JsonSerializer.Deserialize(message, type) as IEvent 
+                                    ?? throw new ApplicationException($"Can't deserialize event: {message}");
+            
+            await eventBus.PullAsync(cancellationToken, deserializedEvent);
+        };
+
+        await channel.BasicConsumeAsync(
+            queueName,
+            true,
+            consumer,
+            cancellationToken);
     }
 
-    public void Subscribe<TEvent>() where TEvent : IEvent
+    public async Task SubscribeAsync<TEvent>(CancellationToken cancellationToken = default) 
+        where TEvent : IEvent
     {
-        throw new NotImplementedException();
+        await SubscribeAsync(typeof(TEvent), cancellationToken);
     }
 
-    public Task Publish<TEvent>(TEvent @event) where TEvent : IEvent
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) 
+        where TEvent : IEvent
     {
-        throw new NotImplementedException();
+        var message = JsonSerializer.Serialize(@event);
+        var type = GetQueueName(typeof(TEvent));
+
+        await PublishAsync(message, type, cancellationToken);
     }
 
-    public Task Publish(string message, string type)
+    public async Task PublishAsync(string message, string type, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
+        using var channel = await connection.CreateChannelAsync(
+            null, 
+            cancellationToken);
+        
+        await channel.ExchangeDeclareAsync(
+            _mainExchangeName, 
+            ExchangeType.Fanout,
+            cancellationToken: cancellationToken);
+        
+        // await channel.QueueDeclareAsync(
+        //     type,
+        //     cancellationToken: cancellationToken);
+        
+        var body = Encoding.UTF8.GetBytes(message);
+        
+        await channel.BasicPublishAsync(
+            _mainExchangeName,
+            type,
+            body,
+            cancellationToken: cancellationToken);
+    }
+    
+    private string GetQueueName(Type type)
+    {
+        return $"{type.Namespace}{type.Name}"
+            .Replace('+', '.')
+            .ToLowerInvariant();
     }
 }
