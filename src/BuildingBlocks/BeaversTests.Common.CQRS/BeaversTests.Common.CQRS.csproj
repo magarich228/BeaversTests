@@ -13,4 +13,8 @@
       <PackageReference Include="MediatR.Extensions.FluentValidation.AspNetCore" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BeaversTests.Common.Application\BeaversTests.Common.Application.csproj" />
+    </ItemGroup>
+
 </Project>

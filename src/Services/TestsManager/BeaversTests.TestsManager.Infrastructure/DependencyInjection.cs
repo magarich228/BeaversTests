@@ -1,4 +1,5 @@
-﻿using BeaversTests.TestsManager.App.Abstractions;
+﻿using BeaversTests.Postgres.EventStore;
+using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using BeaversTests.TestsManager.Infrastructure.S3Access.Minio;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace BeaversTests.TestsManager.Infrastructure;
 
 public static class DependencyInjection
 {
+    private const string TestsManagerNpgsqlKey = "TestManagerNpgsql";
+    
     public static IServiceCollection AddTestsManagerInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         // TODO: Create configuration keys type
-        var connectionString = configuration.GetConnectionString("TestManagerNpgsql");
+        var connectionString = configuration.GetConnectionString(TestsManagerNpgsqlKey);
         
         services.AddDbContext<TestsManagerContext>(options =>
             options.UseNpgsql(connectionString,
@@ -32,6 +35,9 @@ public static class DependencyInjection
             .WithSSL(minioConfiguration.UseSsl));
 
         services.AddSingleton<ITestsStorageService, TestsStorageService>();
+        
+        // Перенести
+        services.AddPostgresEventStore(configuration);
         
         return services;
     }

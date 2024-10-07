@@ -86,7 +86,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "MessageBrokers", "MessageBr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.RabbitMQ.MessageBroker", "src\BuildingBlocks\MessageBrokers\BeaversTests.RabbitMQ.MessageBroker\BeaversTests.RabbitMQ.MessageBroker.csproj", "{0011FEE1-E691-446A-AE6B-767986C296A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.PostgreSql.EventStore", "src\BuildingBlocks\BeaversTests.PostgreSql.EventStore\BeaversTests.PostgreSql.EventStore.csproj", "{DDA02F6A-3024-4600-874F-68698C1B3209}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EventStores", "EventStores", "{2124DDA6-2C72-4FE7-9A32-283EAD1B0A28}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Postgres.EventStore", "src\BuildingBlocks\EventStores\BeaversTests.Postgres.EventStore\BeaversTests.Postgres.EventStore.csproj", "{62A19887-D1BD-4CB4-B207-55F443067932}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,7 +133,8 @@ Global
 		{83218378-095F-44FC-9533-51BEAF305F0B} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 		{F0134F2C-0177-4D83-8B08-8A96B7426873} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 		{0011FEE1-E691-446A-AE6B-767986C296A3} = {F0134F2C-0177-4D83-8B08-8A96B7426873}
-		{DDA02F6A-3024-4600-874F-68698C1B3209} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
+		{2124DDA6-2C72-4FE7-9A32-283EAD1B0A28} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
+		{62A19887-D1BD-4CB4-B207-55F443067932} = {2124DDA6-2C72-4FE7-9A32-283EAD1B0A28}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -218,9 +221,9 @@ Global
 		{0011FEE1-E691-446A-AE6B-767986C296A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0011FEE1-E691-446A-AE6B-767986C296A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0011FEE1-E691-446A-AE6B-767986C296A3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DDA02F6A-3024-4600-874F-68698C1B3209}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DDA02F6A-3024-4600-874F-68698C1B3209}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DDA02F6A-3024-4600-874F-68698C1B3209}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DDA02F6A-3024-4600-874F-68698C1B3209}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62A19887-D1BD-4CB4-B207-55F443067932}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62A19887-D1BD-4CB4-B207-55F443067932}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62A19887-D1BD-4CB4-B207-55F443067932}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62A19887-D1BD-4CB4-B207-55F443067932}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

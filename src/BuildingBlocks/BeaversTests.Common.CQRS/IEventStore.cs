@@ -17,10 +17,10 @@ public interface IEventStore
     Task<IEnumerable<StreamState>> GetEvents(Guid aggregateId, AggregateInfo info);
 }
 
-public interface IStore
+public interface IStore : IAsyncDisposable
 {
-    Task Add(StreamState stream);
-    Task<IEnumerable<StreamState>> GetEvents(Guid aggregateId, AggregateInfo info);
+    Task AddAsync(StreamState stream, CancellationToken cancellationToken = default);
+    Task<IEnumerable<StreamState>> GetEventsAsync(AggregateInfo info, CancellationToken cancellationToken = default);
 }
 
 public class AggregateInfo

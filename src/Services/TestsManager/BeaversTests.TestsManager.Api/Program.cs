@@ -1,4 +1,5 @@
 using BeaversTests.Common.CQRS;
+using BeaversTests.Postgres.EventStore;
 using BeaversTests.TestDrivers;
 using BeaversTests.TestDrivers.Internal;
 using BeaversTests.TestsManager.Api;
@@ -45,6 +46,9 @@ using (var scope = app.Services.CreateScope())
 {
     await using var db = scope.ServiceProvider.GetRequiredService<TestsManagerContext>();
     await db.Database.MigrateAsync();
+    
+    await using var eventStore = scope.ServiceProvider.GetRequiredService<PostgresEventStore>();
+    await eventStore.Database.MigrateAsync();
 }
 
 await app.RunAsync();
