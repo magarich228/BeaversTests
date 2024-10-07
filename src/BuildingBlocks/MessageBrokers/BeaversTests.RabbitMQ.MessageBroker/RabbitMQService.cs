@@ -120,6 +120,7 @@ public class RabbitMqService : IMessageBroker
             cancellationToken: cancellationToken);
     }
     
+    // TODO: Перенести в общую сборку.
     private string GetQueueName(Type type)
     {
         return $"{type.Namespace}{type.Name}"

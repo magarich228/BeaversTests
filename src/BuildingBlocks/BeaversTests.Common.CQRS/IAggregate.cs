@@ -9,19 +9,21 @@ public interface IAggregate
     DateTime CreatedUtc { get; }
 
     IEnumerable<IEvent> DequeueUncommittedEvents();
+    void Apply<TEvent>(TEvent @event) 
+        where TEvent : IEvent;
 }
 
 public abstract class Aggregate : IAggregate
 {
     public Guid Id { get; protected set; }
-    public int Version { get; protected set; } = 0;
-    public DateTime CreatedUtc { get; protected set; }
+    public int Version { get; protected internal set; } = 0;
+    public DateTime CreatedUtc { get; protected internal set; }
     public virtual string Name => "";
 
     [NonSerialized]
     private readonly List<IEvent> _uncommittedEvents = new List<IEvent>();
 
-    protected Aggregate()
+    internal Aggregate()
     { }
 
     IEnumerable<IEvent> IAggregate.DequeueUncommittedEvents()
@@ -32,6 +34,8 @@ public abstract class Aggregate : IAggregate
 
         return dequeuedEvents;
     }
+
+    public abstract void Apply<TEvent>(TEvent @event) where TEvent : IEvent;
 
     protected virtual void Enqueue(IEvent @event)
     {
