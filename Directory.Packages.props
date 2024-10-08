@@ -6,6 +6,7 @@
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageVersion Include="Ocelot" Version="23.2.2" />
+    <PackageVersion Include="RabbitMQ.Client.Core.DependencyInjection" Version="5.0.0" />
     <PackageVersion Include="Swashbuckle.AspNetCore" Version="6.4.0" />
     <PackageVersion Include="RabbitMQ.Client" Version="7.0.0-rc.11" />
     <PackageVersion Include="Microsoft.AspNetCore.Http" Version="2.2.2" />

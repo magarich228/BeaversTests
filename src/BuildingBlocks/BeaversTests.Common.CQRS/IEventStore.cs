@@ -12,27 +12,27 @@ public interface IEventStore
         int? expectedVersion = null, 
         Func<StreamState, Task>? action = null,
         CancellationToken cancellationToken = default) 
-        where TAggregate : IAggregate;
+        where TAggregate : Aggregate, new();
 
     Task<TAggregate> AggregateStreamAsync<TAggregate>(
         AggregateInfo info,
         CancellationToken cancellationToken = default) 
-        where TAggregate : IAggregate;
-    Task<ICollection<TAggregate>> AggregateStreamAsync<TAggregate>(
+        where TAggregate : Aggregate, new();
+    IAsyncEnumerable<TAggregate> AggregateStreamAsync<TAggregate>(
         ICollection<Guid> ids,
         CancellationToken cancellationToken = default) 
-        where TAggregate : IAggregate;
+        where TAggregate : Aggregate, new();
 
     Task StoreAsync<TAggregate>(
         TAggregate aggregate, 
         Func<StreamState, Task>? action = null,
         CancellationToken cancellationToken = default) 
-        where TAggregate : IAggregate;
+        where TAggregate : Aggregate, new();
     Task StoreAsync<TAggregate>(
         ICollection<TAggregate> aggregates, 
         Func<StreamState, Task>? action = null,
         CancellationToken cancellationToken = default) 
-        where TAggregate : IAggregate;
+        where TAggregate : Aggregate, new();
 
     Task<IEnumerable<StreamState>> GetEventsAsync(
         AggregateInfo info,

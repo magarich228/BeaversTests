@@ -2,18 +2,7 @@
 
 namespace BeaversTests.Common.CQRS;
 
-public interface IAggregate
-{
-    Guid Id { get; }
-    int Version { get; }
-    DateTime CreatedUtc { get; }
-
-    IEnumerable<IEvent> DequeueUncommittedEvents();
-    void Apply<TEvent>(TEvent @event) 
-        where TEvent : IEvent;
-}
-
-public abstract class Aggregate : IAggregate
+public abstract class Aggregate
 {
     public Guid Id { get; protected set; }
     public int Version { get; protected internal set; } = 0;
@@ -23,13 +12,12 @@ public abstract class Aggregate : IAggregate
     [NonSerialized]
     private readonly List<IEvent> _uncommittedEvents = new List<IEvent>();
 
-    internal Aggregate()
+    protected internal Aggregate()
     { }
 
-    IEnumerable<IEvent> IAggregate.DequeueUncommittedEvents()
+    internal IEnumerable<IEvent> DequeueUncommittedEvents()
     {
         var dequeuedEvents = _uncommittedEvents.ToList();
-
         _uncommittedEvents.Clear();
 
         return dequeuedEvents;
@@ -43,4 +31,6 @@ public abstract class Aggregate : IAggregate
         CreatedUtc = DateTime.UtcNow;
         _uncommittedEvents.Add(@event);
     }
+
+    protected internal abstract Aggregate Empty();
 }

@@ -14,6 +14,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\BuildingBlocks\EventStores\BeaversTests.Postgres.EventStore\BeaversTests.Postgres.EventStore.csproj" />
+      <ProjectReference Include="..\..\..\BuildingBlocks\MessageBrokers\BeaversTests.RabbitMQ.MessageBroker\BeaversTests.RabbitMQ.MessageBroker.csproj" />
       <ProjectReference Include="..\BeaversTests.TestsManager.App\BeaversTests.TestsManager.App.csproj" />
       <ProjectReference Include="..\BeaversTests.TestsManager.Core\BeaversTests.TestsManager.Core.csproj" />
     </ItemGroup>
