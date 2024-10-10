@@ -4,13 +4,12 @@ using BeaversTests.Common.CQRS.Events;
 
 namespace BeaversTests.Common.CQRS;
 
-public class EventStore(IStore store) : IEventStore
+public class EventStore(IStore store, IEventBus eventBus) : IEventStore
 {
     public async Task AppendEventAsync<TAggregate>(
         Guid aggregateId, 
         IEvent @event, 
-        int? expectedVersion = null, 
-        Func<StreamState, Task>? action = null,
+        int? expectedVersion = null,
         CancellationToken cancellationToken = default) 
         where TAggregate : Aggregate, new()
     {
@@ -46,10 +45,7 @@ public class EventStore(IStore store) : IEventStore
 
         await store.AddAsync(stream, cancellationToken);
 
-        if (action != null)
-        {
-            await action(stream);
-        }
+        await eventBus.CommitAsync(stream, cancellationToken);
     }
 
     public async Task<TAggregate> AggregateStreamAsync<TAggregate>(
@@ -90,9 +86,7 @@ public class EventStore(IStore store) : IEventStore
     }
 
     public async Task StoreAsync<TAggregate>(
-        TAggregate aggregate, 
-        Func<StreamState, 
-            Task>? action = null, 
+        TAggregate aggregate,
         CancellationToken cancellationToken = default) 
         where TAggregate : Aggregate, new()
     {
@@ -106,19 +100,18 @@ public class EventStore(IStore store) : IEventStore
             initialVersion++;
 
             // TODO: add validation
-            await AppendEventAsync<TAggregate>(aggregate.Id, @event, initialVersion, action, cancellationToken);
+            await AppendEventAsync<TAggregate>(aggregate.Id, @event, initialVersion, cancellationToken);
         }
     }
 
     public async Task StoreAsync<TAggregate>(
-        ICollection<TAggregate> aggregates, 
-        Func<StreamState, Task>? action = null, 
+        ICollection<TAggregate> aggregates,
         CancellationToken cancellationToken = default) 
         where TAggregate : Aggregate, new()
     {
         foreach (var aggregate in aggregates)
         {
-            await StoreAsync(aggregate, action, cancellationToken);
+            await StoreAsync(aggregate, cancellationToken);
         }
     }
 

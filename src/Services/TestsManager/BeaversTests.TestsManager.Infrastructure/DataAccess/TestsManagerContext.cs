@@ -1,5 +1,7 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
-using BeaversTests.TestsManager.Core.Models;
+using BeaversTests.TestsManager.Core.TestDriver;
+using BeaversTests.TestsManager.Core.TestPackage;
+using BeaversTests.TestsManager.Core.TestProject;
 using BeaversTests.TestsManager.Infrastructure.DataAccess.Configurations;
 using Microsoft.EntityFrameworkCore;
 

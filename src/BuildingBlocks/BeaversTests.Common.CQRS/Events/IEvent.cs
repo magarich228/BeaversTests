@@ -2,4 +2,4 @@
 
 namespace BeaversTests.Common.CQRS.Events;
 
-public interface IEvent : INotification { }
+public abstract class IEvent : INotification { }

@@ -1,8 +1,8 @@
-﻿namespace BeaversTests.TestsManager.Core.Models;
+﻿namespace BeaversTests.TestsManager.Core.TestPackage;
 
-public class TestPackageContentDirectory
+// TODO: add ref to BeaversTestPackage??
+public class TestPackageContent
 {
-    public required string DirectoryName { get; init; }
     public required IEnumerable<TestPackageFile> TestFiles { get; init; }
     public required IEnumerable<TestPackageContentDirectory> Directories { get; init; }
 }

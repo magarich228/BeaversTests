@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.TestsManager.Core.Models;
+﻿namespace BeaversTests.TestsManager.Core.TestPackage;
 
 public class BeaversTestPackage
 {
@@ -7,6 +7,6 @@ public class BeaversTestPackage
     public string? Description { get; init; }
     public required string TestDriverKey { get; init; }
     public required Guid TestProjectId { get; init; }
-    public TestDriver? TestDriver { get; init; }
-    public TestProject? TestProject { get; init; }
+    public TestDriver.TestDriver? TestDriver { get; init; }
+    public TestProject.TestProject? TestProject { get; init; }
 }

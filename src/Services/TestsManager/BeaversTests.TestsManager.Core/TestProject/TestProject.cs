@@ -1,4 +1,6 @@
-﻿namespace BeaversTests.TestsManager.Core.Models;
+﻿using BeaversTests.TestsManager.Core.TestPackage;
+
+namespace BeaversTests.TestsManager.Core.TestProject;
 
 public class TestProject
 {

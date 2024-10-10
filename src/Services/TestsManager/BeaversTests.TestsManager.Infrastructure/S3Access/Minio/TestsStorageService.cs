@@ -1,6 +1,6 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Exceptions;
-using BeaversTests.TestsManager.Core.Models;
+using BeaversTests.TestsManager.Core.TestPackage;
 using Microsoft.Extensions.Logging;
 using Minio;
 using Minio.DataModel.Args;

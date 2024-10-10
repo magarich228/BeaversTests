@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.TestsManager.Core.Models;
+﻿namespace BeaversTests.TestsManager.Core.TestPackage;
 
 public class TestPackageFile
 {

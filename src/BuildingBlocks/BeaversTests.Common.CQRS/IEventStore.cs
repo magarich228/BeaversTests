@@ -9,8 +9,7 @@ public interface IEventStore
     Task AppendEventAsync<TAggregate>(
         Guid aggregateId, 
         IEvent @event, 
-        int? expectedVersion = null, 
-        Func<StreamState, Task>? action = null,
+        int? expectedVersion = null,
         CancellationToken cancellationToken = default) 
         where TAggregate : Aggregate, new();
 
@@ -24,13 +23,11 @@ public interface IEventStore
         where TAggregate : Aggregate, new();
 
     Task StoreAsync<TAggregate>(
-        TAggregate aggregate, 
-        Func<StreamState, Task>? action = null,
+        TAggregate aggregate,
         CancellationToken cancellationToken = default) 
         where TAggregate : Aggregate, new();
     Task StoreAsync<TAggregate>(
-        ICollection<TAggregate> aggregates, 
-        Func<StreamState, Task>? action = null,
+        ICollection<TAggregate> aggregates,
         CancellationToken cancellationToken = default) 
         where TAggregate : Aggregate, new();
 
