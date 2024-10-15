@@ -1,5 +1,6 @@
 ﻿using BeaversTests.Common.Application;
 using BeaversTests.Common.CQRS;
+using BeaversTests.Common.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeaversTests.Postgres.EventStore;

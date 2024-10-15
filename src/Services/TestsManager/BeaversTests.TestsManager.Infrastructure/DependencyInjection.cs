@@ -1,4 +1,5 @@
 ﻿using BeaversTests.Common.CQRS;
+using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Postgres.EventStore;
 using BeaversTests.RabbitMQ.MessageBroker;
 using BeaversTests.TestsManager.App.Abstractions;
@@ -16,10 +17,10 @@ namespace BeaversTests.TestsManager.Infrastructure;
 public static class DependencyInjection
 {
     private const string TestsManagerNpgsqlKey = "TestManagerNpgsql";
+    private const string MinioS3SectionKey = "S3:Minio";
     
     public static IServiceCollection AddTestsManagerInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // TODO: Create configuration keys type
         var connectionString = configuration.GetConnectionString(TestsManagerNpgsqlKey);
         
         // TODO: перенести
@@ -51,7 +52,7 @@ public static class DependencyInjection
 
         MinioConfiguration minioConfiguration = new();
         configuration
-            .GetSection("S3:Minio")
+            .GetSection(MinioS3SectionKey)
             .Bind(minioConfiguration);
         
         services.AddMinio(c => c

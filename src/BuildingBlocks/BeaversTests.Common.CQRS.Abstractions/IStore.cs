@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.Common.CQRS;
+﻿namespace BeaversTests.Common.CQRS.Abstractions;
 
 public interface IStore : IAsyncDisposable
 {

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BeaversTests.Common.CQRS;
+using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;

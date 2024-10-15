@@ -1,6 +1,4 @@
-﻿using BeaversTests.Common.CQRS.Events;
-
-namespace BeaversTests.Common.CQRS;
+﻿namespace BeaversTests.Common.CQRS.Abstractions;
 
 public interface IEventStore
 {

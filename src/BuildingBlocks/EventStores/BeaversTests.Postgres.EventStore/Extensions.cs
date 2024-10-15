@@ -1,4 +1,5 @@
 ﻿using BeaversTests.Common.CQRS;
+using BeaversTests.Common.CQRS.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

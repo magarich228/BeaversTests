@@ -1,11 +1,6 @@
-using BeaversTests.Common.CQRS;
 using BeaversTests.Postgres.EventStore;
-using BeaversTests.TestDrivers.Internal;
 using BeaversTests.TestsManager.Api;
-using BeaversTests.TestsManager.Api.Dtos;
-using BeaversTests.TestsManager.Api.Services;
 using BeaversTests.TestsManager.App;
-using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Infrastructure;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
@@ -24,14 +19,9 @@ services.AddSwaggerGen(c =>
     //c.IncludeXmlComments();
 });
 
-services.AddCqrsBusses();
 services.AddTestsManagerInfrastructure(configuration);
 services.AddTestsManagerApp();
-services.AddTestDrivers();
 services.AddApi();
-
-// TODO: Вынести
-services.AddTransient<ITestPackageContentExtractor<TestPackageZipDto>, ZipTestPackageContentExtractor>();
 
 var app = builder.Build();
 

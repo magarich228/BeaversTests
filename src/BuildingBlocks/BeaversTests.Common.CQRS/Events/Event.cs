@@ -1,4 +1,6 @@
-﻿namespace BeaversTests.Common.CQRS.Events;
+﻿using BeaversTests.Common.CQRS.Abstractions;
+
+namespace BeaversTests.Common.CQRS.Events;
 
 public abstract class Event : IEvent
 {

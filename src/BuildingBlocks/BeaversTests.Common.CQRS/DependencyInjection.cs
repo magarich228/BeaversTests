@@ -1,4 +1,5 @@
-﻿using BeaversTests.Common.CQRS.Commands;
+﻿using BeaversTests.Common.CQRS.Abstractions;
+using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.Common.CQRS.Events;
 using BeaversTests.Common.CQRS.Queries;
 using Microsoft.Extensions.DependencyInjection;

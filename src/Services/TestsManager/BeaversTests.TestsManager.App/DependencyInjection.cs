@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using BeaversTests.Common.CQRS;
+using BeaversTests.TestDrivers.Internal;
 using MediatR.Extensions.FluentValidation.AspNetCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,6 +10,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddTestsManagerApp(this IServiceCollection services)
     {
+        services.AddCqrsBusses();
+        
         var executingAssembly = Assembly.GetExecutingAssembly();
         
         services.AddFluentValidation(new []{ executingAssembly });
@@ -17,6 +21,8 @@ public static class DependencyInjection
         services.AddMediatR(conf => conf.RegisterServicesFromAssembly(executingAssembly));
 
         services.AddTransient<TestPackageExtractor>();
+        
+        services.AddTestDrivers();
         
         return services;
     }

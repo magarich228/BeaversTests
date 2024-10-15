@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text.Json;
-using BeaversTests.Common.CQRS.Events;
+using BeaversTests.Common.CQRS.Abstractions;
 
 namespace BeaversTests.Common.CQRS;
 

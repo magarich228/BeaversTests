@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.Common.CQRS.Events;
+﻿namespace BeaversTests.Common.CQRS.Abstractions;
 
 public interface IEventBus
 {

@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using BeaversTests.Common.CQRS;
-using BeaversTests.Common.CQRS.Events;
+using BeaversTests.Common.CQRS.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;

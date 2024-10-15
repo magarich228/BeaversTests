@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using BeaversTests.Common.CQRS.Abstractions;
+using MediatR;
 
 namespace BeaversTests.Common.CQRS.Events;
 

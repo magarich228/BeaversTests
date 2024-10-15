@@ -1,7 +1,6 @@
 ﻿using System.Reflection;
-using BeaversTests.Common.CQRS.Events;
 
-namespace BeaversTests.Common.CQRS;
+namespace BeaversTests.Common.CQRS.Abstractions;
 
 public abstract class Aggregate
 {

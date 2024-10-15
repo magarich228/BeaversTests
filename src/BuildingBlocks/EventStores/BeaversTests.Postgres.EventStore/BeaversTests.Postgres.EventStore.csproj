@@ -13,11 +13,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\BeaversTests.Common.CQRS\BeaversTests.Common.CQRS.csproj" />
+      <Folder Include="Migrations\" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Migrations\" />
+      <ProjectReference Include="..\..\BeaversTests.Common.Application\BeaversTests.Common.Application.csproj" />
+      <ProjectReference Include="..\..\BeaversTests.Common.CQRS.Abstractions\BeaversTests.Common.CQRS.Abstractions.csproj" />
     </ItemGroup>
 
 </Project>
