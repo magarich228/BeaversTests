@@ -29,30 +29,25 @@ public class RabbitMqService : IMessageBroker
         _mainExchangeName = configuration.Exchange.Name;
     }
     
-    public async Task SubscribeAsync(Type type, CancellationToken cancellationToken = default)
+    public Task SubscribeAsync(Type type, CancellationToken cancellationToken = default)
     {
         // TODO: type validation
-        
-        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        using var channel = await connection.CreateChannelAsync(
-            null, 
-            cancellationToken);
 
-        await channel.ExchangeDeclareAsync(
+        using var connection = _factory.CreateConnection();
+        using var channel = connection.CreateModel();
+
+        channel.ExchangeDeclare(
             _mainExchangeName, 
-            ExchangeType.Fanout,
-            cancellationToken: cancellationToken);
+            ExchangeType.Fanout);
 
         var queueName = GetQueueName(type);
-        await channel.QueueDeclareAsync(
-            queueName,
-            cancellationToken: cancellationToken);
+        channel.QueueDeclare(
+            queueName);
 
-        await channel.QueueBindAsync(
+        channel.QueueBind(
             queueName,
             _mainExchangeName,
-            string.Empty, 
-            cancellationToken: cancellationToken);
+            string.Empty);
         
         var consumer = new AsyncEventingBasicConsumer(channel);
         
@@ -72,11 +67,12 @@ public class RabbitMqService : IMessageBroker
             await eventBus.PullAsync(cancellationToken, deserializedEvent);
         };
 
-        await channel.BasicConsumeAsync(
+        channel.BasicConsume(
             queueName,
             true,
-            consumer,
-            cancellationToken);
+            consumer);
+
+        return Task.CompletedTask;
     }
 
     public async Task SubscribeAsync<TEvent>(CancellationToken cancellationToken = default) 
@@ -94,17 +90,14 @@ public class RabbitMqService : IMessageBroker
         await PublishAsync(message, type, cancellationToken);
     }
 
-    public async Task PublishAsync(string message, string type, CancellationToken cancellationToken = default)
+    public Task PublishAsync(string message, string type, CancellationToken cancellationToken = default)
     {
-        using var connection = await _factory.CreateConnectionAsync(cancellationToken);
-        using var channel = await connection.CreateChannelAsync(
-            null, 
-            cancellationToken);
+        using var connection = _factory.CreateConnection();
+        using var channel = connection.CreateModel();
         
-        await channel.ExchangeDeclareAsync(
+        channel.ExchangeDeclare(
             _mainExchangeName, 
-            ExchangeType.Fanout,
-            cancellationToken: cancellationToken);
+            ExchangeType.Fanout);
         
         // await channel.QueueDeclareAsync(
         //     type,
@@ -112,11 +105,12 @@ public class RabbitMqService : IMessageBroker
         
         var body = Encoding.UTF8.GetBytes(message);
         
-        await channel.BasicPublishAsync(
+        channel.BasicPublish(
             _mainExchangeName,
             type,
-            body,
-            cancellationToken: cancellationToken);
+            body: body);
+
+        return Task.CompletedTask;
     }
     
     // TODO: Перенести в общую сборку.

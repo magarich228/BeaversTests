@@ -22,7 +22,6 @@ services:
       retries: 3
     networks: 
       tests-manager:
-      eventstore:
   
   postgres.testsmanager:
     container_name: postgres.testsmanager
