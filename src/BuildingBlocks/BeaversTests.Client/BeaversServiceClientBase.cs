@@ -1,47 +1,36 @@
-﻿namespace BeaversTests.Client;
-
-public abstract class BeaversServiceClientBase : IAsyncDisposable, IDisposable
+﻿namespace BeaversTests.Client
 {
-    protected BeaversServiceClientBase(Configuration configuration)
+    public abstract class BeaversServiceClientBase : IDisposable
     {
-        Configuration = configuration;
-        HttpClient = new HttpClient()
+        protected BeaversServiceClientBase(Configuration configuration)
         {
-            BaseAddress = new Uri(Configuration.ApiGatewayUrl)
-        };
-    }
-
-    protected readonly HttpClient HttpClient;
-    public Configuration Configuration { get; }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await DisposeAsyncCore();
-        GC.SuppressFinalize(this);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            HttpClient.Dispose();
+            Configuration = configuration;
+            HttpClient = new HttpClient()
+            {
+                BaseAddress = new Uri(Configuration.ApiGatewayUrl)
+            };
         }
-    }
 
-    protected virtual ValueTask DisposeAsyncCore()
-    {
-        HttpClient.Dispose();
-        return ValueTask.CompletedTask;
-    }
+        protected readonly HttpClient HttpClient;
+        protected Configuration Configuration { get; }
 
-    ~BeaversServiceClientBase()
-    {
-        Dispose(false);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                HttpClient.Dispose();
+            }
+        }
+
+        ~BeaversServiceClientBase()
+        {
+            Dispose(false);
+        }
     }
 }
