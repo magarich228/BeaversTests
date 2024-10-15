@@ -11,7 +11,7 @@ public class TestPackageAggregate : Aggregate
     public string TestDriverKey { get; private set; } = default!;
     public Guid TestProjectId { get; private set; }
     
-    internal TestPackageAggregate() { }
+    public TestPackageAggregate() { }
 
     [EventApplier]
     public void ApplyCreated(TestPackageAddedEvent @event)
@@ -21,6 +21,8 @@ public class TestPackageAggregate : Aggregate
         Description = @event.Description;
         TestDriverKey = @event.TestDriverKey;
         TestProjectId = @event.TestProjectId;
+        
+        base.Enqueue(@event);
     }
 
     protected override Aggregate Empty()

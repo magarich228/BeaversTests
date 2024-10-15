@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.CQRS;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
-using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.TestPackage;
+using BeaversTests.TestsManager.Events.TestPackage;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace BeaversTests.TestsManager.App.Commands;
 
@@ -23,11 +25,14 @@ public abstract class AddTestPackageCommand
 
     public class Validator : AbstractValidator<Command>
     {
-        // TODO: move to configuration
-        public const long MaxFileSize = 5 * 1024 * 1024; // bytes
-
-        public Validator(ITestsManagerContext db)
+        private readonly IConfiguration _configuration;
+        
+        public Validator(
+            ITestsManagerContext db,
+            IConfiguration configuration)
         {
+            _configuration = configuration;
+            
             // TODO: test package content validator;
             RuleFor(c => c.TestPackage)
                 .NotNull();
@@ -64,7 +69,7 @@ public abstract class AddTestPackageCommand
                 .WithMessage("Test project not found.");
         }
 
-        private static async Task<bool> IsContentValidAsync(
+        private async Task<bool> IsContentValidAsync(
             NewTestPackageContentDto content,
             CancellationToken cancellationToken = default)
         {
@@ -72,7 +77,7 @@ public abstract class AddTestPackageCommand
 
             var context = new ContentValidationContext()
             {
-                FileValidator = new FileValidator(),
+                FileValidator = new FileValidator(_configuration),
                 DirectoryValidator = new DirectoryValidator()
             };
 
@@ -86,7 +91,7 @@ public abstract class AddTestPackageCommand
             return isValid;
         }
 
-        private static async Task<bool> IsContentDirectoryValidAsync(
+        private async Task<bool> IsContentDirectoryValidAsync(
             ContentValidationContext context,
             NewTestPackageDirectoryInfo directory,
             CancellationToken cancellationToken = default) =>
@@ -96,7 +101,7 @@ public abstract class AddTestPackageCommand
                        IsContentDirectoryValidAsync(context, d, cancellationToken).Result);
         
 
-        private static Task<bool> IsContentFilesValidAsync(
+        private Task<bool> IsContentFilesValidAsync(
             ContentValidationContext context,
             IEnumerable<NewTestPackageFileInfo> files,
             CancellationToken cancellationToken = default) =>
@@ -105,14 +110,18 @@ public abstract class AddTestPackageCommand
 
         private class FileValidator : AbstractValidator<NewTestPackageFileInfo>
         {
-            public FileValidator()
+            private const string TestPackageMaxFileMbSizeConfigurationKey = "TestPackageMaxFileMbSize";
+            
+            public FileValidator(IConfiguration configuration)
             {
+                var maxFileSizeInBytes = configuration.GetValue<long>(TestPackageMaxFileMbSizeConfigurationKey) * 1024 * 1024;
+                
                 RuleFor(t => t.Name)
                     .NotNull()
                     .NotEmpty();
 
                 RuleFor(t => t.Length)
-                    .Must(l => l < MaxFileSize)
+                    .Must(l => l < maxFileSizeInBytes)
                     .WithMessage(t => $"Max file size exceeded. File name: {t.Name} size: {t.Length}.");
 
                 RuleFor(t => t.Content)
@@ -138,33 +147,34 @@ public abstract class AddTestPackageCommand
     }
 
     public class Handler(
+        IEventStore eventStore,
         ITestsStorageService testsStorageService,
-        ITestsManagerContext db,
         IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
-            var testPackage = mapper.Map<NewTestPackageDto, BeaversTestPackage>(command.TestPackage);
+            var testPackage = new TestPackageAggregate();
+            var @event = new TestPackageAddedEvent()
+            {
+                Id = Guid.NewGuid(),
+                Name = command.TestPackage.Name,
+                Description = command.TestPackage.Description,
+                TestDriverKey = command.TestPackage.TestDriver,
+                TestProjectId = command.TestPackage.TestProjectId,
+            };
+            
             var testPackageContent =
-                mapper.Map<NewTestPackageContentDto, TestPackageContent>(command.TestPackage.Content);
+                 mapper.Map<NewTestPackageContentDto, TestPackageContent>(command.TestPackage.Content);
 
-            var addedTestPackage = await db.TestPackages.AddAsync(testPackage, cancellationToken);
-            var testPackageId = addedTestPackage.Entity.Id;
+            await testsStorageService.AddTestPackageAsync(@event.Id, testPackageContent, cancellationToken);
+            
+            testPackage.ApplyCreated(@event);
 
-            // Get Result
-            await testsStorageService.AddTestPackageAsync(
-                testPackageId,
-                testPackageContent,
-                cancellationToken);
+            await eventStore.StoreAsync(testPackage, cancellationToken);
 
-            if (await db.SaveChangesAsync(cancellationToken) < 1)
+            return new Result()
             {
-                throw new TestsManagerException("Test package not added.");
-            }
-
-            return new Result
-            {
-                TestPackageId = testPackageId
+                TestPackageId = testPackage.Id
             };
         }
     }

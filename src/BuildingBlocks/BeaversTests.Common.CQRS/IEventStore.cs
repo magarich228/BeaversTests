@@ -26,6 +26,7 @@ public interface IEventStore
         TAggregate aggregate,
         CancellationToken cancellationToken = default) 
         where TAggregate : Aggregate, new();
+    
     Task StoreAsync<TAggregate>(
         ICollection<TAggregate> aggregates,
         CancellationToken cancellationToken = default) 

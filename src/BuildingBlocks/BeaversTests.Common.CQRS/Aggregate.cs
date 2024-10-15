@@ -35,7 +35,8 @@ public abstract class Aggregate
 
         var applier = appliers.FirstOrDefault(a =>
         {
-            var parameter = a.GetParameters().SingleOrDefault();
+            var parameter = a.GetParameters()
+                .SingleOrDefault();
 
             if (parameter == null ||
                 !parameter.ParameterType.IsAssignableTo(EventInterfaceType))
