@@ -33,9 +33,4 @@ public class PostgresEventStore(DbContextOptions<PostgresEventStore> options) : 
         return await query.AsNoTracking()
             .ToListAsync(cancellationToken);
     }
-
-    public override ValueTask DisposeAsync()
-    {
-        return base.DisposeAsync();
-    }
 }

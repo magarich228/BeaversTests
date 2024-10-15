@@ -2,8 +2,6 @@
 
 namespace BeaversTests.Common.CQRS;
 
-// TODO: Разделить по реализаций и контрактов.
-
 public interface IEventStore
 {
     Task AppendEventAsync<TAggregate>(
@@ -35,21 +33,4 @@ public interface IEventStore
     Task<IEnumerable<StreamState>> GetEventsAsync(
         AggregateInfo info,
         CancellationToken cancellationToken = default);
-}
-
-public interface IStore : IAsyncDisposable
-{
-    Task AddAsync(
-        StreamState stream, 
-        CancellationToken cancellationToken = default);
-    Task<IEnumerable<StreamState>> GetEventsAsync(
-        AggregateInfo info, 
-        CancellationToken cancellationToken = default);
-}
-
-public class AggregateInfo
-{
-    public required Guid Id { get; set; }
-    public int? Version { get; set; }
-    public DateTime? CreatedUtc { get; set; }
 }

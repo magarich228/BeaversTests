@@ -4,6 +4,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Description>C# Client lib for BeaversTests platform.</Description>
+        <PackageProjectUrl>https://github.com/magarich228/BeaversTests</PackageProjectUrl>
+        <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/magarich228/BeaversTests</RepositoryUrl>
+        <Version>0.0.1</Version>
     </PropertyGroup>
 
     <ItemGroup>

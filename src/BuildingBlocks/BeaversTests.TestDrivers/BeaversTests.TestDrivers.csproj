@@ -2,6 +2,12 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <Version>0.0.1</Version>
+        <Description>C# library for writing your own plugins for executing tests in the BeaversTests platform</Description>
+        <PackageProjectUrl>https://github.com/magarich228/BeaversTests</PackageProjectUrl>
+        <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/magarich228/BeaversTests</RepositoryUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     </PropertyGroup>
 
 </Project>
