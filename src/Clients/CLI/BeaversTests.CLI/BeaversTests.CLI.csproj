@@ -14,7 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Client\BeaversTests.Client.csproj" />
+      <ProjectReference Include="..\..\..\Public\BeaversTests.Client\BeaversTests.Client.csproj" />
     </ItemGroup>
 
 </Project>
