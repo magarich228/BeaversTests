@@ -14,7 +14,7 @@ public static class DependencyInjection
 {
     private const string EventStoreTypeConfigurationKey = "EventStoreType";
     private const string MessageBrokerTypeConfigurationKey = "MessageBrokerType";
-
+    
     public static IServiceCollection AddCqrs(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddMessageBroker(configuration)

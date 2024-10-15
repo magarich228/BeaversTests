@@ -2,6 +2,7 @@
 using System.Text.Json;
 using BeaversTests.Common.CQRS.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -11,10 +12,14 @@ public class RabbitMqService : IMessageBroker
 {
     private readonly IConnectionFactory _factory;
     private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly ILogger<RabbitMqService> _logger;
 
     private readonly string _mainExchangeName;
     
-    public RabbitMqService(RabbitMQConfiguration configuration, IServiceScopeFactory serviceScopeFactory)
+    public RabbitMqService(
+        RabbitMQConfiguration configuration, 
+        IServiceScopeFactory serviceScopeFactory,
+        ILogger<RabbitMqService> logger)
     {
         _serviceScopeFactory = serviceScopeFactory;
         var factory = new ConnectionFactory
@@ -25,8 +30,8 @@ public class RabbitMqService : IMessageBroker
         };
 
         _factory = factory;
-
         _mainExchangeName = configuration.Exchange.Name;
+        _logger = logger;
     }
     
     public Task SubscribeAsync(Type type, CancellationToken cancellationToken = default)
@@ -41,19 +46,27 @@ public class RabbitMqService : IMessageBroker
             ExchangeType.Fanout);
 
         var queueName = GetQueueName(type);
-        channel.QueueDeclare(
-            queueName);
+        var queueDeclareOk = channel.QueueDeclare(
+            queueName, 
+            autoDelete: false,
+            exclusive: false,
+            durable: true,
+            arguments: null);
+        
+        _logger.LogInformation($"Queue declared {queueDeclareOk.QueueName}");
 
         channel.QueueBind(
             queueName,
             _mainExchangeName,
-            string.Empty);
+            queueName);
         
         var consumer = new AsyncEventingBasicConsumer(channel);
         
         // TODO: move to method
         consumer.Received += async (sender, @event) =>
         {
+            _logger.LogInformation($"Received event: {@event.RoutingKey} {@event.Exchange} {@event.ConsumerTag}");
+            
             await using var scope = _serviceScopeFactory.CreateAsyncScope();
             var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
             
@@ -99,9 +112,7 @@ public class RabbitMqService : IMessageBroker
             _mainExchangeName, 
             ExchangeType.Fanout);
         
-        // await channel.QueueDeclareAsync(
-        //     type,
-        //     cancellationToken: cancellationToken);
+        // var queueName = channel.QueueDeclare(type).QueueName;
         
         var body = Encoding.UTF8.GetBytes(message);
         
