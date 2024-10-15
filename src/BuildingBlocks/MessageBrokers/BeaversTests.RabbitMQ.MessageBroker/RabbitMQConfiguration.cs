@@ -6,6 +6,8 @@ public class RabbitMQConfiguration
     public int Port { get; init; }
     public string UserName { get; init; } = null!;
     public string Password { get; init; } = null!;
+    public int Retries { get; init; }
+    public int RetryTimeoutMilliseconds { get; init; }
     public ExchangeOptions Exchange { get; init; } = null!;
 }
 

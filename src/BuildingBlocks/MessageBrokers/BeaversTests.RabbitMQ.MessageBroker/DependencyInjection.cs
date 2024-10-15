@@ -23,7 +23,9 @@ public static class DependencyInjection
         {
             HostName = brokerConfig.Host,
             UserName = brokerConfig.UserName,
-            Password = brokerConfig.Password
+            Password = brokerConfig.Password,
+            InitialConnectionRetries = brokerConfig.Retries,
+            InitialConnectionRetryTimeoutMilliseconds = brokerConfig.RetryTimeoutMilliseconds
         });
         
         services.AddSingleton<IMessageBroker, RabbitMqService>();

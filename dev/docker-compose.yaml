@@ -32,7 +32,7 @@ services:
       POSTGRES_PASSWORD: "qwerty123"
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - ./2. Init Database:/docker-entrypoint-initdb.d
       - tests-manager-ngp-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -59,7 +59,7 @@ services:
       POSTGRES_PASSWORD: "qwerty123"
       PGDATA: "/var/lib/postgresql/eventstore-data/pgdata"
     volumes:
-      - ../3. Init Database:/docker-entrypoint-initdb.d
+      - ./3. Init Database:/docker-entrypoint-initdb.d
       - eventstore-ngp-data:/var/lib/postgresql/eventstore-data
     ports:
       - "5444:5432"
@@ -101,6 +101,8 @@ services:
       RabbitMQ__UserName: rmuser
       RabbitMQ__Password: rmpassword
       RabbitMQ__Exchange__Name: beaverstests.testsmanager
+      RabbitMQ__Retries: 10
+      RabbitMQ__RetryTimeoutMilliseconds: 10000
       Logging__LogLevel__Default: Debug
     depends_on:
       - minio
