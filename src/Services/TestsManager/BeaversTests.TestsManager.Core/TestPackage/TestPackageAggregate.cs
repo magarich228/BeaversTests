@@ -6,20 +6,25 @@ namespace BeaversTests.TestsManager.Core.TestPackage;
 
 public class TestPackageAggregate : Aggregate
 {
-    internal TestPackageAggregate() : base()
+    public string TestPackageName { get; private set; } = default!;
+    public string? Description { get; private set; }
+    public string TestDriverKey { get; private set; } = default!;
+    public Guid TestProjectId { get; private set; }
+    
+    internal TestPackageAggregate() { }
+
+    [EventApplier]
+    public void ApplyCreated(TestPackageAddedEvent @event)
     {
+        Id = @event.Id;
+        TestPackageName = @event.Name;
+        Description = @event.Description;
+        TestDriverKey = @event.TestDriverKey;
+        TestProjectId = @event.TestProjectId;
     }
 
     protected override Aggregate Empty()
     {
         return new TestPackageAggregate();
-    }
-}
-
-public class TestPackageAddedApplier : IEventApplier<TestPackageAggregate, TestPackageAdded>
-{
-    public void Apply(TestPackageAggregate aggregate, TestPackageAdded @event)
-    {
-        
     }
 }

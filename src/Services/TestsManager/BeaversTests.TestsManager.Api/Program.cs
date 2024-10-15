@@ -1,6 +1,5 @@
 using BeaversTests.Common.CQRS;
 using BeaversTests.Postgres.EventStore;
-using BeaversTests.TestDrivers;
 using BeaversTests.TestDrivers.Internal;
 using BeaversTests.TestsManager.Api;
 using BeaversTests.TestsManager.Api.Dtos;
@@ -25,9 +24,9 @@ services.AddSwaggerGen(c =>
     //c.IncludeXmlComments();
 });
 
+services.AddCqrsBusses();
 services.AddTestsManagerInfrastructure(configuration);
 services.AddTestsManagerApp();
-services.AddCqrsBusses();
 services.AddTestDrivers();
 services.AddApi();
 

@@ -1,4 +1,5 @@
 ﻿using BeaversTests.Common.CQRS.Commands;
+using BeaversTests.Common.CQRS.Events;
 using BeaversTests.Common.CQRS.Queries;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ public static class DependencyInjection
     {
         services.AddScoped<ICommandBus, CommandBus>();
         services.AddScoped<IQueryBus, QueryBus>();
+        services.AddScoped<IEventBus, EventBus>();
         
         return services;
     }

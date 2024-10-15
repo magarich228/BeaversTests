@@ -2,7 +2,7 @@
 
 namespace BeaversTests.TestsManager.Events.TestProject;
 
-public class TestProjectAdded : IEvent
+public class TestProjectAddedEvent : IEvent
 {
     
 }

@@ -1,15 +1,7 @@
-﻿using BeaversTests.Common.CQRS.Events;
+﻿using System.Reflection;
+using BeaversTests.Common.CQRS.Events;
 
 namespace BeaversTests.Common.CQRS;
-
-public interface IEventApplier<in TAggregate, in TEvent>
-    where TAggregate : Aggregate
-    where TEvent : IEvent
-{
-    public abstract void Apply(TAggregate aggregate, TEvent @event);
-    
-    internal Type GetEventType() => typeof(TEvent);
-}
 
 public abstract class Aggregate
 {
@@ -18,14 +10,11 @@ public abstract class Aggregate
     public DateTime CreatedUtc { get; protected internal set; }
     public virtual string Name => "";
 
-    private readonly IEnumerable<IEventApplier<Aggregate, IEvent>> _appliers;
     [NonSerialized]
     private readonly List<IEvent> _uncommittedEvents = new();
 
-    protected internal Aggregate(params IEventApplier<Aggregate, IEvent>[] appliers)
-    {
-        _appliers = appliers;
-    }
+    private Type EventApplierAttributeType => typeof(EventApplierAttribute);
+    private Type EventInterfaceType => typeof(IEvent);
 
     internal IEnumerable<IEvent> DequeueUncommittedEvents()
     {
@@ -37,12 +26,29 @@ public abstract class Aggregate
 
     protected internal void Apply<TEvent>(TEvent @event) where TEvent : IEvent
     {
-        var eventType = typeof(TEvent);
-
-        var eventApplier = _appliers.FirstOrDefault(a => a.GetEventType() == eventType)
-            ?? throw new ArgumentException($"{eventType} event cannot applied to aggregate {GetType()}");
+        var aggregateType = GetType();
+        var eventType = @event.GetType();
         
-        eventApplier.Apply(this, @event);
+        var appliers = aggregateType
+            .GetMethods(BindingFlags.Instance)
+            .Where(m => m.GetCustomAttribute(EventApplierAttributeType) is not null);
+
+        var applier = appliers.FirstOrDefault(a =>
+        {
+            var parameter = a.GetParameters().SingleOrDefault();
+
+            if (parameter == null ||
+                !parameter.ParameterType.IsAssignableTo(EventInterfaceType))
+            {
+                throw new InvalidOperationException(
+                    "Event applier method parameter must be one and have the event type");
+            }
+            
+            return parameter.ParameterType == eventType;
+        }) ?? throw new InvalidOperationException(
+            $"Aggregate {aggregateType} event applier for {eventType} not found");
+
+        applier.Invoke(this, [ @event ]);
     }
 
     protected virtual void Enqueue(IEvent @event)
