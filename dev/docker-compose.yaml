@@ -97,6 +97,11 @@ services:
       S3__Minio__AccessKey: kirill
       S3__Minio__SecretKey: minio123
       S3__Minio__UseSSL: false
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Port: 5672
+      RabbitMQ__UserName: rmuser
+      RabbitMQ__Password: rmpassword
+      RabbitMQ__Exchange__Name: beaverstests.testsmanager
       Logging__LogLevel__Default: Debug
     depends_on:
       - minio

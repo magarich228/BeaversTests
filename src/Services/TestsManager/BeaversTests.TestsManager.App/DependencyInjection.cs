@@ -2,15 +2,16 @@
 using BeaversTests.Common.CQRS;
 using BeaversTests.TestDrivers.Internal;
 using MediatR.Extensions.FluentValidation.AspNetCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BeaversTests.TestsManager.App;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddTestsManagerApp(this IServiceCollection services)
+    public static IServiceCollection AddTestsManagerApp(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddCqrsBusses();
+        services.AddCqrs(configuration);
         
         var executingAssembly = Assembly.GetExecutingAssembly();
         

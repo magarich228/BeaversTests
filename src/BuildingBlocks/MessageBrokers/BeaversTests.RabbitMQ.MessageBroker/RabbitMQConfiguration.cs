@@ -2,14 +2,14 @@
 
 public class RabbitMQConfiguration
 {
-    public required string Host { get; init; }
-    public required int Port { get; init; }
-    public required string UserName { get; init; }
-    public required string Password { get; init; }
-    public required ExchangeOptions Exchange { get; init; }
+    public string Host { get; init; } = null!;
+    public int Port { get; init; }
+    public string UserName { get; init; } = null!;
+    public string Password { get; init; } = null!;
+    public ExchangeOptions Exchange { get; init; } = null!;
 }
 
 public class ExchangeOptions
 {
-    public required string Name { get; set; }
+    public string Name { get; init; } = null!;
 }

@@ -23,27 +23,6 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString(TestsManagerNpgsqlKey);
         
-        // TODO: перенести
-        var brokerConfig = new RabbitMQConfiguration()
-        {
-            Host = "rabbitmq",
-            Port = 5672,
-            UserName = "rmuser",
-            Password = "rmpassword",
-            Exchange = new ExchangeOptions()
-            {
-                Name = "beaverstests.testsmanager"
-            }
-        };
-        services.AddSingleton(brokerConfig);
-        services.AddRabbitMqServices(new RabbitMqServiceOptions()
-        {
-            HostName = brokerConfig.Host,
-            UserName = brokerConfig.UserName,
-            Password = brokerConfig.Password
-        });
-        services.AddSingleton<IMessageBroker, RabbitMqService>();
-        
         services.AddDbContext<TestsManagerContext>(options =>
             options.UseNpgsql(connectionString,
                 npgOptions => npgOptions.MigrationsAssembly(typeof(TestsManagerContext).Assembly.GetName().Name)));
@@ -61,10 +40,6 @@ public static class DependencyInjection
             .WithSSL(minioConfiguration.UseSsl));
 
         services.AddSingleton<ITestsStorageService, TestsStorageService>();
-        
-        // Перенести
-        services.AddPostgresEventStore(configuration);
-        services.AddScoped<IEventStore, EventStore>();
         
         return services;
     }

@@ -20,7 +20,7 @@ services.AddSwaggerGen(c =>
 });
 
 services.AddTestsManagerInfrastructure(configuration);
-services.AddTestsManagerApp();
+services.AddTestsManagerApp(configuration);
 services.AddApi();
 
 var app = builder.Build();
