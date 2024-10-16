@@ -1,16 +1,10 @@
-﻿using BeaversTests.Common.CQRS;
-using BeaversTests.Common.CQRS.Abstractions;
-using BeaversTests.Postgres.EventStore;
-using BeaversTests.RabbitMQ.MessageBroker;
-using BeaversTests.TestsManager.App.Abstractions;
+﻿using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using BeaversTests.TestsManager.Infrastructure.S3Access.Minio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Minio;
-using RabbitMQ.Client.Core.DependencyInjection;
-using RabbitMQ.Client.Core.DependencyInjection.Configuration;
 
 namespace BeaversTests.TestsManager.Infrastructure;
 

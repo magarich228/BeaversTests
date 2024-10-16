@@ -18,8 +18,6 @@ public static class DependencyInjection
         services.AddFluentValidation(new []{ executingAssembly });
 
         services.AddAutoMapper(conf => conf.AddMaps(executingAssembly));
-        
-        services.AddMediatR(conf => conf.RegisterServicesFromAssembly(executingAssembly));
 
         services.AddTransient<TestPackageExtractor>();
         

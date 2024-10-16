@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Text.Json;
 using BeaversTests.Common.CQRS.Abstractions;
+using Newtonsoft.Json;
 
 namespace BeaversTests.Common.CQRS;
 
@@ -39,8 +39,8 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         {
             AggregateId = aggregateId,
             Version = version,
-            Type = GetQueueName(@event.GetType()),
-            Data = JsonSerializer.Serialize(@event)
+            Type = GetExchangeName(@event.GetType()),
+            Data = JsonConvert.SerializeObject(@event)
         };
 
         await store.AddAsync(stream, cancellationToken);
@@ -60,7 +60,7 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         {
             // TODO: custom exception
             // TODO: вынести сериализация, десериализация в общее
-            var eventData = JsonSerializer.Deserialize<IEvent>(@event.Data) ??
+            var eventData = JsonConvert.DeserializeObject<IEvent>(@event.Data) ??
                             throw new ApplicationException();
             
             aggregate.Apply(eventData);
@@ -123,9 +123,9 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
     }
     
     // TODO: Перенести в общую сборку.
-    private string GetQueueName(Type type)
+    private string GetExchangeName(Type type)
     {
-        return $"{type.Namespace}{type.Name}"
+        return $"{type.Name}"
             .Replace('+', '.')
             .ToLowerInvariant();
     }

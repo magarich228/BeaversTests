@@ -1,8 +1,8 @@
 ﻿using System.Text;
-using System.Text.Json;
 using BeaversTests.Common.CQRS.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
@@ -14,10 +14,10 @@ public class RabbitMqService : IMessageBroker
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<RabbitMqService> _logger;
 
-    private readonly string _mainExchangeName;
-    
+    private readonly List<Subscription> _subscriptions;
+
     public RabbitMqService(
-        RabbitMQConfiguration configuration, 
+        RabbitMQConfiguration configuration,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<RabbitMqService> logger)
     {
@@ -30,75 +30,78 @@ public class RabbitMqService : IMessageBroker
         };
 
         _factory = factory;
-        _mainExchangeName = configuration.Exchange.Name;
         _logger = logger;
+
+        _subscriptions = new();
     }
-    
+
     public Task SubscribeAsync(Type type, CancellationToken cancellationToken = default)
     {
         // TODO: type validation
 
-        using var connection = _factory.CreateConnection();
-        using var channel = connection.CreateModel();
+        var connection = _factory.CreateConnection();
+        var channel = connection.CreateModel();
+
+        var exchangeName = GetExchangeName(type);
 
         channel.ExchangeDeclare(
-            _mainExchangeName, 
-            ExchangeType.Fanout);
+            exchange: exchangeName,
+            type: ExchangeType.Fanout);
 
-        var queueName = GetQueueName(type);
-        var queueDeclareOk = channel.QueueDeclare(
-            queueName, 
-            autoDelete: false,
-            exclusive: false,
-            durable: true,
-            arguments: null);
-        
-        _logger.LogInformation($"Queue declared {queueDeclareOk.QueueName}");
+        var queueDeclareOk = channel.QueueDeclare();
+
+        _logger.LogInformation($"Exchange {exchangeName} with queue {queueDeclareOk.QueueName} declared.");
 
         channel.QueueBind(
-            queueName,
-            _mainExchangeName,
-            queueName);
-        
-        var consumer = new AsyncEventingBasicConsumer(channel);
-        
+            queue: queueDeclareOk.QueueName,
+            exchange:exchangeName,
+            routingKey: string.Empty);
+
+        var consumer = new EventingBasicConsumer(channel);
+
         // TODO: move to method
         consumer.Received += async (sender, @event) =>
         {
-            _logger.LogInformation($"Received event: {@event.RoutingKey} {@event.Exchange} {@event.ConsumerTag}");
-            
+            _logger.LogInformation(
+                $"Received event: RK: {@event.RoutingKey} Ex: {@event.Exchange} Ct: {@event.ConsumerTag}");
+
             await using var scope = _serviceScopeFactory.CreateAsyncScope();
             var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
-            
+
             var body = @event.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
 
             // TODO: add custom exception, logging
-            var deserializedEvent = JsonSerializer.Deserialize(message, type) as IEvent 
+            var deserializedEvent = JsonConvert.DeserializeObject(message, type) as IEvent
                                     ?? throw new ApplicationException($"Can't deserialize event: {message}");
-            
+
             await eventBus.PullAsync(cancellationToken, deserializedEvent);
         };
 
+        _logger.LogDebug($"Subscribed to exchange: {exchangeName} with queue: {queueDeclareOk.QueueName}");
+        
         channel.BasicConsume(
-            queueName,
-            true,
-            consumer);
+            queue: queueDeclareOk.QueueName,
+            autoAck: true,
+            consumerTag: string.Empty,
+            consumer: consumer);
+
+        _subscriptions.Add(new Subscription(consumer, connection, channel));
 
         return Task.CompletedTask;
     }
 
-    public async Task SubscribeAsync<TEvent>(CancellationToken cancellationToken = default) 
+    public async Task SubscribeAsync<TEvent>(CancellationToken cancellationToken = default)
         where TEvent : IEvent
     {
         await SubscribeAsync(typeof(TEvent), cancellationToken);
     }
 
-    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default) 
+    public async Task PublishAsync<TEvent>(TEvent @event, CancellationToken cancellationToken = default)
         where TEvent : IEvent
     {
-        var message = JsonSerializer.Serialize(@event);
-        var type = GetQueueName(typeof(TEvent));
+        var message = JsonConvert.SerializeObject(@event);
+        var type = GetExchangeName(typeof(TEvent));
 
         await PublishAsync(message, type, cancellationToken);
     }
@@ -107,28 +110,37 @@ public class RabbitMqService : IMessageBroker
     {
         using var connection = _factory.CreateConnection();
         using var channel = connection.CreateModel();
-        
+
         channel.ExchangeDeclare(
-            _mainExchangeName, 
-            ExchangeType.Fanout);
-        
-        // var queueName = channel.QueueDeclare(type).QueueName;
-        
-        var body = Encoding.UTF8.GetBytes(message);
-        
-        channel.BasicPublish(
-            _mainExchangeName,
             type,
+            ExchangeType.Fanout);
+
+        var body = Encoding.UTF8.GetBytes(message);
+
+        channel.BasicPublish(
+            exchange: type,
+            routingKey: string.Empty,
+            basicProperties: null,
             body: body);
+
+        _logger.LogDebug($"Published {type}");
 
         return Task.CompletedTask;
     }
-    
+
     // TODO: Перенести в общую сборку.
-    private string GetQueueName(Type type)
+    private string GetExchangeName(Type type)
     {
-        return $"{type.Namespace}{type.Name}"
+        return $"{type.Name}"
             .Replace('+', '.')
             .ToLowerInvariant();
+    }
+
+    ~RabbitMqService()
+    {
+        foreach (var subscription in _subscriptions)
+        {
+            subscription.Dispose();
+        }
     }
 }
