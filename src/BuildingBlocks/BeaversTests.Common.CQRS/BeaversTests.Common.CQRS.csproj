@@ -9,8 +9,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="MediatR" Version="12.2.0" />
-      <PackageReference Include="MediatR.Extensions.FluentValidation.AspNetCore" Version="5.1.0" />
+      <ProjectReference Include="..\EventStores\BeaversTests.Postgres.EventStore\BeaversTests.Postgres.EventStore.csproj" />
+      <ProjectReference Include="..\MessageBrokers\BeaversTests.RabbitMQ.MessageBroker\BeaversTests.RabbitMQ.MessageBroker.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MediatR.Extensions.FluentValidation.AspNetCore" />
     </ItemGroup>
 
 </Project>

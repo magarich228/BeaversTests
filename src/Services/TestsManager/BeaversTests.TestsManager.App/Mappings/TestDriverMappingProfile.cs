@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BeaversTests.TestsManager.App.Dtos;
-using BeaversTests.TestsManager.Core.Models;
+using BeaversTests.TestsManager.Core.TestDriver;
 
 namespace BeaversTests.TestsManager.App.Mappings;
 

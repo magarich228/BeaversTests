@@ -66,6 +66,9 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Key");
 
                     b.ToTable("TestDrivers");

@@ -1,5 +1,4 @@
-using BeaversTests.Common.CQRS;
-using BeaversTests.TestDrivers;
+using BeaversTests.Postgres.EventStore;
 using BeaversTests.TestsManager.Api;
 using BeaversTests.TestsManager.App;
 using BeaversTests.TestsManager.Infrastructure;
@@ -21,10 +20,7 @@ services.AddSwaggerGen(c =>
 });
 
 services.AddTestsManagerInfrastructure(configuration);
-services.AddTestsManagerApp();
-services.AddCqrsBusses();
-services.AddTestDrivers();
-
+services.AddTestsManagerApp(configuration);
 services.AddApi();
 
 var app = builder.Build();
@@ -39,6 +35,9 @@ using (var scope = app.Services.CreateScope())
 {
     await using var db = scope.ServiceProvider.GetRequiredService<TestsManagerContext>();
     await db.Database.MigrateAsync();
+    
+    await using var eventStore = scope.ServiceProvider.GetRequiredService<PostgresEventStore>();
+    await eventStore.Database.MigrateAsync();
 }
 
 await app.RunAsync();

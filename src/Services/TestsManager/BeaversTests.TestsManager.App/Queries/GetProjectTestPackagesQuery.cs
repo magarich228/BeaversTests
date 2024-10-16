@@ -2,7 +2,6 @@
 using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
-using BeaversTests.TestsManager.Core.Models;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 

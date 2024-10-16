@@ -1,19 +1,23 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:latest AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
 EXPOSE 5174
 USER root
 
-FROM mcr.microsoft.com/dotnet/sdk:latest AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/Services/TestsManager/BeaversTests.TestsManager.Api/BeaversTests.TestsManager.Api.csproj", "src/Services/TestsManager/BeaversTests.TestsManager.Api/"]
-COPY ["src/Services/TestsManager/BeaversTests.TestsManager.App/BeaversTests.TestsManager.App.csproj", "src/Services/TestsManager/BeaversTests.TestsManager.App/"]
-COPY ["src/BuildingBlocks/BeaversTests.Extensions/BeaversTests.Extensions.csproj", "src/BuildingBlocks/BeaversTests.Extensions/"]
-COPY ["src/BuildingBlocks/BeaversTests.Common.Application/BeaversTests.Common.Application.csproj", "src/BuildingBlocks/BeaversTests.Common.Application/"]
-COPY ["src/BuildingBlocks/BeaversTests.Common.CQRS/BeaversTests.Common.CQRS.csproj", "src/BuildingBlocks/BeaversTests.Common.CQRS/"]
 COPY ["src/Services/TestsManager/BeaversTests.TestsManager.Core/BeaversTests.TestsManager.Core.csproj", "src/Services/TestsManager/BeaversTests.TestsManager.Core/"]
-COPY ["src/BuildingBlocks/BeaversTests.TestDrivers/BeaversTests.TestDrivers.csproj", "src/BuildingBlocks/BeaversTests.TestDrivers/"]
+COPY ["src/BuildingBlocks/BeaversTests.Common.CQRS/BeaversTests.Common.CQRS.csproj", "src/BuildingBlocks/BeaversTests.Common.CQRS/"]
+COPY ["src/BuildingBlocks/EventStores/BeaversTests.Postgres.EventStore/BeaversTests.Postgres.EventStore.csproj", "src/BuildingBlocks/EventStores/BeaversTests.Postgres.EventStore/"]
+COPY ["src/BuildingBlocks/BeaversTests.Common.Application/BeaversTests.Common.Application.csproj", "src/BuildingBlocks/BeaversTests.Common.Application/"]
+COPY ["src/BuildingBlocks/BeaversTests.Common.CQRS.Abstractions/BeaversTests.Common.CQRS.Abstractions.csproj", "src/BuildingBlocks/BeaversTests.Common.CQRS.Abstractions/"]
+COPY ["src/BuildingBlocks/MessageBrokers/BeaversTests.RabbitMQ.MessageBroker/BeaversTests.RabbitMQ.MessageBroker.csproj", "src/BuildingBlocks/MessageBrokers/BeaversTests.RabbitMQ.MessageBroker/"]
+COPY ["src/Events/BeaversTests.TestsManager.Events/BeaversTests.TestsManager.Events.csproj", "src/Events/BeaversTests.TestsManager.Events/"]
+COPY ["src/BuildingBlocks/BeaversTests.TestDrivers.Internal/BeaversTests.TestDrivers.Internal.csproj", "src/BuildingBlocks/BeaversTests.TestDrivers.Internal/"]
+COPY ["src/Public/BeaversTests.TestDrivers/BeaversTests.TestDrivers.csproj", "src/Public/BeaversTests.TestDrivers/"]
+COPY ["src/Services/TestsManager/BeaversTests.TestsManager.App/BeaversTests.TestsManager.App.csproj", "src/Services/TestsManager/BeaversTests.TestsManager.App/"]
 COPY ["src/Services/TestsManager/BeaversTests.TestsManager.Infrastructure/BeaversTests.TestsManager.Infrastructure.csproj", "src/Services/TestsManager/BeaversTests.TestsManager.Infrastructure/"]
 
 #Drivers

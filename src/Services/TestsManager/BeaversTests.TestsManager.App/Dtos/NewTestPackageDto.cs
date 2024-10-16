@@ -12,5 +12,5 @@ public class NewTestPackageDto
 public class NewTestPackageContentDto
 {
     public required IEnumerable<NewTestPackageFileInfo> TestFiles { get; init; }
-    public required IEnumerable<NewTestPackageDirectoryDto> Directories { get; init; }
+    public required IEnumerable<NewTestPackageDirectoryInfo> Directories { get; init; }
 }

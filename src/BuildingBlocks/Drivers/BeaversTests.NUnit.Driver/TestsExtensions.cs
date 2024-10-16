@@ -4,18 +4,25 @@ namespace BeaversTests.NUnit.Driver;
 
 public static class TestsExtensions
 {
-    public static bool IsTestSuite(this ITest test) // TODO: write concrete test types
+    public static bool IsTestFixture(this ITest test)
     {
         ArgumentNullException.ThrowIfNull(test);
         
-        return test.TestType == "TestSuite" || test.TestType == "TestFixture";
+        return test.TestType == "TestFixture";
+    }
+    
+    public static bool IsTestSuite(this ITest test)
+    {
+        ArgumentNullException.ThrowIfNull(test);
+        
+        return test.TestType == "TestSuite";
     }
 
     public static bool IsTestCase(this ITest test)
     {
         ArgumentNullException.ThrowIfNull(test);
         
-        return test.TestType == "TestCase" || test.TestType == "Test" || test.TestType == "TestMethod";
+        return test.TestType == "TestMethod";
     }
 
     public static bool IsRoot(this ITest test)

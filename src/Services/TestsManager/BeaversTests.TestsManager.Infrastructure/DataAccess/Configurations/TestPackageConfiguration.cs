@@ -1,4 +1,6 @@
-﻿using BeaversTests.TestsManager.Core.Models;
+﻿using BeaversTests.TestsManager.Core.TestDriver;
+using BeaversTests.TestsManager.Core.TestPackage;
+using BeaversTests.TestsManager.Core.TestProject;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

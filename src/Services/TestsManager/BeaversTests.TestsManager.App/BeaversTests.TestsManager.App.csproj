@@ -9,14 +9,13 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.Application\BeaversTests.Common.Application.csproj" />
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.CQRS\BeaversTests.Common.CQRS.csproj" />
-      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Extensions\BeaversTests.Extensions.csproj" />
-      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.TestDrivers\BeaversTests.TestDrivers.csproj" />
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.TestDrivers.Internal\BeaversTests.TestDrivers.Internal.csproj" />
       <ProjectReference Include="..\BeaversTests.TestsManager.Core\BeaversTests.TestsManager.Core.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper" Version="13.0.1" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.2" />
+      <PackageReference Include="AutoMapper" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" />
     </ItemGroup>
 
 </Project>

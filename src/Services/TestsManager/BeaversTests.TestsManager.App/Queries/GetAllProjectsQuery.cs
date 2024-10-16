@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.Application;
 using BeaversTests.Common.Application.Models;
 using BeaversTests.Common.CQRS.Queries;
-using BeaversTests.Extensions;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
 using FluentValidation;

@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;

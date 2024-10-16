@@ -32,7 +32,7 @@ services:
       POSTGRES_PASSWORD: "qwerty123"
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ../2. Init Database:/docker-entrypoint-initdb.d
+      - ./2. Init Database:/docker-entrypoint-initdb.d
       - tests-manager-ngp-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
@@ -50,7 +50,35 @@ services:
     networks: 
       tests-manager:
   
+  eventstore:
+    container_name: eventstore
+    image: postgres:14
+    environment:
+      POSTGRES_DB: "BeaversTests.EventStore"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "qwerty123"
+      PGDATA: "/var/lib/postgresql/eventstore-data/pgdata"
+    volumes:
+      - ./3. Init Database:/docker-entrypoint-initdb.d
+      - eventstore-ngp-data:/var/lib/postgresql/eventstore-data
+    ports:
+      - "5444:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d BeaversTests.EventStore" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+    networks:
+      eventstore-n:
+  
   beaverstests.testsmanager.api:
+    container_name: beaverstests.testsmanager.api
     image: beaverstests.testsmanager.api
     build:
       context: ../.
@@ -62,21 +90,73 @@ services:
       ASPNETCORE_HTTP_PORT: 5174
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__TestManagerNpgsql: Server=postgres.testsmanager:5432;Database=BeaversTests.TestsManager;Username=postgres;Password=qwerty123
+      ConnectionStrings__EventStoreNpgsql: Server=eventstore:5432;Database=BeaversTests.EventStore;Username=postgres;Password=qwerty123
       TestDriversDirectory: drivers
       S3__Minio__Endpoint: minio:9000
       S3__Minio__AccessKey: kirill
       S3__Minio__SecretKey: minio123
       S3__Minio__UseSSL: false
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Port: 5672
+      RabbitMQ__UserName: rmuser
+      RabbitMQ__Password: rmpassword
+      RabbitMQ__Exchange__Name: beaverstests.testsmanager
+      RabbitMQ__Retries: 10
+      RabbitMQ__RetryTimeoutMilliseconds: 10000
       Logging__LogLevel__Default: Debug
     depends_on:
       - minio
       - postgres.testsmanager
+      - eventstore
+      - rabbitmq
     networks: 
+      eventstore-n:
       tests-manager:
+      messages:
+
+  rabbitmq:
+    container_name: rabbitmq
+    image: rabbitmq:3.11-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=rmuser
+      - RABBITMQ_DEFAULT_PASS=rmpassword
+    volumes:
+      - ./rabbitmq:/var/lib/rabbitmq
+    networks: 
+      messages:
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7.2
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "kirillgroshev52@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "qwerty123"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5400:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - tests-manager
+      - eventstore-n
 
 volumes:
   tests-manager-ngp-data:
     driver: local
+  eventstore-ngp-data:
+    driver: local
+  pgadmin-data:
     
 networks:
   tests-manager:
+  messages:
+  eventstore-n:
