@@ -96,6 +96,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Client", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestDrivers", "src\Public\BeaversTests.TestDrivers\BeaversTests.TestDrivers.csproj", "{C329002A-4C94-4212-B29A-2C94C3F280B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestRunnerController.App", "src\Services\TestRunnerController\BeaversTests.TestRunnerController.App\BeaversTests.TestRunnerController.App.csproj", "{036DB9F9-9B0B-4FA7-89D5-B060D325F631}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestRunnerController.Core", "src\Services\TestRunnerController\BeaversTests.TestRunnerController.Core\BeaversTests.TestRunnerController.Core.csproj", "{9582772D-4988-49E7-B8AE-FDAE8C3ADEFD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestRunnerController.Infrastructure", "src\Services\TestRunnerController\BeaversTests.TestRunnerController.Infrastructure\BeaversTests.TestRunnerController.Infrastructure.csproj", "{2087EF7A-6CD3-403F-866D-454B33C4B82D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -144,6 +150,9 @@ Global
 		{EFDBDB82-637F-4595-9A53-8A496BEE5C93} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 		{05DAF810-C3B4-4C1F-BD23-1AF8140A3BFD} = {F5A70A64-F0ED-4C0F-935A-C996BA121CF1}
 		{C329002A-4C94-4212-B29A-2C94C3F280B5} = {F5A70A64-F0ED-4C0F-935A-C996BA121CF1}
+		{036DB9F9-9B0B-4FA7-89D5-B060D325F631} = {A0AD2A0F-3C23-4422-B0DB-6A70F3E3C091}
+		{9582772D-4988-49E7-B8AE-FDAE8C3ADEFD} = {A0AD2A0F-3C23-4422-B0DB-6A70F3E3C091}
+		{2087EF7A-6CD3-403F-866D-454B33C4B82D} = {A0AD2A0F-3C23-4422-B0DB-6A70F3E3C091}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -238,5 +247,17 @@ Global
 		{C329002A-4C94-4212-B29A-2C94C3F280B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C329002A-4C94-4212-B29A-2C94C3F280B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C329002A-4C94-4212-B29A-2C94C3F280B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{036DB9F9-9B0B-4FA7-89D5-B060D325F631}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{036DB9F9-9B0B-4FA7-89D5-B060D325F631}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{036DB9F9-9B0B-4FA7-89D5-B060D325F631}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{036DB9F9-9B0B-4FA7-89D5-B060D325F631}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9582772D-4988-49E7-B8AE-FDAE8C3ADEFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9582772D-4988-49E7-B8AE-FDAE8C3ADEFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9582772D-4988-49E7-B8AE-FDAE8C3ADEFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9582772D-4988-49E7-B8AE-FDAE8C3ADEFD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2087EF7A-6CD3-403F-866D-454B33C4B82D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2087EF7A-6CD3-403F-866D-454B33C4B82D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2087EF7A-6CD3-403F-866D-454B33C4B82D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2087EF7A-6CD3-403F-866D-454B33C4B82D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
