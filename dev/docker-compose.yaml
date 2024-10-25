@@ -35,7 +35,7 @@ services:
       - ./2. Init Database:/docker-entrypoint-initdb.d
       - tests-manager-ngp-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5445:5432"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d BeaversTests.TestsManager" ]
       interval: 10s
