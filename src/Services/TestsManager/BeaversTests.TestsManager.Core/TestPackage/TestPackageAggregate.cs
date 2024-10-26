@@ -1,6 +1,5 @@
 ﻿using BeaversTests.Common.CQRS;
 using BeaversTests.Common.CQRS.Abstractions;
-using BeaversTests.Common.CQRS.Events;
 using BeaversTests.TestsManager.Events.TestPackage;
 
 namespace BeaversTests.TestsManager.Core.TestPackage;

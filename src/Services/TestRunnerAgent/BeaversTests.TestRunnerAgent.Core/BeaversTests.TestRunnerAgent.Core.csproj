@@ -7,9 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.Application\BeaversTests.Common.Application.csproj" />
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.CQRS.Abstractions\BeaversTests.Common.CQRS.Abstractions.csproj" />
       <ProjectReference Include="..\..\..\Events\BeaversTests.TestRunnerAgent.Events\BeaversTests.TestRunnerAgent.Events.csproj" />
-      <ProjectReference Include="..\BeaversTests.TestRunnerController.Core\BeaversTests.TestRunnerController.Core.csproj" />
     </ItemGroup>
 
 </Project>

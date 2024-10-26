@@ -11,4 +11,8 @@
       <ProjectReference Include="..\BeaversTests.TestRunnerController.Infrastructure\BeaversTests.TestRunnerController.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Swashbuckle.AspNetCore" />
+    </ItemGroup>
+
 </Project>
