@@ -10,4 +10,8 @@
       <ProjectReference Include="..\BeaversTests.TestRunnerController.App\BeaversTests.TestRunnerController.App.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="DataAccess\Migrations\" />
+    </ItemGroup>
+
 </Project>
