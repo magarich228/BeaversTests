@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Api.Shared\BeaversTests.Api.Shared.csproj" />
       <ProjectReference Include="..\BeaversTests.TestRunnerController.App\BeaversTests.TestRunnerController.App.csproj" />
       <ProjectReference Include="..\BeaversTests.TestRunnerController.Infrastructure\BeaversTests.TestRunnerController.Infrastructure.csproj" />
     </ItemGroup>

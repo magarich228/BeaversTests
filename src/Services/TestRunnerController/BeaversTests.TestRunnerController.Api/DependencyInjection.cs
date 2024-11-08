@@ -1,21 +1,18 @@
 ﻿using BeaversTests.Api.Shared.Middlewares;
 using BeaversTests.Common.CQRS.Abstractions;
-using BeaversTests.TestsManager.Api.Dtos;
-using BeaversTests.TestsManager.Api.Services;
-using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestRunnerAgent.Events;
+using BeaversTests.TestRunnerController.Infrastructure.DataAccess;
 using BeaversTests.TestsManager.Events.TestPackage;
-using BeaversTests.TestsManager.Infrastructure.DataAccess;
 
-namespace BeaversTests.TestsManager.Api;
+namespace BeaversTests.TestRunnerController.Api;
 
 public static class DependencyInjection
 {
     public static IServiceCollection AddApi(this IServiceCollection services)
     {
         services.AddMediatR(conf => conf.RegisterServicesFromAssemblies(
-            typeof(TestPackageBase).Assembly,
-            typeof(TestsManagerContext).Assembly));
-        services.AddTransient<ITestPackageContentExtractor<TestPackageZipDto>, ZipTestPackageContentExtractor>();
+            typeof(BeaversTests.TestRunnerController.App.DependencyInjection).Assembly,
+            typeof(TestRunnerControllerContext).Assembly));
         
         return services;
     }
@@ -27,6 +24,8 @@ public static class DependencyInjection
         var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
 
         messageBroker.SubscribeAsync<TestPackageAddedEvent>().Wait();
+        messageBroker.SubscribeAsync<TestRunnerPreparedEvent>().Wait();
+        messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>().Wait();
         
         return app;
     }

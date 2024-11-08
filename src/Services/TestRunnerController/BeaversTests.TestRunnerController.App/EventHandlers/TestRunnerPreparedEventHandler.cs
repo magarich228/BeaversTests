@@ -1,23 +1,25 @@
 ﻿using BeaversTests.Common.CQRS.Events;
 using BeaversTests.TestRunnerAgent.Events;
+using BeaversTests.TestRunnerController.App.Abstractions;
 using BeaversTests.TestRunnerController.Core;
 
 namespace BeaversTests.TestRunnerController.App.EventHandlers;
 
-public class TestRunnerPreparedEventHandler(AgentsContext agentsContext) : IEventHandler<TestRunnerPreparedEvent>
+public class TestRunnerPreparedEventHandler(ITestRunnerControllerContext db) : IEventHandler<TestRunnerPreparedEvent>
 {
-    public Task Handle(TestRunnerPreparedEvent notification, CancellationToken cancellationToken)
+    public async Task Handle(TestRunnerPreparedEvent notification, CancellationToken cancellationToken)
     {
-        var agent = new TestAgent()
+        var testAgent = new TestAgent()
         {
             Id = notification.Id,
             Status = TestAgentStatus.Prepared
         };
 
+        var addedAgent = await db.TestAgents.AddAsync(testAgent, cancellationToken);
+        var rows = await db.SaveChangesAsync(cancellationToken);
+
         // TODO: custom exception
-        if (!agentsContext.TestAgents.TryAdd(agent.Id, agent))
-            throw new ApplicationException("Test agent already exists in controller context.");
-        
-        return Task.CompletedTask;
+        if (rows == 0)
+            throw new ApplicationException($"Failed to add test agent {addedAgent.Entity.Id} to controller context.");
     }
 }

@@ -3,5 +3,5 @@
 public class TestAgent
 {
     public Guid Id { get; init; }
-    public TestAgentStatus Status { get; init; } = TestAgentStatus.Created;
+    public TestAgentStatus Status { get; set; } = TestAgentStatus.Created;
 }

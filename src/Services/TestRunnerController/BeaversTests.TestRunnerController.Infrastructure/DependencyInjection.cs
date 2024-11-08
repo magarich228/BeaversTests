@@ -10,7 +10,7 @@ public static class DependencyInjection
 {
     private const string TestRunnerControllerNpgsqlKey = "TestRunnerControllerNpgsqlRead";
     
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddTestRunnerControllerInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString(TestRunnerControllerNpgsqlKey);
         
