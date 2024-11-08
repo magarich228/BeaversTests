@@ -23,9 +23,9 @@ public static class DependencyInjection
 
         var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
 
-        messageBroker.SubscribeAsync<TestPackageAddedEvent>().Wait();
-        messageBroker.SubscribeAsync<TestRunnerPreparedEvent>().Wait();
-        messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>().Wait();
+        messageBroker.SubscribeAsync<TestPackageAddedEvent>();
+        messageBroker.SubscribeAsync<TestRunnerPreparedEvent>();
+        messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>();
         
         return app;
     }

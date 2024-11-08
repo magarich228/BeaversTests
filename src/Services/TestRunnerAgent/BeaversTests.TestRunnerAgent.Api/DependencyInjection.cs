@@ -22,7 +22,7 @@ public static class DependencyInjection
 
         var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
 
-        // messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>().Wait();
+        // messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>();
         
         return app;
     }

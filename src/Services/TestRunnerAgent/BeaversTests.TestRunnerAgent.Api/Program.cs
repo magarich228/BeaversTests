@@ -41,8 +41,7 @@ void OnStopping()
 
     eventStore.AppendEventAsync<TestRunnerAggregate>(
         TestRunnerContext.Id,
-        finalizedEvent)
-        .Wait();
+        finalizedEvent);
 }
 
 void OnStarted()
@@ -59,7 +58,7 @@ void OnStarted()
     
     testRunnerAggregate.ApplyPrepared(preparedEvent);
 
-    eventStore.StoreAsync(testRunnerAggregate).Wait();
+    eventStore.StoreAsync(testRunnerAggregate);
 }
 
 // TODO: подумать над окружениями для тестов в агенте
