@@ -125,7 +125,7 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
     // TODO: Перенести в общую сборку.
     private string GetExchangeName(Type type)
     {
-        return $"{type.Name}"
+        return $"{type.Namespace}{type.Name}"
             .Replace('+', '.')
             .ToLowerInvariant();
     }

@@ -1,25 +1,18 @@
-﻿using BeaversTests.Common.CQRS.Events;
+﻿using BeaversTests.Common.CQRS.Abstractions;
+using BeaversTests.Common.CQRS.Events;
 using BeaversTests.TestRunnerAgent.Events;
-using BeaversTests.TestRunnerController.App.Abstractions;
-using BeaversTests.TestRunnerController.Core;
 
 namespace BeaversTests.TestRunnerController.App.EventHandlers;
 
-public class TestRunnerPreparedEventHandler(ITestRunnerControllerContext db) : IEventHandler<TestRunnerPreparedEvent>
+public class TestRunnerPreparedEventHandler(IEventBus eventBus) : IEventHandler<TestRunnerPreparedEvent>
 {
     public async Task Handle(TestRunnerPreparedEvent notification, CancellationToken cancellationToken)
     {
-        var testAgent = new TestAgent()
+        await eventBus.CommitLocalAsync(
+            cancellationToken, 
+            new BeaversTests.TestRunnerController.Events.TestRunnerPreparedEvent()
         {
-            Id = notification.Id,
-            Status = TestAgentStatus.Prepared
-        };
-
-        var addedAgent = await db.TestAgents.AddAsync(testAgent, cancellationToken);
-        var rows = await db.SaveChangesAsync(cancellationToken);
-
-        // TODO: custom exception
-        if (rows == 0)
-            throw new ApplicationException($"Failed to add test agent {addedAgent.Entity.Id} to controller context.");
+            Id = notification.Id
+        });
     }
 }

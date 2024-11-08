@@ -75,7 +75,7 @@ public class RabbitMqService : IMessageBroker
             var deserializedEvent = JsonConvert.DeserializeObject(message, type) as IEvent
                                     ?? throw new ApplicationException($"Can't deserialize event: {message}");
 
-            await eventBus.PullAsync(cancellationToken, deserializedEvent);
+            await eventBus.CommitLocalAsync(cancellationToken, deserializedEvent);
         };
 
         _logger.LogDebug($"Subscribed to exchange: {exchangeName} with queue: {queueDeclareOk.QueueName}");
@@ -131,7 +131,7 @@ public class RabbitMqService : IMessageBroker
     // TODO: Перенести в общую сборку.
     private string GetExchangeName(Type type)
     {
-        return $"{type.Name}"
+        return $"{type.Namespace}{type.Name}"
             .Replace('+', '.')
             .ToLowerInvariant();
     }
