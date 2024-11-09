@@ -12,7 +12,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddCqrs(configuration);
+        services.AddCqrsCore(configuration);
         
         var executingAssembly = Assembly.GetExecutingAssembly();
         

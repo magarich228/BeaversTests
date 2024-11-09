@@ -33,32 +33,27 @@ void OnStopping()
 {
     using var scope = app.Services.CreateScope();
     
-    var eventStore = scope.ServiceProvider.GetRequiredService<IEventStore>();
+    var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
     var finalizedEvent = new TestRunnerFinalizedEvent()
     {
         Id = TestRunnerContext.Id
     };
 
-    eventStore.AppendEventAsync<TestRunnerAggregate>(
-        TestRunnerContext.Id,
-        finalizedEvent);
+    eventBus.CommitAsync(default, finalizedEvent);
 }
 
 void OnStarted()
 {
     using var scope = app.Services.CreateScope();
     
-    var eventStore = scope.ServiceProvider.GetRequiredService<IEventStore>();
+    var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
 
-    var testRunnerAggregate = new TestRunnerAggregate();
     var preparedEvent = new TestRunnerPreparedEvent()
     {
         Id = TestRunnerContext.Id
     }; // createdEvent?
     
-    testRunnerAggregate.ApplyPrepared(preparedEvent);
-
-    eventStore.StoreAsync(testRunnerAggregate);
+    eventBus.CommitAsync(default, preparedEvent);
 }
 
 // TODO: подумать над окружениями для тестов в агенте

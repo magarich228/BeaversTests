@@ -17,9 +17,16 @@ public static class DependencyInjection
     
     public static IServiceCollection AddCqrs(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddMessageBroker(configuration)
-            .AddCqrsBusses()
+        services.AddCqrsCore(configuration)
             .AddEventStore(configuration);
+
+        return services;
+    }
+
+    public static IServiceCollection AddCqrsCore(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMessageBroker(configuration)
+            .AddCqrsBusses();
 
         return services;
     }

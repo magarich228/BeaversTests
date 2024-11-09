@@ -19,10 +19,6 @@ public static class DependencyInjection
     public static IApplicationBuilder UseApi(this IApplicationBuilder app)
     {
         app.UseMiddleware<ValidationErrorMiddleware>();
-
-        var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
-
-        // messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>();
         
         return app;
     }
