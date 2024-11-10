@@ -8,6 +8,7 @@ public class TestRunnerFinalizedEventHandler(IEventBus eventBus) : IEventHandler
 {
     public async Task Handle(TestRunnerFinalizedEvent notification, CancellationToken cancellationToken)
     {
+        // TODO: EventStore.StoreAndLocalCommit
         await eventBus.CommitLocalAsync(
             cancellationToken, 
             new BeaversTests.TestRunnerController.Events.TestRunnerFinalizedEvent()
