@@ -9,7 +9,7 @@ public class TestRunnerControllerContext(DbContextOptions<TestRunnerControllerCo
     DbContext(options), 
     ITestRunnerControllerContext
 {
-    public DbSet<TestAgent> TestAgents { get; } = null!;
+    public DbSet<TestAgent> TestAgents { get; init; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

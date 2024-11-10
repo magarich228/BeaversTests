@@ -46,15 +46,21 @@ public class RabbitMqService : IMessageBroker
 
         channel.ExchangeDeclare(
             exchange: exchangeName,
-            type: ExchangeType.Fanout);
+            type: ExchangeType.Fanout,
+            durable: true,
+            autoDelete: false);
 
-        var queueDeclareOk = channel.QueueDeclare();
+        var queueDeclareOk = channel.QueueDeclare(
+            queue: exchangeName,
+            exclusive: false, 
+            autoDelete: false, 
+            durable: true);
 
         _logger.LogInformation($"Exchange {exchangeName} with queue {queueDeclareOk.QueueName} declared.");
 
         channel.QueueBind(
             queue: queueDeclareOk.QueueName,
-            exchange:exchangeName,
+            exchange: exchangeName,
             routingKey: string.Empty);
 
         var consumer = new EventingBasicConsumer(channel);
@@ -101,7 +107,7 @@ public class RabbitMqService : IMessageBroker
         where TEvent : IEvent
     {
         var message = JsonConvert.SerializeObject(@event);
-        var type = GetExchangeName(typeof(TEvent));
+        var type = GetExchangeName(@event.GetType());
 
         await PublishAsync(message, type, cancellationToken);
     }
@@ -110,10 +116,6 @@ public class RabbitMqService : IMessageBroker
     {
         using var connection = _factory.CreateConnection();
         using var channel = connection.CreateModel();
-
-        channel.ExchangeDeclare(
-            type,
-            ExchangeType.Fanout);
 
         var body = Encoding.UTF8.GetBytes(message);
 
