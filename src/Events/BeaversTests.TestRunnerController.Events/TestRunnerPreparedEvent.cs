@@ -4,5 +4,5 @@ namespace BeaversTests.TestRunnerController.Events;
 
 public class TestRunnerPreparedEvent : IEvent
 {
-    public Guid Id { get; init; }
+    public required Guid Id { get; init; }
 }

@@ -4,5 +4,5 @@ namespace BeaversTests.TestRunnerAgent.Events;
 
 public class TestRunnerFinalizedEvent : IEvent
 {
-    public Guid Id { get; init; }
+    public required Guid Id { get; init; }
 }

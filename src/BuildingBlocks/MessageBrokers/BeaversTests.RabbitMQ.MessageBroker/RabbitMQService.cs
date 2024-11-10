@@ -44,6 +44,7 @@ public class RabbitMqService : IMessageBroker
 
         var exchangeName = GetExchangeName(type);
 
+        // TODO: PassiveDeclare?
         channel.ExchangeDeclare(
             exchange: exchangeName,
             type: ExchangeType.Fanout,
