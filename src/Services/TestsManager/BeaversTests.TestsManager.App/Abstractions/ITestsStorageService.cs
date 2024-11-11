@@ -4,10 +4,6 @@ namespace BeaversTests.TestsManager.App.Abstractions;
 
 public interface ITestsStorageService
 {
-    public Task<IDictionary<string, byte[]>> GetTestPackageAsync(
-        Guid testPackageId,
-        CancellationToken cancellationToken = default);
-    
     public Task AddTestPackageAsync(
         Guid testPackageId, 
         TestPackageContent testPackageContent,

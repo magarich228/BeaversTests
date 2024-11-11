@@ -15,13 +15,6 @@ public class TestsStorageService(
     ILogger<TestsStorageService> logger) : ITestsStorageService
 {
     private const string TestPackageItemContentType = "application/octet-stream";
-
-    public async Task<IDictionary<string, byte[]>> GetTestPackageAsync(
-        Guid testPackageId,
-        CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
     
     public async Task AddTestPackageAsync(
         Guid testPackageId,
