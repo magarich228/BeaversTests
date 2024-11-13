@@ -1,5 +1,5 @@
 ﻿using BeaversTests.Common.CQRS.Abstractions;
-using BeaversTests.TestRunnerAgent.Events;
+using BeaversTests.TestRunnerController.Events;
 
 namespace BeaversTests.TestRunnerController.Core;
 
@@ -10,6 +10,7 @@ public class TestAgentAggregate : Aggregate
     [EventApplier]
     public void ApplyPrepared(TestRunnerPreparedEvent @event)
     {
+        Id = @event.Id;
         Status = TestAgentStatus.Prepared;
         
         base.Enqueue(@event);
@@ -18,6 +19,7 @@ public class TestAgentAggregate : Aggregate
     [EventApplier]
     public void ApplyFinalized(TestRunnerFinalizedEvent @event)
     {
+        Id = @event.Id;
         Status = TestAgentStatus.Finalized;
         
         base.Enqueue(@event);

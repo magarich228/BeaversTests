@@ -26,6 +26,8 @@ public static class DependencyInjection
         messageBroker.SubscribeAsync<TestPackageAddedEvent>();
         messageBroker.SubscribeAsync<TestRunnerPreparedEvent>();
         messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>();
+        messageBroker.SubscribeAsync<Events.TestRunnerPreparedEvent>();
+        messageBroker.SubscribeAsync<Events.TestRunnerFinalizedEvent>();
         
         return app;
     }

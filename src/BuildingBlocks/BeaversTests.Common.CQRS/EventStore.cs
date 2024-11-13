@@ -60,6 +60,7 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         {
             // TODO: custom exception
             // TODO: вынести сериализация, десериализация в общее
+            // TODO: Пофиксить ошибку десериализации
             var eventData = JsonConvert.DeserializeObject<IEvent>(@event.Data) ??
                             throw new ApplicationException();
             

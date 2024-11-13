@@ -7,8 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace BeaversTests.TestRunnerController.App.EventHandlers;
 
 public class TestRunnerPreparedEventHandler(
-    // IStore store,
-    IEventBus eventBus,
+    IEventStore eventStore,
     ILogger<TestRunnerPreparedEventHandler> logger) 
     : IEventHandler<TestRunnerPreparedEvent>
 {
@@ -16,22 +15,12 @@ public class TestRunnerPreparedEventHandler(
     {
         logger.LogInformation("TestRunnerPreparedEventHandler: handled {Notification}", notification.Id);
         
-        // var agentAggregate = new TestAgentAggregate();
-        // agentAggregate.ApplyPrepared(notification);
-
-        // await store.AddAsync(new StreamState()
-        // {
-        //     AggregateId = notification.Id,
-        //     
-        // }, cancellationToken);
-        
-        // TODO: EventStore.StoreAndLocalCommit
-        
-        await eventBus.CommitLocalAsync(
-            cancellationToken, 
-            new BeaversTests.TestRunnerController.Events.TestRunnerPreparedEvent()
+        var agentAggregate = new TestAgentAggregate();
+        agentAggregate.ApplyPrepared(new Events.TestRunnerPreparedEvent()
         {
             Id = notification.Id
         });
+
+        await eventStore.StoreAsync(agentAggregate, cancellationToken);
     }
 }
