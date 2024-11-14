@@ -29,6 +29,8 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
                 // TODO: custom exception
                 throw new Exception($"Version '{expectedVersion.Value}' already exists for stream '{aggregateId}'");
             }
+            
+            version = expectedVersion.Value;
         }
         else
         {
@@ -59,16 +61,17 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         foreach (var @event in events)
         {
             // TODO: custom exception
-            // TODO: вынести сериализация, десериализация в общее
-            // TODO: Пофиксить ошибку десериализации
-            var eventData = JsonConvert.DeserializeObject<IEvent>(@event.Data) ??
+            // TODO: вынести сериализацию, десериализацию в общее
+            var eventType = aggregate.GetAppliedEventType(@event.Type);
+            var eventData = (IEvent?)JsonConvert.DeserializeObject(@event.Data, eventType) ??
                             throw new ApplicationException();
             
             aggregate.Apply(eventData);
-            aggregate.Version += 1;
             aggregate.CreatedUtc = @event.CreatedUtc;
         }
 
+        _ = aggregate.DequeueUncommittedEvents();
+        
         return (TAggregate)aggregate;
     }
 
@@ -123,11 +126,8 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         return await store.GetEventsAsync(info, cancellationToken);
     }
     
-    // TODO: Перенести в общую сборку.
     private string GetExchangeName(Type type)
     {
-        return $"{type.Namespace}{type.Name}"
-            .Replace('+', '.')
-            .ToLowerInvariant();
+        return type.GetTypeName();
     }
 }

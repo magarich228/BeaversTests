@@ -130,13 +130,10 @@ public class RabbitMqService : IMessageBroker
 
         return Task.CompletedTask;
     }
-
-    // TODO: Перенести в общую сборку.
+    
     private string GetExchangeName(Type type)
     {
-        return $"{type.Namespace}{type.Name}"
-            .Replace('+', '.')
-            .ToLowerInvariant();
+        return type.GetTypeName();
     }
 
     ~RabbitMqService()
