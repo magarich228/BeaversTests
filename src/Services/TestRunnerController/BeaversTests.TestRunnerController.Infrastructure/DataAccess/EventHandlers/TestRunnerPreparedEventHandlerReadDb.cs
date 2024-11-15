@@ -2,13 +2,18 @@
 using BeaversTests.TestRunnerController.App.Abstractions;
 using BeaversTests.TestRunnerController.Core;
 using BeaversTests.TestRunnerController.Events;
+using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestRunnerController.Infrastructure.DataAccess.EventHandlers;
 
-public class TestRunnerPreparedEventHandlerReadDb(ITestRunnerControllerContext db) : IEventHandler<TestRunnerPreparedEvent>
+public class TestRunnerPreparedEventHandlerReadDb(
+    ITestRunnerControllerContext db,
+    ILogger<TestRunnerPreparedEventHandlerReadDb> logger) : IEventHandler<TestRunnerPreparedEvent>
 {
     public async Task Handle(TestRunnerPreparedEvent notification, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Test agent {Notification} prepared event has been received.", notification.Id);
+        
         var testAgent = new TestAgent()
         {
             Id = notification.Id,

@@ -2,6 +2,7 @@
 using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.TestRunnerAgent.Events;
 using BeaversTests.TestRunnerAgent.Infrastructure.S3Access.Minio;
+using BeaversTests.TestRunnerController.Events;
 
 namespace BeaversTests.TestRunnerAgent.Api;
 
@@ -19,6 +20,10 @@ public static class DependencyInjection
     public static IApplicationBuilder UseApi(this IApplicationBuilder app)
     {
         app.UseMiddleware<ValidationErrorMiddleware>();
+        
+        var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
+
+        messageBroker.SubscribeAsync<TestPackageValidationTaskEvent>();
         
         return app;
     }

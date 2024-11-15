@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BeaversTests.Common.CQRS;
+using BeaversTests.TestRunnerController.Core;
 using MediatR.Extensions.FluentValidation.AspNetCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,8 @@ public static class DependencyInjection
         services.AddFluentValidation(new []{ executingAssembly });
 
         services.AddAutoMapper(conf => conf.AddMaps(executingAssembly));
+
+        services.AddScoped<ITestAgentsPool, TestAgentsPool>();
         
         return services;
     }

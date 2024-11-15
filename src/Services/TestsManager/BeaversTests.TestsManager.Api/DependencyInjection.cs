@@ -1,5 +1,6 @@
 ﻿using BeaversTests.Api.Shared.Middlewares;
 using BeaversTests.Common.CQRS.Abstractions;
+using BeaversTests.TestRunnerController.Events;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.Api.Services;
 using BeaversTests.TestsManager.App.Abstractions;
@@ -27,6 +28,8 @@ public static class DependencyInjection
         var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
 
         messageBroker.SubscribeAsync<TestPackageAddedEvent>();
+        messageBroker.SubscribeAsync<TestPackageValidationStatusEvent>();
+        messageBroker.SubscribeAsync<TestPackageValidationIsNotPossibleEvent>();
         
         return app;
     }

@@ -30,7 +30,17 @@ public class TestPackageConfiguration : IEntityTypeConfiguration<BeaversTestPack
         builder.Property(t => t.TestProjectId)
             .IsRequired();
 
-        // On delete?
+        builder.Property(t => t.ValidationStatus)
+            .IsRequired()
+            .HasConversion(
+                t => t.ToString(),
+                t => Enum.Parse<TestPackageValidationResult>(t));
+        
+        builder.Property(t => t.ValidationMessage)
+            .HasDefaultValue(string.Empty)
+            .HasMaxLength(1000);
+
+        // TODO: On delete?
         builder.HasOne<TestDriver>(t => t.TestDriver)
             .WithMany(d => d.TestPackages);
         
