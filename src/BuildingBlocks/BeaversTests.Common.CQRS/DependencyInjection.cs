@@ -42,9 +42,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddEventStore(this IServiceCollection services, IConfiguration configuration)
     {
-        // TODO: custom exception
         var eventStoreType = configuration[EventStoreTypeConfigurationKey] ??
-                             throw new ApplicationException("EventStoreType is not set in configuration.");
+                             throw new CqrsInfrastructureException("EventStoreType is not set in configuration.");
 
         switch (eventStoreType)
         {
@@ -63,9 +62,8 @@ public static class DependencyInjection
 
     private static IServiceCollection AddMessageBroker(this IServiceCollection services, IConfiguration configuration)
     {
-        // TODO: custom exception
         var messageBrokerType = configuration[MessageBrokerTypeConfigurationKey] ??
-                                throw new ApplicationException("MessageBrokerType is not set in configuration.");
+                                throw new CqrsInfrastructureException("MessageBrokerType is not set in configuration.");
 
         return messageBrokerType switch
         {

@@ -43,8 +43,7 @@ public class RabbitMqService : IMessageBroker
         var channel = connection.CreateModel();
 
         var exchangeName = GetExchangeName(type);
-
-        // TODO: PassiveDeclare?
+        
         channel.ExchangeDeclare(
             exchange: exchangeName,
             type: ExchangeType.Fanout,
@@ -77,10 +76,9 @@ public class RabbitMqService : IMessageBroker
 
             var body = @event.Body.ToArray();
             var message = Encoding.UTF8.GetString(body);
-
-            // TODO: add custom exception, logging
+            
             var deserializedEvent = JsonConvert.DeserializeObject(message, type) as IEvent
-                                    ?? throw new ApplicationException($"Can't deserialize event: {message}");
+                                    ?? throw new RabbitMqException($"Can't deserialize event: {message}");
 
             await eventBus.CommitLocalAsync(cancellationToken, deserializedEvent);
         };
