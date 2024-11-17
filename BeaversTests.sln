@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solutionItems", "solutionIt
 		README.md = README.md
 		Directory.Packages.props = Directory.Packages.props
 		global.json = global.json
+		.drone.yml = .drone.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Clients", "Clients", "{365B84E8-8AEA-4049-B01A-213EE141346B}"
