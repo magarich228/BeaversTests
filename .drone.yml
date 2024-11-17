@@ -7,13 +7,30 @@ steps:
     commands:
       - dotnet restore
       - dotnet build --configuration Release
+    when:
+      branch:
+        - prod
+      event:
+        - push
+        - pull_request
 
   - name: test
     image: mcr.microsoft.com/dotnet/sdk:8.0
     commands:
       - dotnet test --configuration Release --no-build --verbosity normal
+    when:
+      branch:
+        - prod
+      event:
+        - push
+        - pull_request
 
   - name: publish
     image: mcr.microsoft.com/dotnet/sdk:8.0
     commands:
       - dotnet publish --configuration Release --output ./publish
+    when:
+      branch:
+        - prod
+      event:
+        - push
