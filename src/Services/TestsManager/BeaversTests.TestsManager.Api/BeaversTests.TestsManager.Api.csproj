@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Api.Shared\BeaversTests.Api.Shared.csproj" />
       <ProjectReference Include="..\BeaversTests.TestsManager.App\BeaversTests.TestsManager.App.csproj" />
       <ProjectReference Include="..\BeaversTests.TestsManager.Infrastructure\BeaversTests.TestsManager.Infrastructure.csproj" />
     </ItemGroup>
@@ -17,7 +18,6 @@
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
-      <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 
     <ItemGroup>

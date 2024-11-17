@@ -9,7 +9,7 @@ public class EventBus(
     IMessageBroker messageBroker,
     ILogger<EventBus> logger) : IEventBus
 {
-    public virtual async Task PullAsync(CancellationToken cancellationToken = default, params IEvent[] events)
+    public virtual async Task CommitLocalAsync(CancellationToken cancellationToken = default, params IEvent[] events)
     {
         foreach (var @event in events)
         {

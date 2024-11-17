@@ -18,5 +18,12 @@ public class TestDriverConfiguration : IEntityTypeConfiguration<TestDriver>
 
         builder.Property(d => d.Description)
             .HasMaxLength(250);
+
+        // TODO: Temp
+        builder.HasData(new TestDriver()
+        {
+            Key = "NUnit",
+            IsDefault = true
+        });
     }
 }

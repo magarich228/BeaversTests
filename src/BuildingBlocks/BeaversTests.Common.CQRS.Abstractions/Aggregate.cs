@@ -25,30 +25,33 @@ public abstract class Aggregate
 
     protected internal void Apply<TEvent>(TEvent @event) where TEvent : IEvent
     {
-        var aggregateType = GetType();
         var eventType = @event.GetType();
-        
-        var appliers = aggregateType
-            .GetMethods(BindingFlags.Instance)
-            .Where(m => m.GetCustomAttribute(EventApplierAttributeType) is not null);
+
+        var appliers = GetAggregateAppliers();
 
         var applier = appliers.FirstOrDefault(a =>
         {
-            var parameter = a.GetParameters()
-                .SingleOrDefault();
-
-            if (parameter == null ||
-                !parameter.ParameterType.IsAssignableTo(EventInterfaceType))
-            {
-                throw new InvalidOperationException(
-                    "Event applier method parameter must be one and have the event type");
-            }
+            var parameter = GetApplierEvent(a);
             
             return parameter.ParameterType == eventType;
         }) ?? throw new InvalidOperationException(
-            $"Aggregate {aggregateType} event applier for {eventType} not found");
+            $"Aggregate {GetType()} event applier for {eventType} not found");
 
         applier.Invoke(this, [ @event ]);
+    }
+
+    protected internal Type GetAppliedEventType(string eventTypeData)
+    {
+        var appliers = GetAggregateAppliers();
+
+        var applier = appliers.FirstOrDefault(a =>
+        {
+            var parameter = GetApplierEvent(a);
+            
+            return parameter.ParameterType.GetTypeName() == eventTypeData;
+        }) ?? throw new InvalidOperationException("Event type not found.");
+
+        return GetApplierEvent(applier).ParameterType;
     }
 
     protected virtual void Enqueue(IEvent @event)
@@ -59,4 +62,30 @@ public abstract class Aggregate
     }
 
     protected internal abstract Aggregate Empty();
+
+    private IEnumerable<MethodInfo> GetAggregateAppliers()
+    {
+        var aggregateType = GetType();
+
+        var appliers = aggregateType
+            .GetMethods()
+            .Where(m => m.GetCustomAttribute(EventApplierAttributeType) is not null);
+
+        return appliers;
+    }
+
+    private ParameterInfo GetApplierEvent(MethodInfo applier)
+    {
+        var parameter = applier.GetParameters()
+            .SingleOrDefault();
+
+        if (parameter == null ||
+            !parameter.ParameterType.IsAssignableTo(EventInterfaceType))
+        {
+            throw new InvalidOperationException(
+                "Event applier method parameter must be one and have the event type");
+        }
+
+        return parameter;
+    }
 }

@@ -6,4 +6,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Api.Shared\BeaversTests.Api.Shared.csproj" />
+      <ProjectReference Include="..\BeaversTests.TestRunnerAgent.App\BeaversTests.TestRunnerAgent.App.csproj" />
+      <ProjectReference Include="..\BeaversTests.TestRunnerAgent.Infrastructure\BeaversTests.TestRunnerAgent.Infrastructure.csproj" />
+    </ItemGroup>
+
 </Project>

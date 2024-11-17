@@ -1,6 +1,6 @@
-﻿using BeaversTests.Common.CQRS.Abstractions;
+﻿using BeaversTests.Api.Shared.Middlewares;
+using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.TestsManager.Api.Dtos;
-using BeaversTests.TestsManager.Api.Middlewares;
 using BeaversTests.TestsManager.Api.Services;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Events.TestPackage;

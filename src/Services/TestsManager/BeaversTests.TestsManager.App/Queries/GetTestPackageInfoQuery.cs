@@ -43,86 +43,87 @@ public abstract class GetTestPackageInfoQuery
     {
         public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
         {
-            var testPackageId = request.TestPackageId;
-
-            var testPackage = await db.TestPackages.FirstOrDefaultAsync(
-                t => t.Id == testPackageId,
-                cancellationToken);
-
-            if (testPackage is null)
-            {
-                return new Result();
-            }
-
-            var testPackageItems = await testsStorageService.GetTestPackageAsync(testPackageId, cancellationToken);
-
-            var testsExplorer = testDriversResolver.ResolveTestsExplorer(testPackage.TestDriverKey);
-
-            // TODO: Временное решение, перенести в создание пакета
-            // TODO: Освобождать файлы с тестами
-            var tempDirectory = new DirectoryInfo(Path.GetTempPath());
-            var testPackageDirectory = tempDirectory.CreateSubdirectory(testPackageId.ToString());
-
-            List<TestPackageTestSuiteDto> resultTestSuites = new();
-
-            foreach (var testPackageItemPath in testPackageItems.Keys)
-            {
-                var testPackageItemFullName = Path.Combine(testPackageDirectory.FullName, testPackageItemPath);
-                var fileInfo = new FileInfo(testPackageItemFullName);
-                
-                if (!(fileInfo.Directory?.Exists ?? false))
-                {
-                    fileInfo.Directory?.Create();
-                }
-                
-                await using (var file =
-                    File.Create(testPackageItemFullName))
-                await using (var ms = new MemoryStream(testPackageItems[testPackageItemPath]))
-                {
-                    await ms.CopyToAsync(file, cancellationToken);
-                    await ms.FlushAsync(cancellationToken);
-                    await file.FlushAsync(cancellationToken);
-                }
-
-                IEnumerable<TestSuite> testSuites = null!;
-
-                try
-                {
-                    testSuites = testsExplorer
-                        .GetTestSuites(testPackageItemFullName);
-                }
-                catch (Exception exception)
-                {
-                    logger.LogInformation($"Missing test detection in the file ({testPackageItemFullName}) due to: {exception}", testPackageItemFullName, exception);
-                    continue;
-                }
-                
-                var testSuitesDtos = testSuites
-                    .Select(s => new TestPackageTestSuiteDto
-                    {
-                        Name = s.Name,
-                        Tests = s.Tests.Select(t => new TestPackageTestDto
-                        {
-                            Name = t.Name
-                        })
-                    }).ToList();
-
-                if (testSuitesDtos.Any())
-                {
-                    logger.LogDebug("{File} Test suites found: {TestSuitesCount}", testPackageItemFullName, testSuitesDtos.Count);
-                }
-                
-                resultTestSuites.AddRange(testSuitesDtos);
-            }
-
-            return new Result
-            {
-                TestPackageItemsInfo = new TestPackageItemsInfoDto
-                {
-                    TestPackageId = testPackageId,
-                    TestSuites = resultTestSuites
-                }
-            };
+            // var testPackageId = request.TestPackageId;
+            //
+            // var testPackage = await db.TestPackages.FirstOrDefaultAsync(
+            //     t => t.Id == testPackageId,
+            //     cancellationToken);
+            //
+            // if (testPackage is null)
+            // {
+            //     return new Result();
+            // }
+            //
+            // var testPackageItems = await testsStorageService.GetTestPackageAsync(testPackageId, cancellationToken);
+            //
+            // var testsExplorer = testDriversResolver.ResolveTestsExplorer(testPackage.TestDriverKey);
+            //
+            // // TODO: Временное решение, перенести в создание пакета
+            // // TODO: Освобождать файлы с тестами
+            // var tempDirectory = new DirectoryInfo(Path.GetTempPath());
+            // var testPackageDirectory = tempDirectory.CreateSubdirectory(testPackageId.ToString());
+            //
+            // List<TestPackageTestSuiteDto> resultTestSuites = new();
+            //
+            // foreach (var testPackageItemPath in testPackageItems.Keys)
+            // {
+            //     var testPackageItemFullName = Path.Combine(testPackageDirectory.FullName, testPackageItemPath);
+            //     var fileInfo = new FileInfo(testPackageItemFullName);
+            //     
+            //     if (!(fileInfo.Directory?.Exists ?? false))
+            //     {
+            //         fileInfo.Directory?.Create();
+            //     }
+            //     
+            //     await using (var file =
+            //         File.Create(testPackageItemFullName))
+            //     await using (var ms = new MemoryStream(testPackageItems[testPackageItemPath]))
+            //     {
+            //         await ms.CopyToAsync(file, cancellationToken);
+            //         await ms.FlushAsync(cancellationToken);
+            //         await file.FlushAsync(cancellationToken);
+            //     }
+            //
+            //     IEnumerable<TestSuite> testSuites = null!;
+            //
+            //     try
+            //     {
+            //         testSuites = testsExplorer
+            //             .GetTestSuites(testPackageItemFullName);
+            //     }
+            //     catch (Exception exception)
+            //     {
+            //         logger.LogInformation($"Missing test detection in the file ({testPackageItemFullName}) due to: {exception}", testPackageItemFullName, exception);
+            //         continue;
+            //     }
+            //     
+            //     var testSuitesDtos = testSuites
+            //         .Select(s => new TestPackageTestSuiteDto
+            //         {
+            //             Name = s.Name,
+            //             Tests = s.Tests.Select(t => new TestPackageTestDto
+            //             {
+            //                 Name = t.Name
+            //             })
+            //         }).ToList();
+            //
+            //     if (testSuitesDtos.Any())
+            //     {
+            //         logger.LogDebug("{File} Test suites found: {TestSuitesCount}", testPackageItemFullName, testSuitesDtos.Count);
+            //     }
+            //     
+            //     resultTestSuites.AddRange(testSuitesDtos);
+            // }
+            //
+            // return new Result
+            // {
+            //     TestPackageItemsInfo = new TestPackageItemsInfoDto
+            //     {
+            //         TestPackageId = testPackageId,
+            //         TestSuites = resultTestSuites
+            //     }
+            // };
+            throw new NotImplementedException();
         }
     }
 }

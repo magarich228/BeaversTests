@@ -1,4 +1,6 @@
-﻿namespace BeaversTests.TestsManager.Api.Middlewares;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace BeaversTests.Api.Shared.Middlewares;
 
 public class ValidationErrorMiddleware(RequestDelegate next)
 {
