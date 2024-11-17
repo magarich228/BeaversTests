@@ -1,2 +1,2 @@
 # BeaversTests
-A test management system for .net
+A test management system for .net.
