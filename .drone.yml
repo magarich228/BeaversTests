@@ -1,13 +1,6 @@
 kind: pipeline
 name: default
 
-when:
-  branch:
-    - prod
-  event:
-    - push
-    - pull_request
-
 steps:
   - name: build
     image: mcr.microsoft.com/dotnet/sdk:8.0
@@ -24,3 +17,10 @@ steps:
     image: mcr.microsoft.com/dotnet/sdk:8.0
     commands:
       - dotnet publish --configuration Release --output ./publish
+
+trigger:
+  branch:
+  - prod
+  event:
+  - pull_request
+  - push
