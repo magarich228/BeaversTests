@@ -106,9 +106,12 @@ public class TestDriversRegistry
             throw new ApplicationException(
                 "The mandatory test driver directory parameter is not provided from the configuration"); // TODO: add custom exception
 
-        var driverFiles = GetDriverFiles(driversDirectory);
+        foreach (var driverDirectory in driversDirectory.EnumerateDirectories())
+        {
+            var driverFiles = GetDriverFiles(driverDirectory);
         
-        RegisterDriver(driverFiles);
+            RegisterDriver(driverFiles);
+        }
     }
 
     private Configuration GetDriversConfiguration(IConfiguration configuration)
