@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
-using BeaversTests.Common.CQRS;
 using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.App.Dtos.TestPackage;
 using BeaversTests.TestsManager.Core.TestPackage;
 using BeaversTests.TestsManager.Events.TestPackage;
 using FluentValidation;
@@ -94,7 +94,7 @@ public abstract class AddTestPackageCommand
 
         private async Task<bool> IsContentDirectoryValidAsync(
             ContentValidationContext context,
-            NewTestPackageDirectoryInfo directory,
+            BeaversTestsDirectoryInfo directory,
             CancellationToken cancellationToken = default) =>
              (await context.DirectoryValidator.ValidateAsync(directory, cancellationToken)).IsValid &&
                    await IsContentFilesValidAsync(context, directory.TestFiles, cancellationToken) &&
@@ -104,12 +104,12 @@ public abstract class AddTestPackageCommand
 
         private Task<bool> IsContentFilesValidAsync(
             ContentValidationContext context,
-            IEnumerable<NewTestPackageFileInfo> files,
+            IEnumerable<BeaversTestsFileInfo> files,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(files.All(f => context.FileValidator.ValidateAsync(f, cancellationToken).Result.IsValid));
 
 
-        private class FileValidator : AbstractValidator<NewTestPackageFileInfo>
+        private class FileValidator : AbstractValidator<BeaversTestsFileInfo>
         {
             private const string TestPackageMaxFileMbSizeConfigurationKey = "TestPackageMaxFileMbSize";
             
@@ -130,7 +130,7 @@ public abstract class AddTestPackageCommand
             }
         }
 
-        private class DirectoryValidator : AbstractValidator<NewTestPackageDirectoryInfo>
+        private class DirectoryValidator : AbstractValidator<BeaversTestsDirectoryInfo>
         {
             public DirectoryValidator()
             {

@@ -2,6 +2,7 @@
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.App.Dtos.TestProject;
 using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.TestProject;
 using FluentValidation;

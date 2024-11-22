@@ -1,4 +1,5 @@
 ﻿using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.App.Dtos.TestPackage;
 
 namespace BeaversTests.TestsManager.App.Abstractions;
 

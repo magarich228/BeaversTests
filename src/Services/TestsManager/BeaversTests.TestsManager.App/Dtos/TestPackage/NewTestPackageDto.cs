@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.TestsManager.App.Dtos;
+﻿namespace BeaversTests.TestsManager.App.Dtos.TestPackage;
 
 public class NewTestPackageDto
 {
@@ -9,8 +9,4 @@ public class NewTestPackageDto
     public required Guid TestProjectId { get; init; }
 }
 
-public class NewTestPackageContentDto
-{
-    public required IEnumerable<NewTestPackageFileInfo> TestFiles { get; init; }
-    public required IEnumerable<NewTestPackageDirectoryInfo> Directories { get; init; }
-}
+public class NewTestPackageContentDto : EntityContentDto { }

@@ -2,6 +2,7 @@
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.App.Dtos.TestPackage;
 using BeaversTests.TestsManager.App.Exceptions;
 
 namespace BeaversTests.TestsManager.Api.Services;
@@ -49,11 +50,11 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
             
         if (IsDirectory(entry))
         {
-            var directory = new NewTestPackageDirectoryInfo()
+            var directory = new BeaversTestsDirectoryInfo()
             {
                 DirectoryName = GetDirectoryName(entry),
-                Directories = new List<NewTestPackageDirectoryInfo>(),
-                TestFiles = new List<NewTestPackageFileInfo>()
+                Directories = new List<BeaversTestsDirectoryInfo>(),
+                TestFiles = new List<BeaversTestsFileInfo>()
             };
             
             context.AddDirectory(directory, entry.FullName);
@@ -79,7 +80,7 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
         
         ms.Flush();
         
-        var file = new NewTestPackageFileInfo()
+        var file = new BeaversTestsFileInfo()
         {
             Name = entry.Name,
             Content = ms.ToArray(),
@@ -104,10 +105,10 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
     private class ExtractionContext
     {
         public required string RootPath { get; init; }
-        public List<NewTestPackageFileInfo> Files { get; } = new();
-        public List<NewTestPackageDirectoryInfo> Directories { get; } = new();
+        public List<BeaversTestsFileInfo> Files { get; } = new();
+        public List<BeaversTestsDirectoryInfo> Directories { get; } = new();
 
-        public void AddFile(NewTestPackageFileInfo file, string fullPath)
+        public void AddFile(BeaversTestsFileInfo file, string fullPath)
         {
             var searchPath = fullPath
                 .Replace(RootPath, string.Empty)
@@ -115,21 +116,21 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
             
             var pathSegments = searchPath.Split('/').Where(s => !string.IsNullOrEmpty(s));
             var filesLevel = Files;
-            List<NewTestPackageDirectoryInfo> directoryLevel = Directories;
+            List<BeaversTestsDirectoryInfo> directoryLevel = Directories;
 
             foreach (var pathSegment in pathSegments)
             {
                 var targetDirectory = directoryLevel.FirstOrDefault(d => d.DirectoryName == pathSegment)
                     ?? throw new TestsManagerException("Could not find directory in archive");
                 
-                directoryLevel = (List<NewTestPackageDirectoryInfo>)targetDirectory.Directories;
-                filesLevel = (List<NewTestPackageFileInfo>)targetDirectory.TestFiles;
+                directoryLevel = (List<BeaversTestsDirectoryInfo>)targetDirectory.Directories;
+                filesLevel = (List<BeaversTestsFileInfo>)targetDirectory.TestFiles;
             }
             
             filesLevel.Add(file);
         }
         
-        public void AddDirectory(NewTestPackageDirectoryInfo directory, string fullPath)
+        public void AddDirectory(BeaversTestsDirectoryInfo directory, string fullPath)
         {
             var searchPath = fullPath
                 .Replace(RootPath, string.Empty)
@@ -143,7 +144,7 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
                 var targetDirectory = directoryLevel.FirstOrDefault(d => d.DirectoryName == pathSegment) ??
                                       throw new TestsManagerException("Could not find directory in archive");
                 
-                directoryLevel = (List<NewTestPackageDirectoryInfo>)targetDirectory.Directories;
+                directoryLevel = (List<BeaversTestsDirectoryInfo>)targetDirectory.Directories;
             }
             
             directoryLevel.Add(directory);

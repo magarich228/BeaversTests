@@ -1,5 +1,6 @@
 ﻿using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Exceptions;
+using BeaversTests.TestsManager.Core;
 using BeaversTests.TestsManager.Core.TestPackage;
 using Microsoft.Extensions.Logging;
 using Minio;
@@ -81,7 +82,7 @@ public class TestsStorageService(
 
     private async Task AddTestPackageInternalAsync(TestPackageContent content, string bucketName, CancellationToken cancellationToken)
     {
-        var root = new TestPackageContentDirectory()
+        var root = new BeaversTestsDirectory()
         {
             DirectoryName = string.Empty, //root
             Directories = content.Directories,
@@ -91,7 +92,7 @@ public class TestsStorageService(
         await AddTestDirectoryAsync(root, string.Empty, bucketName, cancellationToken);
     }
     
-    private async Task AddTestDirectoryAsync(TestPackageContentDirectory rootDirectory, string previousPath, string bucketName, CancellationToken cancellationToken)
+    private async Task AddTestDirectoryAsync(BeaversTestsDirectory rootDirectory, string previousPath, string bucketName, CancellationToken cancellationToken)
     {
         foreach (var file in rootDirectory.TestFiles)
         {
@@ -104,7 +105,7 @@ public class TestsStorageService(
         }
     }
     
-    private async Task AddTestFileAsync(TestPackageFile file, string dirPath, string bucketName, CancellationToken cancellationToken)
+    private async Task AddTestFileAsync(BeaversTestsFile file, string dirPath, string bucketName, CancellationToken cancellationToken)
     {
         using var streamData = new MemoryStream(file.Content);
         var fullPath = Path.Combine(dirPath, file.Name);

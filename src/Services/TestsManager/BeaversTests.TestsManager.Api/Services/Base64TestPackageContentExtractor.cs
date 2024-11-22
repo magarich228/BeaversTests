@@ -1,6 +1,7 @@
 ﻿using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.App.Dtos.TestPackage;
 
 namespace BeaversTests.TestsManager.Api.Services;
 
@@ -11,8 +12,8 @@ public class Base64TestPackageContentExtractor : ITestPackageContentExtractor<Ba
     {
         ArgumentNullException.ThrowIfNull(input, nameof(input));
 
-        IEnumerable<NewTestPackageFileInfo> files = input.Base64Files.Select(GetFile);
-        IEnumerable<NewTestPackageDirectoryInfo> directories = input.Base64Directories.Select(GetDirectory);
+        IEnumerable<BeaversTestsFileInfo> files = input.Base64Files.Select(GetFile);
+        IEnumerable<BeaversTestsDirectoryInfo> directories = input.Base64Directories.Select(GetDirectory);
         
         var result = new NewTestPackageContentDto()
         {
@@ -23,11 +24,11 @@ public class Base64TestPackageContentExtractor : ITestPackageContentExtractor<Ba
         return result;
     }
 
-    private NewTestPackageFileInfo GetFile(Base64TestPackageFileDto base64File)
+    private BeaversTestsFileInfo GetFile(Base64TestPackageFileDto base64File)
     {
         var content = Convert.FromBase64String(base64File.Base64Content);
         
-        return new NewTestPackageFileInfo()
+        return new BeaversTestsFileInfo()
         {
             Name = base64File.Name,
             Length = content.Length,
@@ -36,9 +37,9 @@ public class Base64TestPackageContentExtractor : ITestPackageContentExtractor<Ba
         };
     }
 
-    private NewTestPackageDirectoryInfo GetDirectory(Base64TestPackageDirectoryDto base64Directory)
+    private BeaversTestsDirectoryInfo GetDirectory(Base64TestPackageDirectoryDto base64Directory)
     {
-        return new NewTestPackageDirectoryInfo()
+        return new BeaversTestsDirectoryInfo()
         {
             DirectoryName = base64Directory.DirectoryName,
             Directories = base64Directory.Base64Directories.Select(GetDirectory),

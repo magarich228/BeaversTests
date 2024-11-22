@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.TestsManager.App.Dtos;
+﻿namespace BeaversTests.TestsManager.App.Dtos.TestProject;
 
 public class TestProjectDto
 {
