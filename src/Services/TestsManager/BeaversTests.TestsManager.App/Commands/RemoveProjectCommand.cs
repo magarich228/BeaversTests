@@ -1,8 +1,12 @@
-﻿using BeaversTests.Common.CQRS.Commands;
+﻿using AutoMapper;
+using BeaversTests.Common.CQRS.Abstractions;
+using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
-using BeaversTests.TestsManager.App.Exceptions;
+using BeaversTests.TestsManager.Core.TestProject;
+using BeaversTests.TestsManager.Events.TestProject;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.App.Commands;
 
@@ -30,38 +34,24 @@ public abstract class RemoveProjectCommand
     }
 
     public class Handler(
-        ITestsManagerContext db,
-        ITestsStorageService testsStorageService) : ICommandHandler<Command, Result>
+        IEventStore eventStore,
+        IMapper mapper,
+        ILogger<Handler> logger) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            // TODO: remove concrete project test package only
-            var removedTestProject = await db.TestProjects
-                .Include(t => t.TestPackages)
-                .FirstOrDefaultAsync(t => t.Id == request.Id, cancellationToken);
-            
-            if (removedTestProject == null)
-            {
-                throw new Exception("Test project not found.");
-            }
-            
-            db.TestProjects.Remove(removedTestProject);
+            logger.LogDebug("Test project {TestProjectId} deleted event has been received.", request.Id);
 
-            var testPackagesIds = removedTestProject.TestPackages
-                ?.Select(t => t.Id)
-                .ToList() ??
-                                  throw new TestsManagerException("Test project test packages not found.");
-
-            foreach (var testPackagesId in testPackagesIds)
+            var projectAggregate = await eventStore.AggregateStreamAsync<TestProjectAggregate>(new AggregateInfo()
             {
-                await testsStorageService.RemoveTestPackageAsync(testPackagesId, cancellationToken);
-            }
-
-            if (await db.SaveChangesAsync(cancellationToken) < 1)
-            {
-                throw new TestsManagerException("Test project not deleted.");
-            }
+                Id = request.Id
+            }, cancellationToken);
+            var deletedEvent = mapper.Map<TestProjectDeletedEvent>(request);
             
+            projectAggregate.ApplyDeleted(deletedEvent);
+
+            await eventStore.StoreAsync(projectAggregate, cancellationToken);
+
             return new Result();
         }
     }

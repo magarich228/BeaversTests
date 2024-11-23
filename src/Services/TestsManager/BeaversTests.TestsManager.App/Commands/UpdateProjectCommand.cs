@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Dtos.TestProject;
 using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.TestProject;
+using BeaversTests.TestsManager.Events.TestProject;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.App.Commands;
 
@@ -52,21 +55,29 @@ public abstract class UpdateProjectCommand
     }
     
     public class Handler(
-        ITestsManagerContext db,
-        IMapper mapper) : ICommandHandler<Command, Result>
+        IEventStore eventStore,
+        IMapper mapper,
+        ILogger<Handler> logger) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
-            var testProject = mapper.Map<Command, TestProject>(command);
+            logger.LogDebug("UpdateProjectCommand: handling {Command}", command.Id);
 
-            var result = db.TestProjects.Update(testProject);
+            // TODO: remove aggregate stream
+            var projectAggregate = await eventStore.AggregateStreamAsync<TestProjectAggregate>(new AggregateInfo()
+            {
+                Id = command.Id
+            }, cancellationToken);
+            
+            var updatedEvent = mapper.Map<TestProjectUpdatedEvent>(command);
+            
+            projectAggregate.ApplyUpdated(updatedEvent);
 
-            if (await db.SaveChangesAsync(cancellationToken) == 0)
-                throw new TestsManagerException("Failed to update project.");
+            await eventStore.StoreAsync(projectAggregate, cancellationToken);
 
             return new Result()
             {
-                TestProject = mapper.Map<TestProject, TestProjectDto>(result.Entity)
+                TestProject = mapper.Map<TestProjectUpdatedEvent, TestProjectDto>(updatedEvent)
             };
         }
     }

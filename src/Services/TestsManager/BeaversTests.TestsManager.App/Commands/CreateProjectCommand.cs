@@ -15,7 +15,7 @@ public abstract class CreateProjectCommand
     public class Command : ICommand<Result>
     {
         // TODO: User
-        internal Guid Id { get; } = Guid.NewGuid();
+        public Guid Id { get; } = Guid.NewGuid();
         public required string Name { get; init; }
         public string? Description { get; init; }
     }
@@ -54,7 +54,6 @@ public abstract class CreateProjectCommand
             
             var projectAggregate = new TestProjectAggregate();
             
-            // TODO: id does not mapped
             var createdEvent = mapper.Map<TestProjectAddedEvent>(request);
             
             projectAggregate.ApplyCreated(createdEvent);

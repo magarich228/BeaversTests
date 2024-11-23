@@ -11,9 +11,13 @@ public class TestProjectMappingProfile : Profile
     public TestProjectMappingProfile()
     {
         CreateMap<CreateProjectCommand.Command, TestProjectAddedEvent>();
+        CreateMap<UpdateProjectCommand.Command, TestProjectUpdatedEvent>();
+        CreateMap<TestProjectUpdatedEvent, TestProjectDto>();
+        CreateMap<RemoveProjectCommand.Command, TestProjectDeletedEvent>();
+        
         CreateMap<TestProjectAddedEvent, TestProject>();
         CreateMap<TestProjectUpdatedEvent, TestProject>();
-        // CreateMap<TestProject, UpdateProjectCommand.Command>().ReverseMap();
+        
         CreateMap<TestProject, TestProjectDto>().ReverseMap();
     }
 }
