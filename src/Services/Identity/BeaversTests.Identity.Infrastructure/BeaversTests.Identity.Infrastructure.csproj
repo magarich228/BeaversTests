@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="DataAccess\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\BeaversTests.Identity.Core\BeaversTests.Identity.Core.csproj" />
     </ItemGroup>
 
