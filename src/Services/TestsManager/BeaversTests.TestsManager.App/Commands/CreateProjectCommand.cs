@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
-using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.TestProject;
+using BeaversTests.TestsManager.Events.TestProject;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.App.Commands;
 
@@ -12,6 +14,8 @@ public abstract class CreateProjectCommand
 {
     public class Command : ICommand<Result>
     {
+        // TODO: User
+        internal Guid Id { get; } = Guid.NewGuid();
         public required string Name { get; init; }
         public string? Description { get; init; }
     }
@@ -33,26 +37,34 @@ public abstract class CreateProjectCommand
                 .MustAsync(async (c, name, token) => !await db.TestProjects
                     .AnyAsync(t => t.Name == name, token))
                 .WithMessage("Test project with this name already exists.");
-
+        
             RuleFor(c => c.Description)
                 .MaximumLength(1000);
         }
     }
 
     public class Handler(
-        ITestsManagerContext db,
-        IMapper mapper) : ICommandHandler<Command, Result>
+        IEventStore eventStore,
+        IMapper mapper,
+        ILogger<Handler> logger) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken = default)
         {
-            var project = mapper.Map<Command, TestProject>(request);
+            logger.LogDebug("Create test project command handler called.");
+            
+            var projectAggregate = new TestProjectAggregate();
+            
+            // TODO: id does not mapped
+            var createdEvent = mapper.Map<TestProjectAddedEvent>(request);
+            
+            projectAggregate.ApplyCreated(createdEvent);
 
-            var result = await db.TestProjects.AddAsync(project, cancellationToken);
+            await eventStore.StoreAsync(projectAggregate, cancellationToken);
 
-            if (await db.SaveChangesAsync(cancellationToken) == 0)
-                throw new TestsManagerException("Failed to create project.");
-
-            return new Result {TestProjectId = result.Entity.Id};
+            return new Result()
+            {
+                TestProjectId = projectAggregate.Id
+            };
         }
     }
 }

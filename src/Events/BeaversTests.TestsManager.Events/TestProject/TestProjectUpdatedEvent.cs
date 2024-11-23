@@ -2,7 +2,7 @@
 
 namespace BeaversTests.TestsManager.Events.TestProject;
 
-public class TestProjectAddedEvent : IEvent
+public class TestProjectUpdatedEvent : IEvent
 {
     public required Guid Id { get; init; }
     public required string Name { get; init; }
