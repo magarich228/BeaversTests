@@ -6,4 +6,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="FirebaseAdmin" />
+      <PackageReference Include="FirebaseAuthentication.net" />
+    </ItemGroup>
+
 </Project>
