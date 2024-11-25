@@ -1,21 +1,5 @@
 ﻿{
-  "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5008"
-  },
   "Routes": [
-    {
-      "DownstreamPathTemplate": "/api/projects/getall",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5174
-        }
-      ],
-      "UpstreamPathTemplate": "/api/projects/getall",
-      "UpstreamHttpMethod": [ "GET" ],
-      "SwaggerKey": "testsManager"
-    },
     {
       "DownstreamPathTemplate": "/api/Auth/SignUp",
       "DownstreamScheme": "http",
@@ -67,28 +51,6 @@
       "UpstreamPathTemplate": "/api/auth/secure",
       "UpstreamHttpMethod": [ "GET" ],
       "SwaggerKey": "identity"
-    }
-  ],
-  "SwaggerEndPoints": [
-    {
-      "Key": "testsManager",
-      "Config": [
-        {
-          "Name": "Tests manager service API",
-          "Version": "v1",
-          "Url": "http://localhost:5174/swagger/v1/swagger.json"
-        }
-      ]
-    },
-    {
-      "Key": "identity",
-      "Config": [
-        {
-          "Name": "Identity service API",
-          "Version": "v1",
-          "Url": "http://localhost:5030/swagger/v1/swagger.json"
-        }
-      ]
     }
   ]
 }

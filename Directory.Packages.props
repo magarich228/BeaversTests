@@ -7,6 +7,7 @@
     <PackageVersion Include="FirebaseAuthentication.net" Version="4.1.0" />
     <PackageVersion Include="FluentValidation" Version="11.10.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
+    <PackageVersion Include="MMLib.SwaggerForOcelot" Version="8.3.2" />
     <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="8.0.0" />
     <PackageVersion Include="Ocelot" Version="23.2.2" />
