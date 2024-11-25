@@ -8,13 +8,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+        <PackageReference Include="FirebaseAdmin" />
+        <PackageReference Include="FirebaseAuthentication.net" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Swashbuckle.AspNetCore" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BeaversTests.Firebase.Auth\BeaversTests.Firebase.Auth.csproj" />
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Api.Shared\BeaversTests.Api.Shared.csproj" />
     </ItemGroup>
 
 </Project>

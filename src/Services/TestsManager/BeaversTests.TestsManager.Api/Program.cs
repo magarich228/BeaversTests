@@ -1,3 +1,4 @@
+using BeaversTests.Api.Shared;
 using BeaversTests.Postgres.EventStore;
 using BeaversTests.TestsManager.Api;
 using BeaversTests.TestsManager.App;
@@ -19,6 +20,8 @@ services.AddSwaggerGen(c =>
     //c.IncludeXmlComments();
 });
 
+services.AddAuth();
+
 services.AddTestsManagerInfrastructure(configuration);
 services.AddTestsManagerApp(configuration);
 services.AddApi();
@@ -30,6 +33,8 @@ app.UseSwaggerUI();
 
 app.MapControllers();
 app.UseApi();
+
+app.UseAuth();
 
 using (var scope = app.Services.CreateScope())
 {

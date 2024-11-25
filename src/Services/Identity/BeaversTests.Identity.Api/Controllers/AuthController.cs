@@ -1,5 +1,6 @@
-﻿using BeaversTests.Firebase.Auth;
+﻿using BeaversTests.Api.Shared;
 using BeaversTests.Identity.Api.Dtos;
+using BeaversTests.Identity.Api.Firebase;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,7 @@ public class AuthController(
         if (token is null)
             return BadRequest();
         
-        HttpContext.Session.SetString("token", token);
+        HttpContext.Session.SetString(Auth.AuthTokenSessionKey, token);
         
         return Ok();
     }
@@ -31,9 +32,9 @@ public class AuthController(
         if (token is null)
             return BadRequest();
         
-        HttpContext.Session.SetString("token", token);
+        HttpContext.Session.SetString(Auth.AuthTokenSessionKey, token);
         
-        return Ok();
+        return Ok(token);
     }
     
     [HttpGet]
@@ -42,7 +43,7 @@ public class AuthController(
     {
         authService.SignOut();
         
-        HttpContext.Session.Remove("token");
+        HttpContext.Session.Remove(Auth.AuthTokenSessionKey);
         
         return Ok();
     }

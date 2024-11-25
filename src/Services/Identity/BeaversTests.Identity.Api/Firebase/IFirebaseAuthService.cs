@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.Firebase.Auth;
+﻿namespace BeaversTests.Identity.Api.Firebase;
 
 public interface IFirebaseAuthService
 {

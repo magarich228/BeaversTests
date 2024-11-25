@@ -2,12 +2,14 @@
 using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.App.Commands;
 using BeaversTests.TestsManager.App.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]/[action]")]
+[Authorize]
 public class ProjectsController(
     ICommandBus commandBus,
     IQueryBus queryBus) : ControllerBase
