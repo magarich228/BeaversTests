@@ -2,9 +2,9 @@
 using Firebase.Auth.Providers;
 using FirebaseAdmin;
 
-namespace BeaversTests.Identity.Api.Firebase;
+namespace BeaversTests.Identity.Api.FirebaseAuth;
 
-public static class Firebase
+public static class FirebaseExtensions
 {
     public static IServiceCollection AddAuthInternal(this IServiceCollection services)
     {
@@ -14,7 +14,7 @@ public static class Firebase
             "beaverstests-firebase-adminsdk-kp03n-8921020f2f.json");
         services.AddSingleton(FirebaseApp.Create());
         
-        services.AddSingleton(new FirebaseAuthClient(new FirebaseAuthConfig
+        services.AddSingleton(new FirebaseAuthConfig
         {
             ApiKey = "AIzaSyDh58sllS39Z6RSE-LTheJ_Adgbrl2Ot1c",
             AuthDomain = $"{firebaseProjectName}.firebaseapp.com",
@@ -23,7 +23,9 @@ public static class Firebase
                 new EmailProvider(),
                 new GoogleProvider()
             }
-        }));
+        });
+        services.AddSingleton<FirebaseAuthClient>();
+        services.AddSingleton<FirebaseEmailService>();
         
         services.AddSingleton<IFirebaseAuthService, FirebaseAuthService>(); 
         

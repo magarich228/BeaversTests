@@ -1,5 +1,4 @@
 ﻿using System.Security.Authentication;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -14,9 +13,6 @@ public static class Auth
     
     public static IServiceCollection AddAuth(this IServiceCollection services)
     {
-        services.AddSession();
-        services.AddDistributedMemoryCache();
-        
         var firebaseProjectName = "beaverstests";
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -38,20 +34,6 @@ public static class Auth
     
     public static IApplicationBuilder UseAuth(this IApplicationBuilder app)
     {
-        app.UseSession();
-        
-        app.Use(async (context, next) =>
-        {
-            var token = context.Session.GetString(AuthTokenSessionKey);
-    
-            if (!string.IsNullOrEmpty(token))
-            {
-                context.Request.Headers.Append("Authorization", "Bearer " + token);
-            }
-
-            await next();
-        });
-        
         app.UseAuthentication();
         app.UseAuthorization();
         

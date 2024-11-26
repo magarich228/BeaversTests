@@ -1,5 +1,5 @@
 using BeaversTests.Api.Shared;
-using BeaversTests.Identity.Api.Firebase;
+using BeaversTests.Identity.Api.FirebaseAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 
