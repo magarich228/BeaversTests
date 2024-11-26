@@ -6,12 +6,20 @@ namespace BeaversTests.Identity.Api.FirebaseAuth;
 
 public static class FirebaseExtensions
 {
+    private const string GoogleAppCredentialsVariableName = "GOOGLE_APPLICATION_CREDENTIALS";
+    private const string CredentialsFileName = "beaverstests-firebase-adminsdk-kp03n-8921020f2f.json";
+    
     public static IServiceCollection AddAuthInternal(this IServiceCollection services)
     {
         var firebaseProjectName = "beaverstests";
+
+        if (!File.Exists(CredentialsFileName))
+        {
+            throw new IdentityException("Firebase credentials file not found");
+        }
         
-        Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS",
-            "beaverstests-firebase-adminsdk-kp03n-8921020f2f.json");
+        Environment.SetEnvironmentVariable(GoogleAppCredentialsVariableName,
+            CredentialsFileName);
         services.AddSingleton(FirebaseApp.Create());
         
         services.AddSingleton(new FirebaseAuthConfig
