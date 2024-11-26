@@ -7,6 +7,7 @@ namespace BeaversTests.Client.Tests;
 public class AuthTests
 {
     [Test]
+    [Category("Runtime")]
     public void LoginAndGetProjectsTest()
     {
         using var client = new HttpClient();
@@ -22,14 +23,14 @@ public class AuthTests
             .PostAsync("/api/Auth/Login", JsonContent.Create(loginDto))
             .Result;
         
-        Assert.True(loginResponse.IsSuccessStatusCode);
-        Assert.True(loginResponse.Headers.TryGetValues("Authorization", out var values));
+        Assert.That(loginResponse.IsSuccessStatusCode, Is.True);
+        Assert.That(loginResponse.Headers.TryGetValues("Authorization", out var values), Is.True);
 
         var authHeaderValue = values?.FirstOrDefault();
         var authHeaderValueExists = !string.IsNullOrWhiteSpace(authHeaderValue);
         
-        Assert.IsNotNull(authHeaderValue);
-        Assert.IsNotEmpty(authHeaderValue);
+        Assert.That(authHeaderValue, Is.Not.Null);
+        Assert.That(authHeaderValue, Is.Not.Empty);
 
         if (authHeaderValueExists)
         {
@@ -39,12 +40,12 @@ public class AuthTests
                 .GetAsync("/api/Projects/GetAll")
                 .Result;
             
-            Assert.True(projectsResponse.IsSuccessStatusCode);
+            Assert.That(projectsResponse.IsSuccessStatusCode, Is.True);
 
             var projects = projectsResponse.Content.ReadAsStringAsync().Result;
             
-            Assert.IsNotNull(projects);
-            Assert.IsNotEmpty(projects);
+            Assert.That(projects, Is.Not.Null);
+            Assert.That(projects, Is.Not.Empty);
         }
     }
 }

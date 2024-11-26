@@ -25,7 +25,7 @@ public static class FirebaseExtensions
             }
         });
         services.AddSingleton<FirebaseAuthClient>();
-        services.AddSingleton<FirebaseEmailService>();
+        services.AddSingleton<FirebaseObbCodeService>();
         
         services.AddSingleton<IFirebaseAuthService, FirebaseAuthService>(); 
         
