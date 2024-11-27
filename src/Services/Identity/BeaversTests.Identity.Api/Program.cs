@@ -4,8 +4,9 @@ using BeaversTests.Identity.Api.FirebaseAuth;
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
+var configuration = builder.Configuration;
 
-services.AddAuthInternal()
+services.AddAuthInternal(configuration)
     .AddAuth();
 
 services.AddControllers();
