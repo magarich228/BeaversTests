@@ -33,7 +33,8 @@ public class TestProjectEventsHandler(
         logger.LogDebug("Test project {TestProjectId} updated event has been received.", notification.Id);
 
         var project = mapper.Map<TestProjectUpdatedEvent, TestProject>(notification);
-
+        
+        // TODO: fix name updating
         db.TestProjects.Update(project);
 
         if (await db.SaveChangesAsync(cancellationToken) == 0)
@@ -45,10 +46,7 @@ public class TestProjectEventsHandler(
         logger.LogDebug("Test project {TestProjectId} deleted event has been received.", notification.Id);
 
         var project = await db.TestProjects.FindAsync(
-            new[]
-            {
-                notification.Id
-            }, cancellationToken) ?? 
+            notification.Id, cancellationToken) ?? 
                       throw new TestsManagerException($"Test project {notification.Id} not found.");
         
         db.TestProjects.Remove(project);

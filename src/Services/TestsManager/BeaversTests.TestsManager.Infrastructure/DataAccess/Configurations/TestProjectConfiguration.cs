@@ -13,6 +13,10 @@ public class TestProjectConfiguration : IEntityTypeConfiguration<TestProject>
 
         builder.Property(t => t.Id)
             .IsRequired();
+        
+        builder.Property(t => t.UserCreatorId)
+            .IsRequired()
+            .HasMaxLength(50);
 
         builder.Property(t => t.Name)
             .IsRequired()

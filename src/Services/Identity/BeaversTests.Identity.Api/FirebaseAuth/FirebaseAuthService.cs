@@ -1,6 +1,4 @@
 ﻿using Firebase.Auth;
-using Newtonsoft.Json.Linq;
-
 namespace BeaversTests.Identity.Api.FirebaseAuth;
 
 public class FirebaseAuthService(FirebaseAuthClient firebaseAuth, FirebaseObbCodeService firebaseEmail) : IFirebaseAuthService
@@ -21,8 +19,13 @@ public class FirebaseAuthService(FirebaseAuthClient firebaseAuth, FirebaseObbCod
         if (!userCredentials.User.Info.IsEmailVerified)
             return null;
         
+        // TODO: send refresh token.
         return await userCredentials.User.GetIdTokenAsync();
     }
+    
+    // TODO: password reset endpoint
+    // TODO: email update endpoint
+    // TODO: refresh token endpoint
     
     public void SignOut() => firebaseAuth.SignOut(); 
 }

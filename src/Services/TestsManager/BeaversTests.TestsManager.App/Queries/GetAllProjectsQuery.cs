@@ -7,6 +7,7 @@ using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Dtos.TestProject;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.App.Queries;
 
@@ -26,12 +27,17 @@ public abstract class GetAllProjectsQuery
     
     public class Handler(
         ITestsManagerContext db,
-        IMapper mapper) : IQueryHandler<Query, Result>
+        IUserService userService,
+        IMapper mapper,
+        ILogger<Handler> logger) : IQueryHandler<Query, Result>
     {
         public async Task<Result> Handle(Query query, CancellationToken cancellationToken = default)
         {
+            logger.LogDebug("Get all test projects query handler called.");
+            
             // TODO: add order
             var testProjects = db.TestProjects
+                .Where(t => t.UserCreatorId == userService.GetCurrentUserId())
                 .PageBy(query)
                 .AsNoTracking();
             

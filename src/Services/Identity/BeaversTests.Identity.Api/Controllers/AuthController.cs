@@ -36,7 +36,7 @@ public class AuthController(
         
         HttpContext.Response.Headers.Authorization = $"{JwtBearerDefaults.AuthenticationScheme} {token}";
         
-        return Ok();
+        return Ok(token);
     }
     
     [HttpGet]

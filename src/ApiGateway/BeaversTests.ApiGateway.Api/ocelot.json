@@ -17,6 +17,58 @@
       "SwaggerKey": "testsManager"
     },
     {
+      "DownstreamPathTemplate": "/api/projects/getById",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/getById",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects/create",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/create",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects/update",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/update",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects/delete",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/delete",
+      "UpstreamHttpMethod": [ "DELETE" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
       "DownstreamPathTemplate": "/api/Auth/SignUp",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

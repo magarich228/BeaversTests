@@ -1,4 +1,5 @@
 ﻿using System.Security.Authentication;
+using BeaversTests.Common.Application;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +29,8 @@ public static class Auth
                     ValidateLifetime = true
                 };
             });
+
+        services.AddScoped<IUserService, UserService>();
 
         return services;
     }

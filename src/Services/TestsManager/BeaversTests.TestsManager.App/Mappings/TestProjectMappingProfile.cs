@@ -17,8 +17,12 @@ public class TestProjectMappingProfile : Profile
                 opt => opt.MapFrom(s => s.UserId));
         CreateMap<RemoveProjectCommand.Command, TestProjectDeletedEvent>();
         
-        CreateMap<TestProjectAddedEvent, TestProject>();
-        CreateMap<TestProjectUpdatedEvent, TestProject>();
+        CreateMap<TestProjectAddedEvent, TestProject>()
+            .ForMember(src => src.UserCreatorId, 
+                opt => opt.MapFrom(dst => dst.UserId));
+        CreateMap<TestProjectUpdatedEvent, TestProject>()
+            .ForMember(src => src.UserCreatorId, 
+                opt => opt.MapFrom(dst => dst.UserId));;
         
         CreateMap<TestProject, TestProjectDto>().ReverseMap();
     }

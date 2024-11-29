@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.Application;
 using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
@@ -14,8 +15,8 @@ public abstract class CreateProjectCommand
 {
     public class Command : ICommand<Result>
     {
-        // TODO: User
         public Guid Id { get; } = Guid.NewGuid();
+        public string? UserId { get; internal set; }
         public required string Name { get; init; }
         public string? Description { get; init; }
     }
@@ -27,7 +28,8 @@ public abstract class CreateProjectCommand
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(ITestsManagerContext db)
+        public Validator(ITestsManagerContext db, 
+            IUserService userService)
         {
             RuleFor(c => c.Name)
                 .NotEmpty()
@@ -35,6 +37,7 @@ public abstract class CreateProjectCommand
                 .MinimumLength(1)
                 .MaximumLength(50)
                 .MustAsync(async (c, name, token) => !await db.TestProjects
+                    .Where(t => t.UserCreatorId == userService.GetCurrentUserId())
                     .AnyAsync(t => t.Name == name, token))
                 .WithMessage("Test project with this name already exists.");
         
@@ -46,15 +49,17 @@ public abstract class CreateProjectCommand
     public class Handler(
         IEventStore eventStore,
         IMapper mapper,
+        IUserService userService,
         ILogger<Handler> logger) : ICommandHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken = default)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
             logger.LogDebug("Create test project command handler called.");
             
             var projectAggregate = new TestProjectAggregate();
-            
-            var createdEvent = mapper.Map<TestProjectAddedEvent>(request);
+
+            command.UserId = userService.GetCurrentUserId();
+            var createdEvent = mapper.Map<TestProjectAddedEvent>(command);
             
             projectAggregate.ApplyCreated(createdEvent);
 

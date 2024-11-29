@@ -20,6 +20,7 @@ services.AddSwaggerGen(c =>
     //c.IncludeXmlComments();
 });
 
+services.AddShared();
 services.AddAuth();
 
 services.AddTestsManagerInfrastructure(configuration);
