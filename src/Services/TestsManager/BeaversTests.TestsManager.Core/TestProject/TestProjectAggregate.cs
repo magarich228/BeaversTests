@@ -5,6 +5,7 @@ namespace BeaversTests.TestsManager.Core.TestProject;
 
 public class TestProjectAggregate : Aggregate
 {
+    public string UserCreatorId { get; private set; }
     public string Name { get; private set; } = default!;
     public string? Description { get; private set; }
     
@@ -14,6 +15,7 @@ public class TestProjectAggregate : Aggregate
     public void ApplyCreated(TestProjectAddedEvent @event)
     {
         Id = @event.Id;
+        UserCreatorId = @event.UserId;
         Name = @event.Name;
         Description = @event.Description;
         
@@ -24,6 +26,9 @@ public class TestProjectAggregate : Aggregate
     public void ApplyUpdated(TestProjectUpdatedEvent @event)
     {
         CheckId(@event.Id);
+
+        if (@event.UserId != UserCreatorId)
+            throw new Exception("This user can't update test project.");
         
         Name = @event.Name;
         Description = @event.Description;
@@ -35,6 +40,9 @@ public class TestProjectAggregate : Aggregate
     public void ApplyDeleted(TestProjectDeletedEvent @event)
     {
         CheckId(@event.Id);
+        
+        if (@event.UserId != UserCreatorId)
+            throw new Exception("This user can't delete test project.");
         
         base.Enqueue(@event);
     }

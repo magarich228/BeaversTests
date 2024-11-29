@@ -12,7 +12,9 @@ public class TestProjectMappingProfile : Profile
     {
         CreateMap<CreateProjectCommand.Command, TestProjectAddedEvent>();
         CreateMap<UpdateProjectCommand.Command, TestProjectUpdatedEvent>();
-        CreateMap<TestProjectUpdatedEvent, TestProjectDto>();
+        CreateMap<TestProjectUpdatedEvent, TestProjectDto>()
+            .ForMember(d => d.UserCreatorId, 
+                opt => opt.MapFrom(s => s.UserId));
         CreateMap<RemoveProjectCommand.Command, TestProjectDeletedEvent>();
         
         CreateMap<TestProjectAddedEvent, TestProject>();
