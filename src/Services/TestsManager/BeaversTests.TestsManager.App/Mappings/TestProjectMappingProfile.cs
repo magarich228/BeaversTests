@@ -20,9 +20,6 @@ public class TestProjectMappingProfile : Profile
         CreateMap<TestProjectAddedEvent, TestProject>()
             .ForMember(src => src.UserCreatorId, 
                 opt => opt.MapFrom(dst => dst.UserId));
-        CreateMap<TestProjectUpdatedEvent, TestProject>()
-            .ForMember(src => src.UserCreatorId, 
-                opt => opt.MapFrom(dst => dst.UserId));;
         
         CreateMap<TestProject, TestProjectDto>().ReverseMap();
     }

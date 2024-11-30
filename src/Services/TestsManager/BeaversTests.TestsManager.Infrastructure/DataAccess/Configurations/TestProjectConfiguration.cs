@@ -9,7 +9,6 @@ public class TestProjectConfiguration : IEntityTypeConfiguration<TestProject>
     public void Configure(EntityTypeBuilder<TestProject> builder)
     {
         builder.HasKey(t => t.Id);
-        builder.HasAlternateKey(t => t.Name);
 
         builder.Property(t => t.Id)
             .IsRequired();

@@ -8,12 +8,19 @@ public class TestProjectAggregate : Aggregate
     public string UserCreatorId { get; private set; }
     public string Name { get; private set; } = default!;
     public string? Description { get; private set; }
+    public bool IsDeleted { get; private set; } = false;
     
     public TestProjectAggregate() { }
     
     [EventApplier]
     public void ApplyCreated(TestProjectAddedEvent @event)
     {
+        if (IsDeleted)
+            throw new InvalidOperationException("Test project deleted.");
+        
+        if (Version != 0)
+            throw new InvalidOperationException("Test project already created.");
+        
         Id = @event.Id;
         UserCreatorId = @event.UserId;
         Name = @event.Name;
@@ -25,6 +32,9 @@ public class TestProjectAggregate : Aggregate
     [EventApplier]
     public void ApplyUpdated(TestProjectUpdatedEvent @event)
     {
+        if (IsDeleted)
+            throw new InvalidOperationException("Test project deleted.");
+        
         CheckId(@event.Id);
 
         if (@event.UserId != UserCreatorId)
@@ -40,6 +50,11 @@ public class TestProjectAggregate : Aggregate
     public void ApplyDeleted(TestProjectDeletedEvent @event)
     {
         CheckId(@event.Id);
+
+        if (IsDeleted)
+            throw new InvalidOperationException("Test project already deleted.");
+        
+        IsDeleted = true;
         
         if (@event.UserId != UserCreatorId)
             throw new Exception("This user can't delete test project.");

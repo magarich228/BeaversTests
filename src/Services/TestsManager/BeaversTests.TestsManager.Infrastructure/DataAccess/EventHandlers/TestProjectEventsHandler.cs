@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BeaversTests.Common.CQRS.Events;
 using BeaversTests.TestsManager.App.Abstractions;
-using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.TestProject;
 using BeaversTests.TestsManager.Events.TestProject;
 using Microsoft.Extensions.Logging;
@@ -25,20 +24,23 @@ public class TestProjectEventsHandler(
         await db.TestProjects.AddAsync(project, cancellationToken);
 
         if (await db.SaveChangesAsync(cancellationToken) == 0)
-            throw new TestsManagerException("Failed to create project.");
+            throw new TestsManagerInfrastructureException("Failed to create project.");
     }
 
     public async Task Handle(TestProjectUpdatedEvent notification, CancellationToken cancellationToken)
     {
         logger.LogDebug("Test project {TestProjectId} updated event has been received.", notification.Id);
 
-        var project = mapper.Map<TestProjectUpdatedEvent, TestProject>(notification);
+        var project = await db.TestProjects.FindAsync(notification.Id);
+
+        if (project is null)
+            throw new TestsManagerInfrastructureException($"Test project {notification.Id} not found.");
         
-        // TODO: fix name updating
-        db.TestProjects.Update(project);
+        project.Name = notification.Name;
+        project.Description = notification.Description;
 
         if (await db.SaveChangesAsync(cancellationToken) == 0)
-            throw new TestsManagerException("Failed to update project.");
+            throw new TestsManagerInfrastructureException("Failed to update project.");
     }
 
     public async Task Handle(TestProjectDeletedEvent notification, CancellationToken cancellationToken)
@@ -47,11 +49,11 @@ public class TestProjectEventsHandler(
 
         var project = await db.TestProjects.FindAsync(
             notification.Id, cancellationToken) ?? 
-                      throw new TestsManagerException($"Test project {notification.Id} not found.");
+                      throw new TestsManagerInfrastructureException($"Test project {notification.Id} not found.");
         
         db.TestProjects.Remove(project);
         
         if (await db.SaveChangesAsync(cancellationToken) == 0)
-            throw new TestsManagerException("Failed to delete project.");
+            throw new TestsManagerInfrastructureException("Failed to delete project.");
     }
 }
