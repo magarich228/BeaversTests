@@ -2,18 +2,16 @@
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
-using BeaversTests.TestsManager.App.Dtos.TestPackage;
 using BeaversTests.TestsManager.App.Exceptions;
 
 namespace BeaversTests.TestsManager.Api.Services;
 
-public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestPackageZipDto>
+public class ZipEntityContentExtractor : IFileSystemEntityContentExtractor<IEntityZipContent>
 {
     private const string ArchiveReadExceptionMessage =
         "When retrieving the contents of a package, its contet is not read completely";
     
-    // TODO: add async
-    public NewTestPackageContentDto ExtractContent(TestPackageZipDto input)
+    public EntityContentDto ExtractContent(IEntityZipContent input)
     {
         ArgumentNullException.ThrowIfNull(input, nameof(input));
 
@@ -36,7 +34,7 @@ public class ZipTestPackageContentExtractor : ITestPackageContentExtractor<TestP
             ProcessEntry(context, entry);
         }
         
-        return new NewTestPackageContentDto()
+        return new EntityContentDto()
         {
             TestFiles = context.Files,
             Directories = context.Directories

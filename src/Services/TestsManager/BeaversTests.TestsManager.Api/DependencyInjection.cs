@@ -17,7 +17,9 @@ public static class DependencyInjection
         services.AddMediatR(conf => conf.RegisterServicesFromAssemblies(
             typeof(TestPackageBase).Assembly,
             typeof(TestsManagerContext).Assembly));
-        services.AddTransient<ITestPackageContentExtractor<TestPackageZipDto>, ZipTestPackageContentExtractor>();
+        
+        services.AddTransient<IFileSystemEntityContentExtractor<IEntityZipContent>, ZipEntityContentExtractor>();
+        services.AddTransient<IFileSystemEntityContentExtractor<IEntityBase64Content>, Base64EntityContentExtractor>();
         
         return services;
     }

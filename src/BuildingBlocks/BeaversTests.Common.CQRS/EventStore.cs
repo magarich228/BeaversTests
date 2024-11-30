@@ -34,7 +34,8 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         }
         else
         {
-            version = versions.DefaultIfEmpty(0).Max() + 1;
+            version = versions.DefaultIfEmpty(0)
+                .Max() + 1;
         }
 
         var stream = new StreamState

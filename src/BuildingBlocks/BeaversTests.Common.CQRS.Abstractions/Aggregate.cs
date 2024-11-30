@@ -7,7 +7,6 @@ public abstract class Aggregate
     public Guid Id { get; protected set; }
     public int Version { get; protected internal set; } = 0;
     public DateTime CreatedUtc { get; protected internal set; }
-    // public virtual string Name => "";
 
     [NonSerialized]
     private readonly List<IEvent> _uncommittedEvents = new();
