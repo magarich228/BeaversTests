@@ -34,18 +34,19 @@ public class AuthTests
 
         if (authHeaderValueExists)
         {
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authHeaderValue.Substring(7));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authHeaderValue!.Substring(7));
             
             using var projectsResponse = client
-                .GetAsync("/api/Projects/GetAll")
+                .GetAsync("/api/Auth/Secure")
                 .Result;
             
             Assert.That(projectsResponse.IsSuccessStatusCode, Is.True);
 
-            var projects = projectsResponse.Content.ReadAsStringAsync().Result;
+            var secureResponse = projectsResponse.Content.ReadAsStringAsync().Result;
             
-            Assert.That(projects, Is.Not.Null);
-            Assert.That(projects, Is.Not.Empty);
+            Assert.That(secureResponse, Is.Not.Null);
+            Assert.That(secureResponse, Is.Not.Empty);
+            Assert.That(secureResponse, Is.EqualTo("secure str"));
         }
     }
 }
