@@ -1,4 +1,5 @@
-﻿using BeaversTests.TestsManager.Core;
+﻿using BeaversTests.Common.Binary;
+using BeaversTests.TestsManager.Core;
 
 namespace BeaversTests.TestsManager.App.Abstractions;
 

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.Binary;
 using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Dtos.TestPackage;
 using BeaversTests.TestsManager.Core;

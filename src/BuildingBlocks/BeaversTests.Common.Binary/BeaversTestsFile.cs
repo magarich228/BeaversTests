@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.TestsManager.Core;
+﻿namespace BeaversTests.Common.Binary;
 
 public class BeaversTestsFile
 {
