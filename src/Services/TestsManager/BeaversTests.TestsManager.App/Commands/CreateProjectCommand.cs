@@ -31,6 +31,7 @@ public abstract class CreateProjectCommand
         public Validator(ITestsManagerContext db, 
             IUserService userService)
         {
+            // TODO: техдолг, придумать нормальный варик проверки агрегатов в Event store
             RuleFor(c => c.Name)
                 .NotEmpty()
                 .NotNull()

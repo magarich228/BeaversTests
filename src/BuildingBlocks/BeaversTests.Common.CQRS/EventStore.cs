@@ -27,7 +27,7 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         {
             if (versions.Contains(expectedVersion.Value))
             {
-                throw new Exception($"Version '{expectedVersion.Value}' already exists for stream '{aggregateId}'");
+                throw new EventStoreException($"Version '{expectedVersion.Value}' already exists for stream '{aggregateId}'");
             }
             
             version = expectedVersion.Value;

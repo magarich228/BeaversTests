@@ -9,7 +9,6 @@ public class EntityContentExtractor(IServiceProvider serviceProvider)
 {
     // TODO: add TryExtract
     public EntityContentDto ExtractContent<TInput>(TInput input)
-        where TInput : TestPackageBase
     {
         var extractor = serviceProvider.GetService(typeof(IFileSystemEntityContentExtractor<TInput>)) as IFileSystemEntityContentExtractor<TInput>
             ?? throw new TestsManagerException("File system entity content extractor not found.");

@@ -6,7 +6,6 @@ public class TestDriver
 {
     public required string Key { get; init; }
     public required string UserCreatorId { get; init; }
-    public bool IsDefault { get; init; }
     public string? Description { get; set; }
     public IEnumerable<BeaversTestPackage>? TestPackages { get; init; }
 }

@@ -18,17 +18,17 @@ public class TestsStorageService(
     private const string TestPackageItemContentType = "application/octet-stream";
     
     public async Task AddTestPackageAsync(
-        Guid testPackageId,
-        TestPackageContent testPackageContent,
+        Guid entityId,
+        FileSystemEntity testPackageContent,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(testPackageContent, nameof(testPackageContent));
 
-        var bucketName = GetBucketName(testPackageId);
+        var bucketName = GetBucketName(entityId);
 
         logger.LogInformation(
-            "Test package {testPackageId} bucket name: {BucketName}", 
-            testPackageId, 
+            "Test package {entityId} bucket name: {BucketName}", 
+            entityId, 
             bucketName);
         
         // bug https://github.com/minio/minio-dotnet/issues/1041
@@ -80,7 +80,7 @@ public class TestsStorageService(
 
     private string GetBucketName(Guid assemblyId) => $"tests-{assemblyId}";
 
-    private async Task AddTestPackageInternalAsync(TestPackageContent content, string bucketName, CancellationToken cancellationToken)
+    private async Task AddTestPackageInternalAsync(FileSystemEntity content, string bucketName, CancellationToken cancellationToken)
     {
         var root = new BeaversTestsDirectory()
         {

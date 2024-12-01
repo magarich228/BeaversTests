@@ -39,6 +39,8 @@ public class AuthController(
         return Ok(token);
     }
     
+    // TODO: add refresh token, password, email reset endpoint.
+    
     [HttpGet]
     [Authorize]
     public IActionResult Logout()

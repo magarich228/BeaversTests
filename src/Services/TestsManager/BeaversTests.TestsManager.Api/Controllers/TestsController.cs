@@ -70,7 +70,7 @@ public class TestsController(
         CancellationToken cancellationToken)
         where TInput : TestPackageBase
     {
-        logger.LogInformation("Adding test package {Name} to Project {Id}", testPackageInput.Name,
+        logger.LogDebug("Adding test package {Name} to Project {Id}", testPackageInput.Name,
             testPackageInput.TestProjectId);
 
         var testPackageContent = extractor.ExtractContent(testPackageInput);

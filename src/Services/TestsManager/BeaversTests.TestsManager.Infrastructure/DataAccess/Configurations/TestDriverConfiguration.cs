@@ -16,10 +16,6 @@ public class TestDriverConfiguration : IEntityTypeConfiguration<TestDriver>
         builder.Property(d => d.UserCreatorId)
             .HasMaxLength(50)
             .IsRequired();
-        
-        builder.Property(d => d.IsDefault)
-            .HasDefaultValue(false)
-            .IsRequired();
 
         builder.Property(d => d.Description)
             .HasMaxLength(250);
