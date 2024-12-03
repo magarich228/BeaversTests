@@ -7,11 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\BeaversTests.Common.S3.Abstractions\BeaversTests.Common.S3.Abstractions.csproj" />
+      <PackageReference Include="Microsoft.NET.Test.Sdk" />
+      <PackageReference Include="NUnit" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Minio" />
+      <ProjectReference Include="..\..\BeaversTests.S3.MinioProvider\BeaversTests.S3.MinioProvider.csproj" />
     </ItemGroup>
 
 </Project>
