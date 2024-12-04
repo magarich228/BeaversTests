@@ -6,6 +6,8 @@ using Minio.DataModel.Args;
 
 namespace BeaversTests.S3.MinioProvider;
 
+// TODO: Абстрагироваться от Minio.
+// TODO: Организовать бакеты по проектам.
 public class MinioS3Provider(
     IMinioClient minioClient,
     ILogger<MinioS3Provider> logger) : IS3Provider
@@ -14,12 +16,16 @@ public class MinioS3Provider(
     
     public async Task<FileSystemEntity> GetAsync(string bucketName, CancellationToken cancellationToken = default)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(bucketName, nameof(bucketName));
+        
+        // bug https://github.com/minio/minio-dotnet/issues/1041
+        // find stable version of minio or choose another client
         if (!await minioClient.BucketExistsAsync(
                 new BucketExistsArgs()
                     .WithBucket(bucketName), 
                 cancellationToken))
         {
-            // throw new ApplicationException("Bucket with this testPackageId does not exists");
+            throw new ApplicationException($"Bucket with this name ({bucketName}) does not exists.");
         }
         
         var items = minioClient.ListObjectsEnumAsync(
@@ -41,8 +47,6 @@ public class MinioS3Provider(
                     .WithCallbackStream(async (stream, token) => 
                         itemsData.Add(objectKey, await GetObjectData(stream, token))),
                 cancellationToken);
-            
-            
         }
 
         logger.LogInformation("Item from {BucketName} was downloaded", bucketName);
@@ -50,52 +54,13 @@ public class MinioS3Provider(
         return null;
     }
 
-    public Task UploadToAsync(string bucketName, FileSystemEntity @object, CancellationToken cancellationToken = default)
+    public async Task UploadToAsync(string bucketName, FileSystemEntity @object, CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task RemoveBucketAsync(string bucketName, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-    
-    private async Task<byte[]> GetObjectData(
-        Stream objectStream, 
-        CancellationToken cancellationToken)
-    {
-        await using var ms = new MemoryStream();
-        
-        await objectStream.CopyToAsync(ms, cancellationToken);
-        await objectStream.FlushAsync(cancellationToken);
-
-        await objectStream.DisposeAsync();
-
-        return ms.ToArray();
-    }
-}
-
-// TODO: Сделать фасадом и выделить?
-// TODO: Абстрагироваться от Minio.
-// TODO: Организовать бакеты по проектам.
-public class TestsStorageService(
-    IMinioClient minioClient,
-    ILogger<TestsStorageService> logger)// : ITestsStorageService
-{
-    private const string TestPackageItemContentType = "application/octet-stream";
-    
-    public async Task AddTestPackageAsync(
-        Guid entityId,
-        FileSystemEntity testPackageContent,
-        CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(testPackageContent, nameof(testPackageContent));
-
-        var bucketName = GetBucketName(entityId);
+        ArgumentException.ThrowIfNullOrWhiteSpace(bucketName, nameof(bucketName));
+        ArgumentNullException.ThrowIfNull(@object, nameof(@object));
 
         logger.LogInformation(
-            "Test package {entityId} bucket name: {BucketName}", 
-            entityId, 
+            "New bucket name: {BucketName}", 
             bucketName);
         
         // bug https://github.com/minio/minio-dotnet/issues/1041
@@ -111,18 +76,14 @@ public class TestsStorageService(
         // TODO: Configure bucket access, lifecycle, versioning...
         await minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(bucketName), cancellationToken);
 
-        await AddTestPackageInternalAsync(testPackageContent, bucketName, cancellationToken);
+        await UploadInternalAsync(@object, bucketName, cancellationToken);
     }
-    
-    public async Task RemoveTestPackageAsync(
-        Guid testPackageId, 
-        CancellationToken cancellationToken = default)
-    {
-        var bucketName = GetBucketName(testPackageId);
 
+    public async Task RemoveBucketAsync(string bucketName, CancellationToken cancellationToken = default)
+    {
         var items = minioClient.ListObjectsEnumAsync(new ListObjectsArgs()
-            .WithBucket(bucketName)
-            .WithRecursive(true), cancellationToken)
+                .WithBucket(bucketName)
+                .WithRecursive(true), cancellationToken)
             .ToBlockingEnumerable();
         
         var deleteErrors = await minioClient.RemoveObjectsAsync(
@@ -144,38 +105,55 @@ public class TestsStorageService(
                 .WithBucket(bucketName), 
             cancellationToken);
     }
+    
+    public void Dispose()
+    {
+        minioClient.Dispose();
+    }
+    
+    private async Task<byte[]> GetObjectData(
+        Stream objectStream, 
+        CancellationToken cancellationToken)
+    {
+        await using var ms = new MemoryStream();
+        
+        await objectStream.CopyToAsync(ms, cancellationToken);
+        await objectStream.FlushAsync(cancellationToken);
 
-    private string GetBucketName(Guid assemblyId) => $"tests-{assemblyId}";
+        await objectStream.DisposeAsync();
 
-    private async Task AddTestPackageInternalAsync(FileSystemEntity content, string bucketName, CancellationToken cancellationToken)
+        return ms.ToArray();
+    }
+    
+    private async Task UploadInternalAsync(FileSystemEntity content, string bucketName, CancellationToken cancellationToken)
     {
         var root = new BeaversTestsDirectory()
         {
             DirectoryName = string.Empty, //root
             Directories = content.Directories,
-            TestFiles = content.TestFiles
+            TestFiles = content.Files
         };
 
-        await AddTestDirectoryAsync(root, string.Empty, bucketName, cancellationToken);
+        await AddDirectoryAsync(root, string.Empty, bucketName, cancellationToken);
     }
     
-    private async Task AddTestDirectoryAsync(BeaversTestsDirectory rootDirectory, string previousPath, string bucketName, CancellationToken cancellationToken)
+    private async Task AddDirectoryAsync(BeaversTestsDirectory rootDirectory, string previousPath, string bucketName, CancellationToken cancellationToken)
     {
         foreach (var file in rootDirectory.TestFiles)
         {
-            await AddTestFileAsync(file, previousPath, bucketName, cancellationToken);
+            await AddFileAsync(file, previousPath, bucketName, cancellationToken);
         }
         
         foreach (var subDir in rootDirectory.Directories)
         {
-            await AddTestDirectoryAsync(subDir, Path.Combine(previousPath, subDir.DirectoryName), bucketName, cancellationToken);
+            await AddDirectoryAsync(subDir, $"{previousPath}/{subDir.DirectoryName}", bucketName, cancellationToken);
         }
     }
     
-    private async Task AddTestFileAsync(BeaversTestsFile file, string dirPath, string bucketName, CancellationToken cancellationToken)
+    private async Task AddFileAsync(BeaversTestsFile file, string dirPath, string bucketName, CancellationToken cancellationToken)
     {
         using var streamData = new MemoryStream(file.Content);
-        var fullPath = Path.Combine(dirPath, file.Name);
+        var fullPath = $"{dirPath}/{file.Name}";//Path.Combine(dirPath, file.Name);
 
         logger.LogDebug("Object {ObjectKey} with size {ObjectSize} put it {BucketName}", 
             fullPath, streamData.Length, bucketName);

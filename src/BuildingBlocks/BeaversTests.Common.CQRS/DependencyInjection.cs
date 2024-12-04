@@ -47,12 +47,13 @@ public static class DependencyInjection
 
         switch (eventStoreType)
         {
-            case "Postgres":
+            case PostgresEventStoreConstants.PostgresEventStoreType:
                 services.AddPostgresEventStore(configuration);
                 break;
             
             default: 
-                throw new ArgumentOutOfRangeException("Unknown eventStoreTypeValue. value: " + eventStoreType);
+                throw new ArgumentOutOfRangeException($"Unknown event store type: {eventStoreType}." +
+                                                      $"Check configuration with key: {EventStoreTypeConfigurationKey}.");
         }
         
         services.AddScoped<IEventStore, EventStore>();

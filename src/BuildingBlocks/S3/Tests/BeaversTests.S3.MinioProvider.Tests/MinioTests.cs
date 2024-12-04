@@ -1,6 +1,5 @@
 ﻿using BeaversTests.Common.S3.Abstractions;
-using Microsoft.Extensions.Logging;
-using Minio;
+using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 
 namespace BeaversTests.S3.MinioProvider.Tests;
@@ -9,22 +8,39 @@ namespace BeaversTests.S3.MinioProvider.Tests;
 [TestFixture]
 public class MinioTests
 {
-    private IS3Provider? _s3Provider = default;
-
-    [SetUp]
-    public void SetupProvider()
-    {
-        var loggerFactory = new LoggerFactory();
-        var client = new MinioClient();
-     
-        // TODO: Add minio configuration
-        
-        _s3Provider = new MinioS3Provider(client, loggerFactory.CreateLogger<MinioS3Provider>());
-    }
+    private const string TestBucketName = "test-bucket";
     
     [Test]
-    public void GetAsyncTest()
+    public async Task UploadGetRemoveAsyncTest()
     {
+        using var minioProvider = Global.ServiceProvider.GetRequiredService<IS3Provider>();
+        var entity = DirectoryEntity.Create();
+
+        await minioProvider.UploadToAsync(TestBucketName, entity);
+
+        var resultEntity = await minioProvider.GetAsync(TestBucketName);
         
+        Assert.That(resultEntity, Is.Not.Null);
+        
+        await minioProvider.RemoveBucketAsync(TestBucketName);
+        
+        // TODO: get async
+        Assert.Pass();
     }
+    
+    // [Test]
+    // public async Task GetAsyncTest()
+    // {
+    //     using var minioProvider = Global.ServiceProvider.GetRequiredService<IS3Provider>();
+    //
+    //     
+    // }
+    //
+    // [Test]
+    // public async Task RemoveBucketAsyncTest()
+    // {
+    //     using var minioProvider = Global.ServiceProvider.GetRequiredService<IS3Provider>();
+    //     
+    //     
+    // }
 }

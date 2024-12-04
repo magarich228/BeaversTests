@@ -85,7 +85,7 @@ public class TestsStorageService(
         {
             DirectoryName = string.Empty, //root
             Directories = content.Directories,
-            TestFiles = content.TestFiles
+            TestFiles = content.Files
         };
 
         await AddTestDirectoryAsync(root, string.Empty, bucketName, cancellationToken);

@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\S3\BeaversTests.S3.MinioProvider\BeaversTests.S3.MinioProvider.csproj" />
+    </ItemGroup>
+
 </Project>
