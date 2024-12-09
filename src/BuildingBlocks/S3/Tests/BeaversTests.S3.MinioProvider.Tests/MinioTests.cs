@@ -18,29 +18,15 @@ public class MinioTests
 
         await minioProvider.UploadToAsync(TestBucketName, entity);
 
-        var resultEntity = await minioProvider.GetAsync(TestBucketName);
+        var resultEntity = await minioProvider.GetAsync<DirectoryEntity>(TestBucketName);
         
         Assert.That(resultEntity, Is.Not.Null);
+        Assert.That(resultEntity.Files.Count(), Is.EqualTo(entity.Files.Count()));
+        Assert.That(resultEntity.Directories.Count(), Is.EqualTo(entity.Directories.Count())); // TODO: нормальные проверки.
         
         await minioProvider.RemoveBucketAsync(TestBucketName);
         
         // TODO: get async
         Assert.Pass();
     }
-    
-    // [Test]
-    // public async Task GetAsyncTest()
-    // {
-    //     using var minioProvider = Global.ServiceProvider.GetRequiredService<IS3Provider>();
-    //
-    //     
-    // }
-    //
-    // [Test]
-    // public async Task RemoveBucketAsyncTest()
-    // {
-    //     using var minioProvider = Global.ServiceProvider.GetRequiredService<IS3Provider>();
-    //     
-    //     
-    // }
 }

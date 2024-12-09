@@ -14,9 +14,12 @@ public class MinioS3Provider(
 {
     private const string TestPackageItemContentType = "application/octet-stream";
     
-    public async Task<FileSystemEntity> GetAsync(string bucketName, CancellationToken cancellationToken = default)
+    public async Task<FileSystemEntity> GetAsync<TEntity>(string bucketName, CancellationToken cancellationToken = default)
+        where TEntity : FileSystemEntity, new()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(bucketName, nameof(bucketName));
+
+        var resolver = new FileSystemEntityFileResolver();
         
         // bug https://github.com/minio/minio-dotnet/issues/1041
         // find stable version of minio or choose another client
@@ -34,7 +37,7 @@ public class MinioS3Provider(
                 .WithRecursive(true),
             cancellationToken);
 
-        var itemsData = new Dictionary<string, byte[]>();
+        var context = new FileSystemEntityContext();
         
         await foreach (var item in items)
         {
@@ -44,14 +47,17 @@ public class MinioS3Provider(
                 new GetObjectArgs()
                     .WithBucket(bucketName)
                     .WithObject(objectKey)
-                    .WithCallbackStream(async (stream, token) => 
-                        itemsData.Add(objectKey, await GetObjectData(stream, token))),
+                    .WithCallbackStream(async (stream, token) => await resolver.ResolveFromAsync(
+                        context,
+                        item,
+                        stream,
+                        token)),
                 cancellationToken);
         }
 
         logger.LogInformation("Item from {BucketName} was downloaded", bucketName);
-
-        return null;
+        
+        return context.ToEntity<TEntity>();
     }
 
     public async Task UploadToAsync(string bucketName, FileSystemEntity @object, CancellationToken cancellationToken = default)
@@ -109,20 +115,6 @@ public class MinioS3Provider(
     public void Dispose()
     {
         minioClient.Dispose();
-    }
-    
-    private async Task<byte[]> GetObjectData(
-        Stream objectStream, 
-        CancellationToken cancellationToken)
-    {
-        await using var ms = new MemoryStream();
-        
-        await objectStream.CopyToAsync(ms, cancellationToken);
-        await objectStream.FlushAsync(cancellationToken);
-
-        await objectStream.DisposeAsync();
-
-        return ms.ToArray();
     }
     
     private async Task UploadInternalAsync(FileSystemEntity content, string bucketName, CancellationToken cancellationToken)

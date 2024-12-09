@@ -2,6 +2,6 @@
 
 public abstract class FileSystemEntity
 {
-    public required IEnumerable<BeaversTestsFile> Files { get; init; }
-    public required IEnumerable<BeaversTestsDirectory> Directories { get; init; }
+    public IEnumerable<BeaversTestsFile> Files { get; init; } = new List<BeaversTestsFile>();
+    public IEnumerable<BeaversTestsDirectory> Directories { get; init; } = new List<BeaversTestsDirectory>();
 }
