@@ -1,9 +1,11 @@
 ﻿using System.Runtime.CompilerServices;
 using BeaversTests.Common.CQRS.Abstractions;
+using FluentValidation;
 using Newtonsoft.Json;
 
 namespace BeaversTests.Common.CQRS;
 
+// TODO: Изучить и добавить снэпшоты и проекции.
 public class EventStore(IStore store, IEventBus eventBus) : IEventStore
 {
     public async Task AppendEventAsync<TAggregate>(
@@ -26,15 +28,15 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         {
             if (versions.Contains(expectedVersion.Value))
             {
-                // TODO: custom exception
-                throw new Exception($"Version '{expectedVersion.Value}' already exists for stream '{aggregateId}'");
+                throw new EventStoreException($"Version '{expectedVersion.Value}' already exists for stream '{aggregateId}'");
             }
             
             version = expectedVersion.Value;
         }
         else
         {
-            version = versions.DefaultIfEmpty(0).Max() + 1;
+            version = versions.DefaultIfEmpty(0)
+                .Max() + 1;
         }
 
         var stream = new StreamState
@@ -60,11 +62,10 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
         
         foreach (var @event in events)
         {
-            // TODO: custom exception
             // TODO: вынести сериализацию, десериализацию в общее
             var eventType = aggregate.GetAppliedEventType(@event.Type);
             var eventData = (IEvent?)JsonConvert.DeserializeObject(@event.Data, eventType) ??
-                            throw new ApplicationException();
+                            throw new EventStoreException("Can't deserialize event. Event data is null. Event type: " + @event.Type);
             
             aggregate.Apply(eventData);
             aggregate.CreatedUtc = @event.CreatedUtc;
@@ -130,4 +131,8 @@ public class EventStore(IStore store, IEventBus eventBus) : IEventStore
     {
         return type.GetTypeName();
     }
+    
+    public class EventStoreException(
+        string? message = null,
+        Exception? innerException = null) : CqrsInfrastructureException(message, innerException) {}
 }

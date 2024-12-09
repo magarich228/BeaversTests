@@ -12,6 +12,8 @@ public class TestRunnerFinalizedEventHandlerReadDb(
 {
     public async Task Handle(TestRunnerFinalizedEvent notification, CancellationToken cancellationToken)
     {
+        logger.LogInformation("Test agent {Notification} finalized event has been received.", notification.Id);
+        
         var testAgent = await db.TestAgents.FindAsync([notification.Id], cancellationToken);
 
         if (testAgent == null)

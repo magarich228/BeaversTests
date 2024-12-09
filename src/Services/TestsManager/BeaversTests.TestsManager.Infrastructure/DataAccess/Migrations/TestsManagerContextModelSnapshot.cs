@@ -17,12 +17,37 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.3")
+                .HasAnnotation("ProductVersion", "8.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.BeaversTestPackage", b =>
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.TestDriver.TestDriver", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(25)
+                        .HasColumnType("character varying(25)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("character varying(250)");
+
+                    b.Property<bool>("IsDefault")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("TestDrivers");
+
+                    b.HasData(
+                        new
+                        {
+                            Key = "NUnit",
+                            IsDefault = true
+                        });
+                });
+
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.TestPackage.BeaversTestPackage", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,6 +70,17 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
                     b.Property<Guid>("TestProjectId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("ValidationMessage")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)")
+                        .HasDefaultValue("");
+
+                    b.Property<string>("ValidationStatus")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.HasAlternateKey("Name", "TestProjectId");
@@ -56,25 +92,7 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
                     b.ToTable("TestPackages");
                 });
 
-            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.TestDriver", b =>
-                {
-                    b.Property<string>("Key")
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(250)
-                        .HasColumnType("character varying(250)");
-
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("TestDrivers");
-                });
-
-            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.TestProject", b =>
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.TestProject.TestProject", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -89,22 +107,25 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.HasKey("Id");
+                    b.Property<string>("UserCreatorId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
-                    b.HasAlternateKey("Name");
+                    b.HasKey("Id");
 
                     b.ToTable("TestProjects");
                 });
 
-            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.BeaversTestPackage", b =>
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.TestPackage.BeaversTestPackage", b =>
                 {
-                    b.HasOne("BeaversTests.TestsManager.Core.Models.TestDriver", "TestDriver")
+                    b.HasOne("BeaversTests.TestsManager.Core.TestDriver.TestDriver", "TestDriver")
                         .WithMany("TestPackages")
                         .HasForeignKey("TestDriverKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BeaversTests.TestsManager.Core.Models.TestProject", "TestProject")
+                    b.HasOne("BeaversTests.TestsManager.Core.TestProject.TestProject", "TestProject")
                         .WithMany("TestPackages")
                         .HasForeignKey("TestProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -115,12 +136,12 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
                     b.Navigation("TestProject");
                 });
 
-            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.TestDriver", b =>
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.TestDriver.TestDriver", b =>
                 {
                     b.Navigation("TestPackages");
                 });
 
-            modelBuilder.Entity("BeaversTests.TestsManager.Core.Models.TestProject", b =>
+            modelBuilder.Entity("BeaversTests.TestsManager.Core.TestProject.TestProject", b =>
                 {
                     b.Navigation("TestPackages");
                 });

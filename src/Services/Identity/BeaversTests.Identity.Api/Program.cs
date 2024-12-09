@@ -1,15 +1,16 @@
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using BeaversTests.Api.Shared;
+using BeaversTests.Identity.Api.FirebaseAuth;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
+var configuration = builder.Configuration;
 
-services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(opt =>
-{
-    opt.Password.RequiredUniqueChars = 0;
-    opt.Password.RequireDigit = false;
-}).AddEntityFrameworkStores<IdentityDbContext<IdentityUser>>();
+services.AddShared();
+services.AddAuthInternal(configuration)
+    .AddAuth();
+
+services.AddControllers();
 
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
@@ -19,4 +20,8 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.Run();
+app.MapControllers();
+
+app.UseAuth();
+
+await app.RunAsync();

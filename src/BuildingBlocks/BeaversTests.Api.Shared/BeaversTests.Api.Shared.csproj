@@ -8,7 +8,12 @@
 
     <ItemGroup>
       <PackageReference Include="FluentValidation" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
       <PackageReference Include="Swashbuckle.AspNetCore" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BeaversTests.Common.Application\BeaversTests.Common.Application.csproj" />
     </ItemGroup>
 
 </Project>

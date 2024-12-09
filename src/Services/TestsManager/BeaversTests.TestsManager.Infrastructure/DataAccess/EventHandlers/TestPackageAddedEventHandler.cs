@@ -3,21 +3,26 @@ using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.TestPackage;
 using BeaversTests.TestsManager.Events.TestPackage;
+using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.Infrastructure.DataAccess.EventHandlers;
 
-public class TestPackageAddedEventHandler(ITestsManagerContext db) : IEventHandler<TestPackageAddedEvent>
+public class TestPackageAddedEventHandler(
+    ITestsManagerContext db,
+    ILogger<TestPackageAddedEventHandler> logger) : IEventHandler<TestPackageAddedEvent>
 {
     public async Task Handle(TestPackageAddedEvent notification, CancellationToken cancellationToken)
     {
-        // TODO: map?
+        logger.LogInformation("Test package {TestPackageId} added event has been received.", notification.Id);
+        
         var testPackage = new BeaversTestPackage()
         {
             Id = notification.Id,
             Name = notification.Name,
             Description = notification.Description,
             TestDriverKey = notification.TestDriverKey,
-            TestProjectId = notification.TestProjectId
+            TestProjectId = notification.TestProjectId,
+            ValidationStatus = TestPackageValidationResult.InProgress
         };
         
         await db.TestPackages.AddAsync(testPackage, cancellationToken);

@@ -4,7 +4,7 @@ using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.App;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Commands;
-using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.App.Dtos.TestPackage;
 using BeaversTests.TestsManager.App.Queries;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +16,7 @@ public class TestsController(
     IQueryBus queryBus,
     ICommandBus commandBus,
     ILogger<TestsController> logger,
-    TestPackageExtractor extractor) : ControllerBase
+    EntityContentExtractor extractor) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetProjectTestPackagesAsync(
@@ -70,13 +70,29 @@ public class TestsController(
         CancellationToken cancellationToken)
         where TInput : TestPackageBase
     {
-        logger.LogInformation("Adding test package {Name} to Project {Id}", testPackageInput.Name,
+        logger.LogDebug("Adding test package {Name} to Project {Id}", testPackageInput.Name,
             testPackageInput.TestProjectId);
 
-        var newTestPackageDto = extractor.ExtractTestPackage(testPackageInput);
+        var testPackageContent = extractor.ExtractContent(testPackageInput);
+        
+        var testPackageContentDto = new NewTestPackageContentDto()
+        {
+            Files = testPackageContent.Files,
+            Directories = testPackageContent.Directories
+        };
+        
+        var newTestPackage = new NewTestPackageDto()
+        {
+            Name = testPackageInput.Name,
+            Description = testPackageInput.Description,
+            TestDriver = testPackageInput.TestPackageType,
+            TestProjectId = testPackageInput.TestProjectId,
+            Content = testPackageContentDto
+        };
+        
         var command = new AddTestPackageCommand.Command()
         {
-            TestPackage = newTestPackageDto
+            TestPackage = newTestPackage
         };
 
         var commandResult = await commandBus.SendAsync(command, cancellationToken);

@@ -1,3 +1,146 @@
 ﻿{
-  
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5008"
+  },
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/projects/getall",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/getall",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects/getById",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/getById",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects/create",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/create",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects/update",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/update",
+      "UpstreamHttpMethod": [ "PUT" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/projects/delete",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/projects/delete",
+      "UpstreamHttpMethod": [ "DELETE" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Auth/SignUp",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5030
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/signup",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "identity"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Auth/Login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5030
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/login",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "identity"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Auth/Logout",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5030
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/logout",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "identity"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Auth/Secure",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5030
+        }
+      ],
+      "UpstreamPathTemplate": "/api/auth/secure",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "identity"
+    }
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "testsManager",
+      "Config": [
+        {
+          "Name": "Tests manager service API",
+          "Version": "v1",
+          "Url": "http://localhost:5174/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "identity",
+      "Config": [
+        {
+          "Name": "Identity service API",
+          "Version": "v1",
+          "Url": "http://localhost:5030/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
 }

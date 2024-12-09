@@ -1,9 +1,11 @@
 ﻿using BeaversTests.Api.Shared.Middlewares;
 using BeaversTests.Common.CQRS.Abstractions;
+using BeaversTests.TestRunnerController.Events;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.Api.Services;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Events.TestPackage;
+using BeaversTests.TestsManager.Events.TestProject;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 
 namespace BeaversTests.TestsManager.Api;
@@ -15,7 +17,9 @@ public static class DependencyInjection
         services.AddMediatR(conf => conf.RegisterServicesFromAssemblies(
             typeof(TestPackageBase).Assembly,
             typeof(TestsManagerContext).Assembly));
-        services.AddTransient<ITestPackageContentExtractor<TestPackageZipDto>, ZipTestPackageContentExtractor>();
+        
+        services.AddTransient<IFileSystemEntityContentExtractor<IEntityZipContent>, ZipEntityContentExtractor>();
+        services.AddTransient<IFileSystemEntityContentExtractor<IEntityBase64Content>, Base64EntityContentExtractor>();
         
         return services;
     }
@@ -26,7 +30,13 @@ public static class DependencyInjection
 
         var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
 
+        messageBroker.SubscribeAsync<TestProjectAddedEvent>();
+        messageBroker.SubscribeAsync<TestProjectUpdatedEvent>();
+        messageBroker.SubscribeAsync<TestProjectDeletedEvent>();
+        
         messageBroker.SubscribeAsync<TestPackageAddedEvent>();
+        messageBroker.SubscribeAsync<TestPackageValidationStatusEvent>();
+        messageBroker.SubscribeAsync<TestPackageValidationIsNotPossibleEvent>();
         
         return app;
     }

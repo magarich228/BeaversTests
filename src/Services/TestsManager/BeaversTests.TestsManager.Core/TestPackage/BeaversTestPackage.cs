@@ -7,6 +7,8 @@ public class BeaversTestPackage
     public string? Description { get; init; }
     public required string TestDriverKey { get; init; }
     public required Guid TestProjectId { get; init; }
+    public required TestPackageValidationResult ValidationStatus { get; set; }
+    public string ValidationMessage { get; set; } = String.Empty;
     public TestDriver.TestDriver? TestDriver { get; init; }
     public TestProject.TestProject? TestProject { get; init; }
 }

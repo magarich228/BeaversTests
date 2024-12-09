@@ -1,8 +1,10 @@
-﻿namespace BeaversTests.TestRunnerAgent.App.Abstractions;
+﻿using BeaversTests.Common.Binary;
+
+namespace BeaversTests.TestRunnerAgent.App.Abstractions;
 
 public interface ITestsStorageReadService
 {
-    public Task<IDictionary<string, byte[]>> GetTestPackageAsync(
+    public Task<TestPackageContent> GetTestPackageAsync(
         Guid testPackageId,
         CancellationToken cancellationToken = default);
 }

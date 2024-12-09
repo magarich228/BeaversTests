@@ -13,17 +13,11 @@ public class TestDriverConfiguration : IEntityTypeConfiguration<TestDriver>
             .IsRequired()
             .HasMaxLength(25);
 
-        builder.Property(d => d.IsDefault)
+        builder.Property(d => d.UserCreatorId)
+            .HasMaxLength(50)
             .IsRequired();
 
         builder.Property(d => d.Description)
             .HasMaxLength(250);
-
-        // TODO: Temp
-        builder.HasData(new TestDriver()
-        {
-            Key = "NUnit",
-            IsDefault = true
-        });
     }
 }

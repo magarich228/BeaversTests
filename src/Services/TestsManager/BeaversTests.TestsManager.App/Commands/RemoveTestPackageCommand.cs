@@ -31,7 +31,7 @@ public abstract class RemoveTestPackageCommand
     
     public class Handler(
         ITestsManagerContext db, 
-        ITestsStorageService testsStorageService) : ICommandHandler<Command, Result>
+        ITestsStorageWriteService testsStorageWriteService) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
@@ -47,7 +47,7 @@ public abstract class RemoveTestPackageCommand
             
             db.TestPackages.Remove(removedTestPackage);
             
-            await testsStorageService.RemoveTestPackageAsync(removedTestPackage.Id, cancellationToken);
+            await testsStorageWriteService.RemoveTestPackageAsync(removedTestPackage.Id, cancellationToken);
 
             if (await db.SaveChangesAsync(cancellationToken) < 1)
             {

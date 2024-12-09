@@ -29,7 +29,6 @@ public class EventBus(
     {
         logger.LogInformation($"Commit stream {stream.Id} {stream.Type}");
         
-        // TODO: Проверить, протестить достаточно ли данных
         await messageBroker.PublishAsync(stream.Data, stream.Type, cancellationToken);
     }
 }

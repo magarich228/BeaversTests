@@ -1,11 +1,31 @@
+using Ocelot.DependencyInjection;
+using Ocelot.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+var services = builder.Services;
+var configuration = builder.Configuration;
+
+configuration
+    .AddJsonFile("ocelot.json", optional: false, reloadOnChange: true)
+    // .AddJsonFile("testsManager.ocelot.json", optional: false, reloadOnChange: true)
+    // .AddJsonFile("identity.ocelot.json", optional: false, reloadOnChange: true)
+    .AddEnvironmentVariables();
+
+// services.AddSwaggerGen();
+services.AddEndpointsApiExplorer();
+services.AddOcelot(configuration);
+services.AddSwaggerForOcelot(configuration);
+
+// services.AddEndpointsApiExplorer();
+// services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+await app.UseSwaggerForOcelotUI()
+    .UseOcelot();
 
-app.Run();
+// app.UseSwagger();
+// app.UseSwaggerUI();
+
+await app.RunAsync();

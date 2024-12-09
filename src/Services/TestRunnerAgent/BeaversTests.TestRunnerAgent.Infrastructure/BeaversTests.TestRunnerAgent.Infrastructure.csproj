@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.S3\BeaversTests.Common.S3.csproj" />
       <ProjectReference Include="..\BeaversTests.TestRunnerAgent.App\BeaversTests.TestRunnerAgent.App.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
-      <PackageReference Include="Minio" />
     </ItemGroup>
 
 </Project>

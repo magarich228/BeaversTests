@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using BeaversTests.Common.CQRS;
+using BeaversTests.Common.Binary;
 using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Dtos;
+using BeaversTests.TestsManager.App.Dtos.TestPackage;
 using BeaversTests.TestsManager.Core.TestPackage;
 using BeaversTests.TestsManager.Events.TestPackage;
 using FluentValidation;
@@ -82,7 +83,7 @@ public abstract class AddTestPackageCommand
                 DirectoryValidator = new DirectoryValidator()
             };
 
-            isValid |= await IsContentFilesValidAsync(context, content.TestFiles, cancellationToken);
+            isValid |= await IsContentFilesValidAsync(context, content.Files, cancellationToken);
 
             foreach (var directory in content.Directories)
             {
@@ -94,7 +95,7 @@ public abstract class AddTestPackageCommand
 
         private async Task<bool> IsContentDirectoryValidAsync(
             ContentValidationContext context,
-            NewTestPackageDirectoryInfo directory,
+            BeaversTestsDirectoryInfo directory,
             CancellationToken cancellationToken = default) =>
              (await context.DirectoryValidator.ValidateAsync(directory, cancellationToken)).IsValid &&
                    await IsContentFilesValidAsync(context, directory.TestFiles, cancellationToken) &&
@@ -104,12 +105,12 @@ public abstract class AddTestPackageCommand
 
         private Task<bool> IsContentFilesValidAsync(
             ContentValidationContext context,
-            IEnumerable<NewTestPackageFileInfo> files,
+            IEnumerable<BeaversTestsFileInfo> files,
             CancellationToken cancellationToken = default) =>
             Task.FromResult(files.All(f => context.FileValidator.ValidateAsync(f, cancellationToken).Result.IsValid));
 
 
-        private class FileValidator : AbstractValidator<NewTestPackageFileInfo>
+        private class FileValidator : AbstractValidator<BeaversTestsFileInfo>
         {
             private const string TestPackageMaxFileMbSizeConfigurationKey = "TestPackageMaxFileMbSize";
             
@@ -130,7 +131,7 @@ public abstract class AddTestPackageCommand
             }
         }
 
-        private class DirectoryValidator : AbstractValidator<NewTestPackageDirectoryInfo>
+        private class DirectoryValidator : AbstractValidator<BeaversTestsDirectoryInfo>
         {
             public DirectoryValidator()
             {
@@ -149,7 +150,7 @@ public abstract class AddTestPackageCommand
 
     public class Handler(
         IEventStore eventStore,
-        ITestsStorageService testsStorageService,
+        ITestsStorageWriteService testsStorageWriteService,
         IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
@@ -167,7 +168,7 @@ public abstract class AddTestPackageCommand
             var testPackageContent =
                  mapper.Map<NewTestPackageContentDto, TestPackageContent>(command.TestPackage.Content);
 
-            await testsStorageService.AddTestPackageAsync(@event.Id, testPackageContent, cancellationToken);
+            await testsStorageWriteService.AddTestPackageAsync(@event.Id, testPackageContent, cancellationToken);
             
             testPackage.ApplyCreated(@event);
 

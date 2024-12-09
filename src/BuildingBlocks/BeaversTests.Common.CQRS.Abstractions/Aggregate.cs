@@ -7,7 +7,6 @@ public abstract class Aggregate
     public Guid Id { get; protected set; }
     public int Version { get; protected internal set; } = 0;
     public DateTime CreatedUtc { get; protected internal set; }
-    public virtual string Name => "";
 
     [NonSerialized]
     private readonly List<IEvent> _uncommittedEvents = new();
@@ -23,7 +22,7 @@ public abstract class Aggregate
         return dequeuedEvents;
     }
 
-    protected internal void Apply<TEvent>(TEvent @event) where TEvent : IEvent
+    internal void Apply<TEvent>(TEvent @event) where TEvent : IEvent
     {
         var eventType = @event.GetType();
 

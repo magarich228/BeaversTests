@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.Application;
+using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
-using BeaversTests.TestsManager.App.Exceptions;
 using BeaversTests.TestsManager.Core.TestProject;
+using BeaversTests.TestsManager.Events.TestProject;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.App.Commands;
 
@@ -12,6 +15,8 @@ public abstract class CreateProjectCommand
 {
     public class Command : ICommand<Result>
     {
+        public Guid Id { get; } = Guid.NewGuid();
+        public string? UserId { get; internal set; }
         public required string Name { get; init; }
         public string? Description { get; init; }
     }
@@ -23,36 +28,48 @@ public abstract class CreateProjectCommand
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator(ITestsManagerContext db)
+        public Validator(ITestsManagerContext db, 
+            IUserService userService)
         {
+            // TODO: техдолг, придумать нормальный варик проверки агрегатов в Event store
             RuleFor(c => c.Name)
                 .NotEmpty()
                 .NotNull()
                 .MinimumLength(1)
                 .MaximumLength(50)
                 .MustAsync(async (c, name, token) => !await db.TestProjects
+                    .Where(t => t.UserCreatorId == userService.GetCurrentUserId())
                     .AnyAsync(t => t.Name == name, token))
                 .WithMessage("Test project with this name already exists.");
-
+        
             RuleFor(c => c.Description)
                 .MaximumLength(1000);
         }
     }
 
     public class Handler(
-        ITestsManagerContext db,
-        IMapper mapper) : ICommandHandler<Command, Result>
+        IEventStore eventStore,
+        IMapper mapper,
+        IUserService userService,
+        ILogger<Handler> logger) : ICommandHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken = default)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
         {
-            var project = mapper.Map<Command, TestProject>(request);
+            logger.LogDebug("Create test project command handler called.");
+            
+            var projectAggregate = new TestProjectAggregate();
 
-            var result = await db.TestProjects.AddAsync(project, cancellationToken);
+            command.UserId = userService.GetCurrentUserId();
+            var createdEvent = mapper.Map<TestProjectAddedEvent>(command);
+            
+            projectAggregate.ApplyCreated(createdEvent);
 
-            if (await db.SaveChangesAsync(cancellationToken) == 0)
-                throw new TestsManagerException("Failed to create project.");
+            await eventStore.StoreAsync(projectAggregate, cancellationToken);
 
-            return new Result {TestProjectId = result.Entity.Id};
+            return new Result()
+            {
+                TestProjectId = projectAggregate.Id
+            };
         }
     }
 }

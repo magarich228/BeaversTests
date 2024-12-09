@@ -19,9 +19,9 @@ public static class DependencyInjection
 
         services.AddAutoMapper(conf => conf.AddMaps(executingAssembly));
 
-        services.AddTransient<TestPackageExtractor>();
+        services.AddTransient<EntityContentExtractor>();
         
-        services.AddTestDrivers();
+        services.AddTestDrivers();  
         
         return services;
     }
