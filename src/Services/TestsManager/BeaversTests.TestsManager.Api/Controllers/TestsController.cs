@@ -77,7 +77,7 @@ public class TestsController(
         
         var testPackageContentDto = new NewTestPackageContentDto()
         {
-            TestFiles = testPackageContent.TestFiles,
+            Files = testPackageContent.Files,
             Directories = testPackageContent.Directories
         };
         

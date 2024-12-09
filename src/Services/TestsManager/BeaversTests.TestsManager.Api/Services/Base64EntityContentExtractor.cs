@@ -16,7 +16,7 @@ public class Base64EntityContentExtractor : IFileSystemEntityContentExtractor<IE
         
         var result = new EntityContentDto()
         {
-            TestFiles = files,
+            Files = files,
             Directories = directories
         };
 

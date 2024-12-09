@@ -83,7 +83,7 @@ public abstract class AddTestPackageCommand
                 DirectoryValidator = new DirectoryValidator()
             };
 
-            isValid |= await IsContentFilesValidAsync(context, content.TestFiles, cancellationToken);
+            isValid |= await IsContentFilesValidAsync(context, content.Files, cancellationToken);
 
             foreach (var directory in content.Directories)
             {

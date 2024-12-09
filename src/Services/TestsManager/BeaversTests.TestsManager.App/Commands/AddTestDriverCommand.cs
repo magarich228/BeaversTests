@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BeaversTests.Common.Application;
+using BeaversTests.Common.Binary;
 using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
@@ -39,10 +40,10 @@ public class AddTestDriverCommand
 
     public class Handler(
         IEventStore eventStore,
-        ITestsStorageWriteService testsStorageWriteService,
+        IDriversStorageWriteService driversStorageWriteService,
         IUserService userService,
         IMapper mapper,
-        Logger<Handler> logger) : ICommandHandler<Command, Result>
+        ILogger<Handler> logger) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
@@ -54,6 +55,11 @@ public class AddTestDriverCommand
             var addedEvent = mapper.Map<TestDriverAddedEvent>(command.TestDriver);
             
             driverAggregate.ApplyAdded(addedEvent);
+
+            var contentDto = command.TestDriver.Content;
+            var content = mapper.Map<NewTestDriverContentDto, TestDriverContent>(contentDto);
+            
+            await driversStorageWriteService.AddTestDriverAsync(command.TestDriver.Key, content, cancellationToken);
             
             await eventStore.StoreAsync(driverAggregate, cancellationToken);
 

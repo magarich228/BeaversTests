@@ -5,8 +5,8 @@ namespace BeaversTests.TestsManager.Core.TestDriver;
 
 public class TestDriverAggregate : Aggregate
 {
-    public string Key { get; private set; }
-    public string UserCreatorId { get; private set; }
+    public string Key { get; private set; } = null!;
+    public string UserCreatorId { get; private set; } = null!;
     public string? Description { get; private set; }
     public bool IsDeleted { get; private set; }
 

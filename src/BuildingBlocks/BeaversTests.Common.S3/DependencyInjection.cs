@@ -6,7 +6,7 @@ namespace BeaversTests.Common.S3;
 
 public static class DependencyInjection
 {
-    private const string S3ProviderConfigurationKey = "S3ProviderType";
+    private const string S3ProviderConfigurationKey = "S3:ProviderType";
     
     public static IServiceCollection AddS3(this IServiceCollection services, IConfiguration configuration)
     {

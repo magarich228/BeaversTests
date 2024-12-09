@@ -6,11 +6,13 @@ using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Commands;
 using BeaversTests.TestsManager.App.Dtos.TestDriver;
 using BeaversTests.TestsManager.App.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeaversTests.TestsManager.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]/[action]")]
 public class DriversController(
     ICommandBus commandBus,
@@ -60,7 +62,7 @@ public class DriversController(
         var driverContentDto = new NewTestDriverContentDto()
         {
             Directories = driverContent.Directories,
-            TestFiles = driverContent.TestFiles
+            Files = driverContent.Files
         };
 
         var newTestDriver = new NewTestDriverDto
@@ -77,6 +79,6 @@ public class DriversController(
         
         var commandResult = await commandBus.SendAsync(command, cancellationToken);
 
-        return Ok(commandResult);
+        return Accepted(commandResult);
     }
 }

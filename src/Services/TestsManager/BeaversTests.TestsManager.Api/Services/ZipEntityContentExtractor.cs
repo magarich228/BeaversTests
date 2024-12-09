@@ -36,7 +36,7 @@ public class ZipEntityContentExtractor : IFileSystemEntityContentExtractor<IEnti
         
         return new EntityContentDto()
         {
-            TestFiles = context.Files,
+            Files = context.Files,
             Directories = context.Directories
         };
     }
