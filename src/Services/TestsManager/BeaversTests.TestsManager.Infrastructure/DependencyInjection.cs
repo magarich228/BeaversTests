@@ -1,17 +1,16 @@
-﻿using BeaversTests.TestsManager.App.Abstractions;
+﻿using BeaversTests.Common.S3;
+using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
 using BeaversTests.TestsManager.Infrastructure.S3Access.Minio;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Minio;
 
 namespace BeaversTests.TestsManager.Infrastructure;
 
 public static class DependencyInjection
 {
     private const string TestsManagerNpgsqlKey = "TestManagerNpgsql";
-    private const string MinioS3SectionKey = "S3:Minio";
     
     public static IServiceCollection AddTestsManagerInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
@@ -23,17 +22,10 @@ public static class DependencyInjection
         
         services.AddScoped<ITestsManagerContext, TestsManagerContext>();
 
-        MinioConfiguration minioConfiguration = new();
-        configuration
-            .GetSection(MinioS3SectionKey)
-            .Bind(minioConfiguration);
-        
-        services.AddMinio(c => c
-            .WithEndpoint(minioConfiguration.Endpoint)
-            .WithCredentials(minioConfiguration.AccessKey, minioConfiguration.SecretKey)
-            .WithSSL(minioConfiguration.UseSsl));
+        services.AddS3(configuration);
 
-        services.AddSingleton<ITestsStorageService, TestsStorageService>();
+        services.AddSingleton<IDriversStorageWriteService, DriversStorageWriteService>();
+        services.AddSingleton<ITestsStorageWriteService, TestsStorageWriteService>();
         
         return services;
     }

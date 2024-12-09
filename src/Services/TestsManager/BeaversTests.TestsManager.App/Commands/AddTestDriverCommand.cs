@@ -39,7 +39,7 @@ public class AddTestDriverCommand
 
     public class Handler(
         IEventStore eventStore,
-        ITestsStorageService testsStorageService,
+        ITestsStorageWriteService testsStorageWriteService,
         IUserService userService,
         IMapper mapper,
         Logger<Handler> logger) : ICommandHandler<Command, Result>

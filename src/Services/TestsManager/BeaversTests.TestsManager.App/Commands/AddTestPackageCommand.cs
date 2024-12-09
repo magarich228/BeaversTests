@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.Binary;
 using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.TestsManager.App.Abstractions;
@@ -149,7 +150,7 @@ public abstract class AddTestPackageCommand
 
     public class Handler(
         IEventStore eventStore,
-        ITestsStorageService testsStorageService,
+        ITestsStorageWriteService testsStorageWriteService,
         IMapper mapper) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken = default)
@@ -167,7 +168,7 @@ public abstract class AddTestPackageCommand
             var testPackageContent =
                  mapper.Map<NewTestPackageContentDto, TestPackageContent>(command.TestPackage.Content);
 
-            await testsStorageService.AddTestPackageAsync(@event.Id, testPackageContent, cancellationToken);
+            await testsStorageWriteService.AddTestPackageAsync(@event.Id, testPackageContent, cancellationToken);
             
             testPackage.ApplyCreated(@event);
 

@@ -12,7 +12,7 @@ public static class DependencyInjection
     {
         services.AddMediatR(conf => conf.RegisterServicesFromAssemblies(
             typeof(BeaversTests.TestRunnerAgent.App.DependencyInjection).Assembly,
-            typeof(TestsStorageService).Assembly));
+            typeof(TestsStorageReadService).Assembly));
         
         return services;
     }

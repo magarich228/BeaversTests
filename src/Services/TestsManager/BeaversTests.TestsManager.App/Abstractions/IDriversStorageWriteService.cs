@@ -1,16 +1,15 @@
 ﻿using BeaversTests.Common.Binary;
-using BeaversTests.TestsManager.Core;
 
 namespace BeaversTests.TestsManager.App.Abstractions;
 
-public interface ITestsStorageService
+public interface IDriversStorageWriteService
 {
-    public Task AddTestPackageAsync(
-        Guid testPackageId, 
+    public Task AddTestDriverAsync(
+        string testDriverKey, 
         FileSystemEntity testPackageContent,
         CancellationToken cancellationToken = default);
 
-    Task RemoveTestPackageAsync(
-        Guid testPackageId,
+    Task RemoveTestDriverAsync(
+        string testDriverKey,
         CancellationToken cancellationToken = default);
 }

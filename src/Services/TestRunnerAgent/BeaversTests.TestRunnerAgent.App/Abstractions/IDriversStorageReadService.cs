@@ -2,9 +2,9 @@
 
 namespace BeaversTests.TestRunnerAgent.App.Abstractions;
 
-public interface ITestsStorageReadService
+public interface IDriversStorageReadService
 {
-    public Task<TestPackageContent> GetTestPackageAsync(
-        Guid testPackageId,
+    public Task<TestDriverContent> GetTestDriverAsync(
+        string testDriverKey,
         CancellationToken cancellationToken = default);
 }

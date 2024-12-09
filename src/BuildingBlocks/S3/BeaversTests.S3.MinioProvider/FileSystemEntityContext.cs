@@ -7,7 +7,7 @@ internal class FileSystemEntityContext
     public List<BeaversTestsFile> Files { get; } = new();
     public List<BeaversTestsDirectory> Directories { get; } = new();
     
-    public FileSystemEntity ToEntity<TEntity>() 
+    public TEntity ToEntity<TEntity>() 
         where TEntity : FileSystemEntity, new() => new TEntity()
     {
         Files = Files,

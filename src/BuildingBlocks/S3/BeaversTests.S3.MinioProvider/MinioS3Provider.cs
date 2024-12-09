@@ -6,15 +6,14 @@ using Minio.DataModel.Args;
 
 namespace BeaversTests.S3.MinioProvider;
 
-// TODO: Абстрагироваться от Minio.
-// TODO: Организовать бакеты по проектам.
+// TODO: Организовать бакеты по проектам?
 public class MinioS3Provider(
     IMinioClient minioClient,
     ILogger<MinioS3Provider> logger) : IS3Provider
 {
     private const string TestPackageItemContentType = "application/octet-stream";
     
-    public async Task<FileSystemEntity> GetAsync<TEntity>(string bucketName, CancellationToken cancellationToken = default)
+    public async Task<TEntity> GetAsync<TEntity>(string bucketName, CancellationToken cancellationToken = default)
         where TEntity : FileSystemEntity, new()
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(bucketName, nameof(bucketName));
@@ -110,6 +109,8 @@ public class MinioS3Provider(
             new RemoveBucketArgs()
                 .WithBucket(bucketName), 
             cancellationToken);
+        
+        logger.LogInformation("Bucket {BucketName} was removed", bucketName);
     }
     
     public void Dispose()

@@ -38,7 +38,7 @@ public abstract class GetTestPackageInfoQuery
 
     public class Handler(
         ITestsManagerContext db,
-        ITestsStorageService testsStorageService,
+        ITestsStorageWriteService testsStorageWriteService,
         TestDriversResolver testDriversResolver,
         ILogger<Handler> logger) : IQueryHandler<Query, Result>
     {
@@ -55,7 +55,7 @@ public abstract class GetTestPackageInfoQuery
             //     return new Result();
             // }
             //
-            // var testPackageItems = await testsStorageService.GetTestPackageAsync(testPackageId, cancellationToken);
+            // var testPackageItems = await testsStorageWriteService.GetTestPackageAsync(testPackageId, cancellationToken);
             //
             // var testsExplorer = testDriversResolver.ResolveTestsExplorer(testPackage.TestDriverKey);
             //

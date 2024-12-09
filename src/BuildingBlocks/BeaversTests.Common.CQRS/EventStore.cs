@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 namespace BeaversTests.Common.CQRS;
 
+// TODO: Изучить и добавить снэпшоты и проекции.
 public class EventStore(IStore store, IEventBus eventBus) : IEventStore
 {
     public async Task AppendEventAsync<TAggregate>(
