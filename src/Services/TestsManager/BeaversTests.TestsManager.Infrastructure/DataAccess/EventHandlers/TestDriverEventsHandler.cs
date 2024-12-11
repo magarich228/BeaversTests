@@ -9,7 +9,8 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.EventHandlers;
 public class TestDriverEventsHandler(
     TestsManagerContext db,
     IMapper mapper,
-    ILogger<TestDriverEventsHandler> logger) : IEventHandler<TestDriverAddedEvent>
+    ILogger<TestDriverEventsHandler> logger) : 
+    IEventHandler<TestDriverAddedEvent>, IEventHandler<TestDriverRemovedEvent>
 {
     public async Task Handle(TestDriverAddedEvent notification, CancellationToken cancellationToken)
     {
@@ -21,5 +22,19 @@ public class TestDriverEventsHandler(
         
         if (await db.SaveChangesAsync(cancellationToken) == 0)
             throw new TestsManagerInfrastructureException("Failed to create driver.");
+    }
+
+    public async Task Handle(TestDriverRemovedEvent notification, CancellationToken cancellationToken)
+    {
+        logger.LogDebug("Test driver {TestDriverKey} removed event has been received.", notification.Key);
+
+        var driver = await db.TestDrivers
+            .FindAsync(notification.Key, cancellationToken) ??
+            throw new TestsManagerInfrastructureException($"Test driver {notification.Key} not found.");
+
+        db.TestDrivers.Remove(driver);
+        
+        if (await db.SaveChangesAsync(cancellationToken) == 0)
+            throw new TestsManagerInfrastructureException("Failed to delete driver.");
     }
 }

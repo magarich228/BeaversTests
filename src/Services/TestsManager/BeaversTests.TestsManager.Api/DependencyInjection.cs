@@ -40,6 +40,7 @@ public static class DependencyInjection
         messageBroker.SubscribeAsync<TestPackageValidationIsNotPossibleEvent>();
 
         messageBroker.SubscribeAsync<TestDriverAddedEvent>();
+        messageBroker.SubscribeAsync<TestDriverRemovedEvent>();
         
         return app;
     }

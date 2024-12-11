@@ -2,8 +2,8 @@
 
 public class NewTestDriverDto
 {
-    public Guid Id { get; } = Guid.NewGuid();
-    public string UserId { get; internal set; }
+    public Guid AgId { get; } = Guid.NewGuid();
+    public string UserId { get; internal set; } = null!;
     public required string Key { get; init; }
     public required NewTestDriverContentDto Content { get; init; }
     public string? Description { get; init; }

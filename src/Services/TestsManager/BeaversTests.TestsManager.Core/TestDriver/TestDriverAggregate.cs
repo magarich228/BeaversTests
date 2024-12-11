@@ -19,7 +19,7 @@ public class TestDriverAggregate : Aggregate
         if (Version != 0)
             throw new InvalidOperationException("Test driver already created.");
         
-        Id = @event.Id;
+        Id = @event.AgId;
         Key = @event.Key;
         UserCreatorId = @event.UserId;
         Description = @event.Description;
@@ -33,7 +33,7 @@ public class TestDriverAggregate : Aggregate
         if (IsDeleted)
             throw new InvalidOperationException("Test driver already deleted.");
         
-        if (Id != @event.Id)
+        if (Id != @event.AgId)
             throw new InvalidOperationException("Test driver not found.");
 
         if (Key != @event.Key)
@@ -42,7 +42,7 @@ public class TestDriverAggregate : Aggregate
         if (UserCreatorId != @event.UserId)
             throw new InvalidOperationException("This user can't delete this test driver.");
         
-        Id = @event.Id;
+        Id = @event.AgId;
 
         IsDeleted = true;
         

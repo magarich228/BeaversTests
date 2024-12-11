@@ -10,8 +10,6 @@ public class TestProjectAggregate : Aggregate
     public string? Description { get; private set; }
     public bool IsDeleted { get; private set; } = false;
     
-    public TestProjectAggregate() { }
-    
     [EventApplier]
     public void ApplyCreated(TestProjectAddedEvent @event)
     {

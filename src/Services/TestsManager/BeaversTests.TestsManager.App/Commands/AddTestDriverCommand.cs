@@ -22,6 +22,7 @@ public class AddTestDriverCommand
     public class Result
     {
         public required string TestDriverKey { get; init; }
+        public required Guid TestDriverId { get; init; }
     }
 
     public class Validator : AbstractValidator<Command>
@@ -65,7 +66,8 @@ public class AddTestDriverCommand
 
             return new Result()
             {
-                TestDriverKey = driverAggregate.Key
+                TestDriverKey = driverAggregate.Key,
+                TestDriverId = driverAggregate.Id
             };
         }
     }

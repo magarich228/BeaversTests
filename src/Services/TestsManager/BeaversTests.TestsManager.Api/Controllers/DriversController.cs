@@ -45,9 +45,13 @@ public class DriversController(
     }
 
     [HttpDelete]
-    public async Task<IActionResult> RemoveAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> RemoveAsync(
+        [FromQuery] RemoveDriverCommand.Command commandInput, 
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = await commandBus.SendAsync(commandInput, cancellationToken);
+
+        return Ok(result);
     }
 
     private async Task<IActionResult> AddTestDriverAsync<TInput>(

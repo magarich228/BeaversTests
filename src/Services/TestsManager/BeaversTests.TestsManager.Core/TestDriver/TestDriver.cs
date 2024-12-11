@@ -4,6 +4,7 @@ namespace BeaversTests.TestsManager.Core.TestDriver;
 
 public class TestDriver
 {
+    public required Guid AgId { get; init; }
     public required string Key { get; init; }
     public required string UserCreatorId { get; init; }
     public string? Description { get; set; }
