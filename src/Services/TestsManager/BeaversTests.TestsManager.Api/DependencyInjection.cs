@@ -4,6 +4,7 @@ using BeaversTests.TestRunnerController.Events;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.Api.Services;
 using BeaversTests.TestsManager.App.Abstractions;
+using BeaversTests.TestsManager.Events.TestDriver;
 using BeaversTests.TestsManager.Events.TestPackage;
 using BeaversTests.TestsManager.Events.TestProject;
 using BeaversTests.TestsManager.Infrastructure.DataAccess;
@@ -37,6 +38,8 @@ public static class DependencyInjection
         messageBroker.SubscribeAsync<TestPackageAddedEvent>();
         messageBroker.SubscribeAsync<TestPackageValidationStatusEvent>();
         messageBroker.SubscribeAsync<TestPackageValidationIsNotPossibleEvent>();
+
+        messageBroker.SubscribeAsync<TestDriverAddedEvent>();
         
         return app;
     }

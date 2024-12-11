@@ -18,8 +18,5 @@ public class DriversStorageReadService(
         return s3Provider.GetAsync<TestDriverContent>(bucketName, cancellationToken);
     }
 
-    private string GetBucketName(string testDriverKey)
-    {
-        return $"{testDriverKey}-driver";
-    }
+    private string GetBucketName(string testDriverKey) => $"{testDriverKey.ToLower()}-driver";
 }

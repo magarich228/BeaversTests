@@ -69,6 +69,32 @@
       "SwaggerKey": "testsManager"
     },
     {
+      "DownstreamPathTemplate": "/api/drivers/addZip",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/drivers/addZip",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
+      "DownstreamPathTemplate": "/api/drivers/list",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/drivers/list",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
       "DownstreamPathTemplate": "/api/Auth/SignUp",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

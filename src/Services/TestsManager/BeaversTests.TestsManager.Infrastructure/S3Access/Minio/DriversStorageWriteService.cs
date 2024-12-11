@@ -28,5 +28,6 @@ public class DriversStorageWriteService(
         await s3Provider.RemoveBucketAsync(bucketName, cancellationToken);
     }
     
-    private string GetBucketName(string testDriverKey) => $"{testDriverKey}-driver";
+    // TODO: move to shared, unique bucket name in minio
+    private string GetBucketName(string testDriverKey) => $"{testDriverKey.ToLower()}-driver";
 }
