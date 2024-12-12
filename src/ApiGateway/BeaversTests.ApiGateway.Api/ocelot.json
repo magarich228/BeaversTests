@@ -95,6 +95,19 @@
       "SwaggerKey": "testsManager"
     },
     {
+      "DownstreamPathTemplate": "/api/drivers/remove",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5174
+        }
+      ],
+      "UpstreamPathTemplate": "/api/drivers/remove",
+      "UpstreamHttpMethod": [ "DELETE" ],
+      "SwaggerKey": "testsManager"
+    },
+    {
       "DownstreamPathTemplate": "/api/Auth/SignUp",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [

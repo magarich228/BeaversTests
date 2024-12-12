@@ -50,6 +50,7 @@ public class RemoveDriverCommand
         IEventStore eventStore,
         IMapper mapper,
         IUserService userService,
+        IDriversStorageWriteService driversStorageWriteService,
         ILogger<Handler> logger) : ICommandHandler<Command, Result>
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
@@ -67,7 +68,8 @@ public class RemoveDriverCommand
             var deletedEvent = mapper.Map<TestDriverRemovedEvent>(command);
             
             driverAggregate.ApplyDeleted(deletedEvent);
-            
+
+            await driversStorageWriteService.RemoveTestDriverAsync(driverAggregate.Key, cancellationToken);
             await eventStore.StoreAsync(driverAggregate, cancellationToken);
             
             return new Result();
