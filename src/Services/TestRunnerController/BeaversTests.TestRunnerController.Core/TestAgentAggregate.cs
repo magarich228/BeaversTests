@@ -6,11 +6,13 @@ namespace BeaversTests.TestRunnerController.Core;
 public class TestAgentAggregate : Aggregate
 {
     public TestAgentStatus Status { get; set; } = TestAgentStatus.Created;
+    public string OwnerId { get; set; } = null!;
 
     [EventApplier]
     public void ApplyPrepared(TestRunnerPreparedEvent @event)
     {
         Id = @event.Id;
+        OwnerId = @event.OwnerId;
         Status = TestAgentStatus.Prepared;
         
         base.Enqueue(@event);

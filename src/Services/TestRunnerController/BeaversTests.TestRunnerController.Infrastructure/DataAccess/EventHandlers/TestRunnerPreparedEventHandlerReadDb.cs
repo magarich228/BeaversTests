@@ -17,6 +17,8 @@ public class TestRunnerPreparedEventHandlerReadDb(
         var testAgent = new TestAgent()
         {
             Id = notification.Id,
+            OwnerId = notification.OwnerId,
+            Key = notification.Key,
             Status = TestAgentStatus.Prepared
         };
 

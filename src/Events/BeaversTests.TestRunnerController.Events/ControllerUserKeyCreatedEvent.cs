@@ -2,7 +2,7 @@
 
 namespace BeaversTests.TestRunnerController.Events;
 
-public class TestRunnerPreparedEvent : IEvent
+public class ControllerUserKeyCreatedEvent : IEvent
 {
     public required Guid Id { get; init; }
     public required string Key { get; init; }

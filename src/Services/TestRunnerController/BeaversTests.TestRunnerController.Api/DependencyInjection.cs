@@ -1,8 +1,11 @@
 ﻿using BeaversTests.Api.Shared.Middlewares;
 using BeaversTests.Common.CQRS.Abstractions;
-using BeaversTests.TestRunnerAgent.Events;
+using BeaversTests.TestRunnerController.Events;
 using BeaversTests.TestRunnerController.Infrastructure.DataAccess;
+using BeaversTests.TestsManager.Events.TestDriver;
 using BeaversTests.TestsManager.Events.TestPackage;
+using TestRunnerFinalizedEvent = BeaversTests.TestRunnerAgent.Events.TestRunnerFinalizedEvent;
+using TestRunnerPreparedEvent = BeaversTests.TestRunnerAgent.Events.TestRunnerPreparedEvent;
 
 namespace BeaversTests.TestRunnerController.Api;
 
@@ -24,11 +27,14 @@ public static class DependencyInjection
         var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
 
         messageBroker.SubscribeAsync<TestPackageAddedEvent>();
+        messageBroker.SubscribeAsync<TestDriverAddedEvent>();
         
         messageBroker.SubscribeAsync<TestRunnerPreparedEvent>();
         messageBroker.SubscribeAsync<TestRunnerFinalizedEvent>();
         messageBroker.SubscribeAsync<Events.TestRunnerPreparedEvent>();
         messageBroker.SubscribeAsync<Events.TestRunnerFinalizedEvent>();
+
+        messageBroker.SubscribeAsync<ControllerUserKeyCreatedEvent>();
         
         return app;
     }

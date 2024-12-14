@@ -1,3 +1,4 @@
+using BeaversTests.Api.Shared;
 using BeaversTests.Postgres.EventStore;
 using BeaversTests.TestRunnerController.Api;
 using BeaversTests.TestRunnerController.App;
@@ -17,6 +18,9 @@ services.AddSwaggerGen(c =>
     c.CustomSchemaIds(type => type.FullName?.Replace("+", "."));
 });
 
+services.AddShared();
+services.AddAuth();
+
 services.AddTestRunnerControllerInfrastructure(configuration);
 services.AddTestRunnerControllerApp(configuration);
 services.AddApi();
@@ -28,6 +32,8 @@ app.UseSwaggerUI();
 
 app.MapControllers();
 app.UseApi();
+
+app.UseAuth();
 
 using (var scope = app.Services.CreateScope())
 {

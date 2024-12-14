@@ -34,9 +34,11 @@ void OnStopping()
     using var scope = app.Services.CreateScope();
     
     var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+    var runnerContext = scope.ServiceProvider.GetRequiredService<TestRunnerContext>();
+    
     var finalizedEvent = new TestRunnerFinalizedEvent()
     {
-        Id = TestRunnerContext.Id
+        Id = runnerContext.Id
     };
 
     eventBus.CommitAsync(default, finalizedEvent);
@@ -47,10 +49,12 @@ void OnStarted()
     using var scope = app.Services.CreateScope();
     
     var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
+    var runnerContext = scope.ServiceProvider.GetRequiredService<TestRunnerContext>();
 
     var preparedEvent = new TestRunnerPreparedEvent()
     {
-        Id = TestRunnerContext.Id
+        Id = runnerContext.Id,
+        ControllerConnectionKey = runnerContext.ControllerConnectionKey
     }; // createdEvent?
     
     eventBus.CommitAsync(default, preparedEvent);

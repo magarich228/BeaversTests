@@ -108,6 +108,45 @@
       "SwaggerKey": "testsManager"
     },
     {
+      "DownstreamPathTemplate": "/api/agents/getAgents",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5175
+        }
+      ],
+      "UpstreamPathTemplate": "/api/agents/getAgents",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "testRunnerController"
+    },
+    {
+      "DownstreamPathTemplate": "/api/agents/getAgentConnectionKeys",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5175
+        }
+      ],
+      "UpstreamPathTemplate": "/api/agents/getAgentConnectionKeys",
+      "UpstreamHttpMethod": [ "GET" ],
+      "SwaggerKey": "testRunnerController"
+    },
+    {
+      "DownstreamPathTemplate": "/api/agents/generateAgentConnectionKey",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5175
+        }
+      ],
+      "UpstreamPathTemplate": "/api/agents/generateAgentConnectionKey",
+      "UpstreamHttpMethod": [ "POST" ],
+      "SwaggerKey": "testRunnerController"
+    },
+    {
       "DownstreamPathTemplate": "/api/Auth/SignUp",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -178,6 +217,16 @@
           "Name": "Identity service API",
           "Version": "v1",
           "Url": "http://localhost:5030/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "testRunnerController",
+      "Config": [
+        {
+          "Name": "Test runner controller service API",
+          "Version": "v1",
+          "Url": "http://localhost:5175/swagger/v1/swagger.json"
         }
       ]
     }

@@ -23,6 +23,8 @@ public static class DependencyInjection
 
         services.AddScoped<ITestAgentsPool, TestAgentsPool>();
         
+        services.AddTransient<ControllerKeyDomainService>();
+        
         return services;
     }
 }
