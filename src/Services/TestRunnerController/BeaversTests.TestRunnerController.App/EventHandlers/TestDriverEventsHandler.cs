@@ -32,7 +32,16 @@ public class TestDriverEventsHandler(
             
             return;
         }
-        
-        throw new NotImplementedException();
+
+        var validationTaskEvent = new TestDriverValidationTaskEvent()
+        {
+            Key = notification.Key,
+            AgId = notification.AgId,
+            TestAgentId = agentId.Value
+        };
+
+        await eventBus.CommitAsync(cancellationToken, validationTaskEvent);
+
+        logger.LogDebug("TestDriverValidationTaskEvent was sent. Key: {Key}, AgId: {AgId}", notification.Key, notification.AgId);
     }
 }
