@@ -7,6 +7,8 @@ public class TestDriverAggregate : Aggregate
 {
     public string Key { get; private set; } = null!;
     public string UserCreatorId { get; private set; } = null!;
+    public ValidationResult ValidationResult { get; private set; } = ValidationResult.Unknown;
+    public string? ValidationMessage { get; private set; }
     public string? Description { get; private set; }
     public bool IsDeleted { get; private set; }
 
@@ -27,6 +29,24 @@ public class TestDriverAggregate : Aggregate
         base.Enqueue(@event);
     }
 
+    [EventApplier]
+    public void ApplyValidationStatus(TestDriverValidationStatusEvent @event)
+    {
+        if (IsDeleted)
+            throw new InvalidOperationException("Test driver already deleted.");
+        
+        if (Id != @event.AgId)
+            throw new InvalidOperationException("Test driver not found.");
+
+        if (Key != @event.Key)
+            throw new InvalidOperationException("Test driver key is invalid.");
+        
+        ValidationResult = Enum.Parse<ValidationResult>(@event.ValidationStatus);
+        ValidationMessage = @event.ValidationMessage;
+        
+        base.Enqueue(@event);
+    }
+    
     [EventApplier]
     public void ApplyDeleted(TestDriverRemovedEvent @event)
     {

@@ -1,4 +1,5 @@
-﻿using BeaversTests.TestsManager.Core.TestDriver;
+﻿using BeaversTests.TestsManager.Core;
+using BeaversTests.TestsManager.Core.TestDriver;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -19,6 +20,16 @@ public class TestDriverConfiguration : IEntityTypeConfiguration<TestDriver>
             .HasMaxLength(50)
             .IsRequired();
 
+        builder.Property(t => t.ValidationResult)
+            .IsRequired()
+            .HasConversion(
+                t => t.ToString(),
+                t => Enum.Parse<ValidationResult>(t));
+        
+        builder.Property(t => t.ValidationMessage)
+            .HasDefaultValue(string.Empty)
+            .HasMaxLength(1000);
+        
         builder.Property(d => d.Description)
             .HasMaxLength(250);
     }

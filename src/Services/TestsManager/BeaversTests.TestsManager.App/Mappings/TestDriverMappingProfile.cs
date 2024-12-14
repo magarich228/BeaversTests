@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BeaversTests.Common.Binary;
+using BeaversTests.TestRunnerAgent.Events;
 using BeaversTests.TestsManager.App.Commands;
 using BeaversTests.TestsManager.App.Dtos.TestDriver;
 using BeaversTests.TestsManager.Core.TestDriver;
@@ -22,5 +23,7 @@ public class TestDriverMappingProfile : Profile
         CreateMap<RemoveDriverCommand.Command, TestDriverRemovedEvent>();
 
         CreateMap<TestDriver, TestDriverDto>();
+
+        CreateMap<TestDriverValidationResultEvent, TestDriverValidationStatusEvent>();
     }
 }

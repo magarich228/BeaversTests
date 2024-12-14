@@ -1,5 +1,6 @@
 ﻿using BeaversTests.Api.Shared.Middlewares;
 using BeaversTests.Common.CQRS.Abstractions;
+using BeaversTests.TestRunnerAgent.Events;
 using BeaversTests.TestRunnerController.Events;
 using BeaversTests.TestsManager.Api.Dtos;
 using BeaversTests.TestsManager.Api.Services;
@@ -41,6 +42,8 @@ public static class DependencyInjection
 
         messageBroker.SubscribeAsync<TestDriverAddedEvent>();
         messageBroker.SubscribeAsync<TestDriverRemovedEvent>();
+        messageBroker.SubscribeAsync<TestDriverValidationStatusEvent>();
+        messageBroker.SubscribeAsync<TestDriverValidationResultEvent>();
         
         return app;
     }

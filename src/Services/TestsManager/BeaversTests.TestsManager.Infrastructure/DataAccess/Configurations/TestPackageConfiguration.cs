@@ -1,4 +1,5 @@
-﻿using BeaversTests.TestsManager.Core.TestDriver;
+﻿using BeaversTests.TestsManager.Core;
+using BeaversTests.TestsManager.Core.TestDriver;
 using BeaversTests.TestsManager.Core.TestPackage;
 using BeaversTests.TestsManager.Core.TestProject;
 using Microsoft.EntityFrameworkCore;
@@ -34,7 +35,7 @@ public class TestPackageConfiguration : IEntityTypeConfiguration<BeaversTestPack
             .IsRequired()
             .HasConversion(
                 t => t.ToString(),
-                t => Enum.Parse<TestPackageValidationResult>(t));
+                t => Enum.Parse<ValidationResult>(t));
         
         builder.Property(t => t.ValidationMessage)
             .HasDefaultValue(string.Empty)

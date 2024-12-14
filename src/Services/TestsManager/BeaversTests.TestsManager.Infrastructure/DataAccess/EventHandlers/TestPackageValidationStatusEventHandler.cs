@@ -1,4 +1,5 @@
 ﻿using BeaversTests.Common.CQRS.Events;
+using BeaversTests.TestsManager.Core;
 using BeaversTests.TestsManager.Core.TestPackage;
 using BeaversTests.TestsManager.Events.TestPackage;
 using Microsoft.Extensions.Logging;
@@ -15,14 +16,14 @@ public class TestPackageValidationStatusEventHandler(
         
         await SetValidationStatus(
             notification.Id, 
-            Enum.Parse<TestPackageValidationResult>(notification.ValidationStatus), 
+            Enum.Parse<ValidationResult>(notification.ValidationStatus), 
             notification.ValidationMessage, 
             cancellationToken);
     }
 
     private async Task SetValidationStatus(
         Guid testPackageId,
-        TestPackageValidationResult validationStatus,
+        ValidationResult validationStatus,
         string validationMessage,
         CancellationToken cancellationToken)
     {
