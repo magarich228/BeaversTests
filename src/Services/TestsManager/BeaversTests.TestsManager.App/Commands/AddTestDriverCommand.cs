@@ -60,7 +60,11 @@ public class AddTestDriverCommand
             var contentDto = command.TestDriver.Content;
             var content = mapper.Map<NewTestDriverContentDto, TestDriverContent>(contentDto);
             
-            await driversStorageWriteService.AddTestDriverAsync(command.TestDriver.Key, content, cancellationToken);
+            await driversStorageWriteService.AddTestDriverAsync(
+                command.TestDriver.Key, 
+                command.TestDriver.AgId,
+                content, 
+                cancellationToken);
             
             await eventStore.StoreAsync(driverAggregate, cancellationToken);
 

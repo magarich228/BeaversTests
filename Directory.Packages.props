@@ -3,6 +3,7 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Docker.DotNet" Version="3.125.15" />
     <PackageVersion Include="FirebaseAdmin" Version="3.1.0" />
     <PackageVersion Include="FirebaseAuthentication.net" Version="4.1.0" />
     <PackageVersion Include="FluentValidation" Version="11.10.0" />

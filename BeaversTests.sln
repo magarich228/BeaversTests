@@ -128,6 +128,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CDAA2C9C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.S3.MinioProvider.Tests", "src\BuildingBlocks\S3\Tests\BeaversTests.S3.MinioProvider.Tests\BeaversTests.S3.MinioProvider.Tests.csproj", "{BB13409D-0302-45C6-9B0A-BE8145BB8708}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestDrivers.Registry", "src\Services\TestRunnerAgent\BeaversTests.TestDrivers.Registry\BeaversTests.TestDrivers.Registry.csproj", "{AB2699E6-1CB1-43C0-ACAD-BD067D2A0400}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Isolation", "Isolation", "{AF9A9AD3-5354-44F1-B7B8-FD0F96CBF64F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Isolation.Docker", "src\Services\TestRunnerAgent\Isolation\BeaversTests.Isolation.Docker\BeaversTests.Isolation.Docker.csproj", "{69E5C3DA-490F-4AA8-90F5-1B20B4032668}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Isolation.Contract", "src\Services\TestRunnerAgent\Isolation\BeaversTests.Isolation.Contract\BeaversTests.Isolation.Contract.csproj", "{984B31E4-743F-426E-86B3-733BBE963070}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +199,10 @@ Global
 		{8D4D29D9-8C04-4518-9856-84C68B3E010D} = {58612AA6-F6EB-4F27-AE05-1CAF3B9B67EC}
 		{CDAA2C9C-DA32-4A8D-AA9A-B865E7A45C51} = {D5268798-785C-4A9E-A370-D128B060241D}
 		{BB13409D-0302-45C6-9B0A-BE8145BB8708} = {CDAA2C9C-DA32-4A8D-AA9A-B865E7A45C51}
+		{AB2699E6-1CB1-43C0-ACAD-BD067D2A0400} = {431E3AF1-CDDB-4B1F-9E01-7506E018BF72}
+		{AF9A9AD3-5354-44F1-B7B8-FD0F96CBF64F} = {431E3AF1-CDDB-4B1F-9E01-7506E018BF72}
+		{69E5C3DA-490F-4AA8-90F5-1B20B4032668} = {AF9A9AD3-5354-44F1-B7B8-FD0F96CBF64F}
+		{984B31E4-743F-426E-86B3-733BBE963070} = {AF9A9AD3-5354-44F1-B7B8-FD0F96CBF64F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -337,5 +349,17 @@ Global
 		{BB13409D-0302-45C6-9B0A-BE8145BB8708}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB13409D-0302-45C6-9B0A-BE8145BB8708}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB13409D-0302-45C6-9B0A-BE8145BB8708}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB2699E6-1CB1-43C0-ACAD-BD067D2A0400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB2699E6-1CB1-43C0-ACAD-BD067D2A0400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB2699E6-1CB1-43C0-ACAD-BD067D2A0400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB2699E6-1CB1-43C0-ACAD-BD067D2A0400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69E5C3DA-490F-4AA8-90F5-1B20B4032668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69E5C3DA-490F-4AA8-90F5-1B20B4032668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69E5C3DA-490F-4AA8-90F5-1B20B4032668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69E5C3DA-490F-4AA8-90F5-1B20B4032668}.Release|Any CPU.Build.0 = Release|Any CPU
+		{984B31E4-743F-426E-86B3-733BBE963070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{984B31E4-743F-426E-86B3-733BBE963070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{984B31E4-743F-426E-86B3-733BBE963070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{984B31E4-743F-426E-86B3-733BBE963070}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

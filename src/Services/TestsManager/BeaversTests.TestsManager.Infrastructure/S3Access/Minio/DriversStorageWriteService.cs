@@ -9,25 +9,25 @@ public class DriversStorageWriteService(
     IS3Provider s3Provider,
     ILogger<DriversStorageWriteService> logger): IDriversStorageWriteService
 {
-    public async Task AddTestDriverAsync(string testDriverKey, FileSystemEntity testPackageContent,
+    public async Task AddTestDriverAsync(string testDriverKey, Guid agId, FileSystemEntity testPackageContent,
         CancellationToken cancellationToken = default)
     {
         logger.LogDebug("Adding test driver {testDriverKey} to S3", testDriverKey);
         
-        var bucketName = GetBucketName(testDriverKey);
+        var bucketName = GetBucketName(testDriverKey, agId);
         
         await s3Provider.UploadToAsync(bucketName, testPackageContent, cancellationToken);
     }
 
-    public async Task RemoveTestDriverAsync(string testDriverKey, CancellationToken cancellationToken = default)
+    public async Task RemoveTestDriverAsync(string testDriverKey, Guid agId, CancellationToken cancellationToken = default)
     {
         logger.LogDebug("Removing test driver {testDriverKey} from S3", testDriverKey);
         
-        var bucketName = GetBucketName(testDriverKey);
+        var bucketName = GetBucketName(testDriverKey, agId);
         
         await s3Provider.RemoveBucketAsync(bucketName, cancellationToken);
     }
     
     // TODO: move to shared, unique bucket name in minio
-    private string GetBucketName(string testDriverKey) => $"{testDriverKey.ToLower()}-driver";
+    private string GetBucketName(string testDriverKey, Guid agId) => $"{agId}{testDriverKey.ToLower()}-driver";
 }

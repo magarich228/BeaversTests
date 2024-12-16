@@ -69,7 +69,10 @@ public class RemoveDriverCommand
             
             driverAggregate.ApplyDeleted(deletedEvent);
 
-            await driversStorageWriteService.RemoveTestDriverAsync(driverAggregate.Key, cancellationToken);
+            await driversStorageWriteService.RemoveTestDriverAsync(
+                driverAggregate.Key, 
+                driverAggregate.Id,
+                cancellationToken);
             await eventStore.StoreAsync(driverAggregate, cancellationToken);
             
             return new Result();
