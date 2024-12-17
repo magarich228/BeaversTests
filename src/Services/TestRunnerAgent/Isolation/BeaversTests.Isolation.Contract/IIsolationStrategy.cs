@@ -3,5 +3,5 @@
 public interface IIsolationStrategy : IAsyncDisposable
 {
     Task<bool> IsPossibleAsync(CancellationToken cancellationToken = default);
-    Task PrepareIsolationContextAsync();
+    Task PrepareIsolationContextAsync(CancellationToken cancellationToken = default);
 }

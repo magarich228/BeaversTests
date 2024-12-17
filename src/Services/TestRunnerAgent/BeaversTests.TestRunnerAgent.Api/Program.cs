@@ -1,8 +1,6 @@
-using BeaversTests.Common.CQRS.Abstractions;
+using BeaversTests.Isolation;
 using BeaversTests.TestRunnerAgent.Api;
 using BeaversTests.TestRunnerAgent.App;
-using BeaversTests.TestRunnerAgent.Core;
-using BeaversTests.TestRunnerAgent.Events;
 using BeaversTests.TestRunnerAgent.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,43 +20,16 @@ app.UseApi();
 using (var scope = app.Services.CreateScope())
 {
     var appLifetime = scope.ServiceProvider.GetRequiredService<IHostApplicationLifetime>();
-    
-    appLifetime.ApplicationStopping.Register(OnStopping);
-    appLifetime.ApplicationStarted.Register(OnStarted);
+
+    appLifetime.ApplicationStopping.Register(LifetimeActions.OnStopping, app);
+    appLifetime.ApplicationStarted.Register(LifetimeActions.OnStarted, app);
+
+    var isolationService = scope.ServiceProvider.GetRequiredService<IsolationService>();
+    var strategy = await isolationService.FindPossibleStrategy();
+
+    await strategy.PrepareIsolationContextAsync();
 }
 
 await app.RunAsync();
 
-void OnStopping()
-{
-    using var scope = app.Services.CreateScope();
-    
-    var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
-    var runnerContext = scope.ServiceProvider.GetRequiredService<TestRunnerContext>();
-    
-    var finalizedEvent = new TestRunnerFinalizedEvent()
-    {
-        Id = runnerContext.Id
-    };
-
-    eventBus.CommitAsync(default, finalizedEvent);
-}
-
-void OnStarted()
-{
-    using var scope = app.Services.CreateScope();
-    
-    var eventBus = scope.ServiceProvider.GetRequiredService<IEventBus>();
-    var runnerContext = scope.ServiceProvider.GetRequiredService<TestRunnerContext>();
-
-    var preparedEvent = new TestRunnerPreparedEvent()
-    {
-        Id = runnerContext.Id,
-        ControllerConnectionKey = runnerContext.ControllerConnectionKey
-    }; // createdEvent?
-    
-    eventBus.CommitAsync(default, preparedEvent);
-}
-
-// TODO: подумать над окружениями для тестов в агенте
 // TODO: разгрести референсы для сервисов, удалить лишние Nuget пакеты

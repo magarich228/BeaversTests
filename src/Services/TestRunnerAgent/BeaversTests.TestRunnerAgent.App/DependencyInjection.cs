@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using BeaversTests.Common.CQRS;
+using BeaversTests.Isolation;
 using BeaversTests.TestRunnerAgent.Core;
 using MediatR.Extensions.FluentValidation.AspNetCore;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +31,7 @@ public static class DependencyInjection
 
         services.AddAutoMapper(conf => conf.AddMaps(executingAssembly));
 
+        services.AddSingleton<IsolationService>();
 
         return services;
     }

@@ -1,0 +1,48 @@
+﻿using BeaversTests.Isolation.Contract;
+using BeaversTests.Isolation.Docker;
+using BeaversTests.TestRunnerAgent.App;
+
+namespace BeaversTests.Isolation;
+
+public class IsolationService
+{
+    // TODO: Убрать костыль
+    private readonly DockerIsolationStrategy _dockerIsolationStrategy = new();
+    
+    public async Task<IIsolationStrategy> FindPossibleStrategy(CancellationToken cancellationToken = default)
+    {
+        foreach (var isolationStrategy in GetIsolationStrategies())
+        {
+            if (await isolationStrategy.IsPossibleAsync(cancellationToken))
+            {
+                return isolationStrategy;
+            }
+        }
+        
+        throw new IsolationException("All isolation strategies are not possible");
+    }
+
+    private IEnumerable<IIsolationStrategy> GetIsolationStrategies()
+    {
+        foreach (var isolationStrategyType in AppDomain.CurrentDomain.GetAssemblies()
+                     .Where(IsolationStrategyExtensions.IsIsolationModuleAssembly)
+                     .SelectMany(asm => asm.GetExportedTypes())
+                     .Where(IsolationStrategyExtensions.IsIsolationStrategyType))
+        {
+            IIsolationStrategy isolationStrategy = null!;
+            
+            try
+            {
+                isolationStrategy = (IIsolationStrategy)Activator.CreateInstance(isolationStrategyType)!;
+            }
+            catch (Exception ex)
+            {
+                // TODO: Logger
+                Console.WriteLine($"Isolation strategy {isolationStrategyType.Name} " +
+                                  $"instance creation failed: {ex.Message}");
+            }
+            
+            yield return isolationStrategy;
+        }
+    }
+}

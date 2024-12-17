@@ -3,8 +3,11 @@ using Docker.DotNet;
 
 namespace BeaversTests.Isolation.Docker;
 
+[Strategy(Name)]
 public class DockerIsolationStrategy() : IIsolationStrategy
 {
+    private const string Name = "Docker";
+    
     private readonly DockerClientConfiguration _dockerClientConfiguration = new();
     private string? _containerId;
     
@@ -30,11 +33,20 @@ public class DockerIsolationStrategy() : IIsolationStrategy
         }
     }
 
-    public Task PrepareIsolationContextAsync()
+    public Task PrepareIsolationContextAsync(CancellationToken cancellationToken = default)
     {
         using var client = _dockerClientConfiguration.CreateClient();
 
-        var response = client.Containers.CreateContainerAsync(new());
+        var response = client.Containers.CreateContainerAsync(
+            new()
+            {
+                Image = "alpine",
+                Tty = true,
+                Cmd = new[] {"sh"}
+            }, 
+            cancellationToken);
+
+        //response.Result.ID;
 
         throw new NotImplementedException();
     }
