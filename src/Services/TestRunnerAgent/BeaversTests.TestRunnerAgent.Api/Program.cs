@@ -27,9 +27,9 @@ using (var scope = app.Services.CreateScope())
     appLifetime.ApplicationStarted.Register(LifetimeActions.OnStarted, app);
 
     var isolationService = scope.ServiceProvider.GetRequiredService<IsolationService>();
-    await using var strategy = await isolationService.FindPossibleStrategy();
+    var strategy = await isolationService.FindPossibleStrategy();
 
-    await strategy.PrepareIsolationContextAsync();
+    await using var context = await strategy.PrepareIsolationContextAsync();
 }
 
 await app.RunAsync();
