@@ -33,22 +33,20 @@ public class DockerIsolationStrategy() : IIsolationStrategy
         }
     }
 
-    public Task PrepareIsolationContextAsync(CancellationToken cancellationToken = default)
+    public async Task PrepareIsolationContextAsync(CancellationToken cancellationToken = default)
     {
         using var client = _dockerClientConfiguration.CreateClient();
-
-        var response = client.Containers.CreateContainerAsync(
+        
+        var response = await client.Containers.CreateContainerAsync(
             new()
             {
                 Image = "alpine",
                 Tty = true,
-                Cmd = new[] {"sh"}
+                Cmd = new[] {"sh"},
             }, 
             cancellationToken);
-
-        //response.Result.ID;
-
-        throw new NotImplementedException();
+        
+        _containerId = response.ID;
     }
 
     public async ValueTask DisposeAsync()

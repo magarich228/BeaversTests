@@ -12,6 +12,8 @@ services.AddTestRunnerAgentInfrastructure(configuration);
 services.AddTestRunnerControllerApp(configuration);
 services.AddApi();
 
+services.AddHostedService<IsolationLayerEngine>();
+
 var app = builder.Build();
 
 app.MapGet("/", () => "Alive.");
@@ -25,7 +27,7 @@ using (var scope = app.Services.CreateScope())
     appLifetime.ApplicationStarted.Register(LifetimeActions.OnStarted, app);
 
     var isolationService = scope.ServiceProvider.GetRequiredService<IsolationService>();
-    var strategy = await isolationService.FindPossibleStrategy();
+    await using var strategy = await isolationService.FindPossibleStrategy();
 
     await strategy.PrepareIsolationContextAsync();
 }
