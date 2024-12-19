@@ -2,5 +2,5 @@
 
 public interface IIsolationContext : IAsyncDisposable
 {
-    Task StartRunnerAsync(CancellationToken cancellationToken = default);
+    Task<bool> IsAliveAsync();
 }

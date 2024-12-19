@@ -31,6 +31,7 @@ public static class DependencyInjection
 
         services.AddAutoMapper(conf => conf.AddMaps(executingAssembly));
 
+        services.AddSingleton<TasksContainer>();
         services.AddSingleton<IsolationService>();
 
         return services;

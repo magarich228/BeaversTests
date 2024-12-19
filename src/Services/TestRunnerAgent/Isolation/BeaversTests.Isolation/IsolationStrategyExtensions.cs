@@ -1,9 +1,9 @@
 ﻿using System.Reflection;
 using BeaversTests.Isolation.Contract;
 
-namespace BeaversTests.TestRunnerAgent.App;
+namespace BeaversTests.Isolation;
 
-internal static class IsolationStrategyExtensions
+public static class IsolationStrategyExtensions
 {
     private static readonly Type IsolationStrategyType = typeof(IIsolationStrategy);
 
@@ -16,5 +16,18 @@ internal static class IsolationStrategyExtensions
     internal static bool IsIsolationModuleAssembly(this Assembly assembly)
     {
         return assembly.GetCustomAttribute<IsolationModuleAttribute>() != null;
+    }
+
+    public static string? GetName(this IIsolationStrategy strategy)
+    {
+        return strategy
+            .GetType()
+            .GetCustomAttribute<StrategyAttribute>()?
+            .Name;
+    }
+    
+    internal static bool IsExclusionStrategy(this IIsolationStrategy strategy, IEnumerable<string> exclusionNames)
+    {
+        return exclusionNames.Any(e => strategy.GetName() == e);
     }
 }

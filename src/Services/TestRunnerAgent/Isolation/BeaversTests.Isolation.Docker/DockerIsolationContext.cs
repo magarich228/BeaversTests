@@ -7,7 +7,7 @@ public class DockerIsolationContext(
     string? containerId, 
     DockerClientConfiguration dockerClientConfiguration) : IIsolationContext
 {
-    public Task StartRunnerAsync(CancellationToken cancellationToken = default)
+    public Task<bool> IsAliveAsync()
     {
         throw new NotImplementedException();
     }

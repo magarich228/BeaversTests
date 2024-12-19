@@ -1,11 +1,13 @@
 ﻿using BeaversTests.Common.CQRS.Events;
 using BeaversTests.TestRunnerAgent.Core;
+using BeaversTests.TestRunnerAgent.Core.Tasks;
 using BeaversTests.TestRunnerController.Events;
 using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestRunnerAgent.App.EventHandlers;
 
 public class TestDriverTasksEventHandler(
+    TasksContainer tasksContainer,
     TestRunnerContext testRunnerContext,
     ILogger<TestDriverTasksEventHandler> logger) : IEventHandler<TestDriverValidationTaskEvent>
 {
@@ -19,6 +21,10 @@ public class TestDriverTasksEventHandler(
             notification.AgId,
             notification.TestAgentId);
 
-        throw new NotImplementedException();
+        tasksContainer.Register(new DriverValidationTask()
+        {
+            AgId = notification.AgId,
+            DriverKey = notification.Key
+        });
     }
 }

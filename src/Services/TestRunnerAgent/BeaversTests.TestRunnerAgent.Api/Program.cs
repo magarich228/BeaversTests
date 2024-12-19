@@ -12,7 +12,7 @@ services.AddTestRunnerAgentInfrastructure(configuration);
 services.AddTestRunnerControllerApp(configuration);
 services.AddApi();
 
-services.AddHostedService<IsolationLayerEngine>();
+services.AddHostedService<TaskEngine>();
 
 var app = builder.Build();
 
@@ -25,11 +25,6 @@ using (var scope = app.Services.CreateScope())
 
     appLifetime.ApplicationStopping.Register(LifetimeActions.OnStopping, app);
     appLifetime.ApplicationStarted.Register(LifetimeActions.OnStarted, app);
-
-    var isolationService = scope.ServiceProvider.GetRequiredService<IsolationService>();
-    var strategy = await isolationService.FindPossibleStrategy();
-
-    await using var context = await strategy.PrepareIsolationContextAsync();
 }
 
 await app.RunAsync();

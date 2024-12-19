@@ -1,6 +1,6 @@
-﻿using BeaversTests.Isolation.Contract;
+﻿using System.Reflection;
+using BeaversTests.Isolation.Contract;
 using BeaversTests.Isolation.Docker;
-using BeaversTests.TestRunnerAgent.App;
 
 namespace BeaversTests.Isolation;
 
@@ -9,10 +9,19 @@ public class IsolationService
     // TODO: Убрать костыль
     private readonly DockerIsolationStrategy _dockerIsolationStrategy = new();
     
-    public async Task<IIsolationStrategy> FindPossibleStrategy(CancellationToken cancellationToken = default)
+    public async Task<IIsolationStrategy> FindPossibleStrategy(List<string>? exclusionNames = null, CancellationToken cancellationToken = default)
     {
+        // TODO: Выбор стратегии в зависимости от приоритета из конфигурации?
+        var exclusionsExists = exclusionNames is not null && 
+                               exclusionNames.Any();
+        
         foreach (var isolationStrategy in GetIsolationStrategies())
         {
+            if (exclusionsExists && isolationStrategy.IsExclusionStrategy(exclusionNames!))
+            {
+                continue;
+            }
+            
             if (await isolationStrategy.IsPossibleAsync(cancellationToken))
             {
                 return isolationStrategy;
