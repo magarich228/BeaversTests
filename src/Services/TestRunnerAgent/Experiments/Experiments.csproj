@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
@@ -8,12 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.Binary\BeaversTests.Common.Binary.csproj" />
-      <ProjectReference Include="..\..\..\Public\BeaversTests.TestDrivers\BeaversTests.TestDrivers.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+      <ProjectReference Include="..\BeaversTests.TestDrivers.Registry\BeaversTests.TestDrivers.Registry.csproj" />
     </ItemGroup>
 
 </Project>

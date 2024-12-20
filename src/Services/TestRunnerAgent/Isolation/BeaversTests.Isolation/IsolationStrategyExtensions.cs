@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using BeaversTests.Isolation.Contract;
+using BeaversTests.Isolation.Contracts;
 
 namespace BeaversTests.Isolation;
 

@@ -1,3 +1,3 @@
-﻿using BeaversTests.Isolation.Contract;
+﻿using BeaversTests.Isolation.Contracts;
 
 [assembly: IsolationModule]

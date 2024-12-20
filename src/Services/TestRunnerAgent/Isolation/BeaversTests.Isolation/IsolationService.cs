@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using BeaversTests.Isolation.Contract;
+﻿using BeaversTests.Isolation.Contracts;
 using BeaversTests.Isolation.Docker;
 
 namespace BeaversTests.Isolation;
@@ -19,6 +18,8 @@ public class IsolationService
         {
             if (exclusionsExists && isolationStrategy.IsExclusionStrategy(exclusionNames!))
             {
+                await isolationStrategy.DisposeAsync();
+                
                 continue;
             }
             
@@ -33,6 +34,7 @@ public class IsolationService
 
     private IEnumerable<IIsolationStrategy> GetIsolationStrategies()
     {
+        // TODO: Загружать только один раз
         foreach (var isolationStrategyType in AppDomain.CurrentDomain.GetAssemblies()
                      .Where(IsolationStrategyExtensions.IsIsolationModuleAssembly)
                      .SelectMany(asm => asm.GetExportedTypes())

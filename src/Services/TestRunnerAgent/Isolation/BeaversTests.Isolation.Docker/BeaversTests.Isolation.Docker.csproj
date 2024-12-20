@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BeaversTests.Isolation.Contract\BeaversTests.Isolation.Contract.csproj" />
+      <ProjectReference Include="..\BeaversTests.Isolation.Contracts\BeaversTests.Isolation.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>

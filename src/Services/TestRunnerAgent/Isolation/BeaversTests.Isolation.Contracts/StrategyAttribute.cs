@@ -1,4 +1,4 @@
-﻿namespace BeaversTests.Isolation.Contract;
+﻿namespace BeaversTests.Isolation.Contracts;
 
 [AttributeUsage(AttributeTargets.Class)]
 public class StrategyAttribute(string name) : Attribute

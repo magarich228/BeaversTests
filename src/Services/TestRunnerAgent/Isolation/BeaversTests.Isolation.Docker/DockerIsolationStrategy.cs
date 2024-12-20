@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using BeaversTests.Isolation.Contract;
+using BeaversTests.Isolation.Contracts;
 using Docker.DotNet;
 using Docker.DotNet.Models;
 
@@ -60,6 +60,23 @@ public class DockerIsolationStrategy() : IIsolationStrategy
                 Image = _imageName,
                 Tty = true,
                 Cmd = new[] {"bash"},
+                ExposedPorts = new Dictionary<string, EmptyStruct>
+                {
+                    { "53999/tcp", new EmptyStruct() }
+                },
+                HostConfig = new HostConfig
+                {
+                    PortBindings = new Dictionary<string, IList<PortBinding>>
+                    {
+                        { 
+                            "53999/tcp", 
+                            new List<PortBinding>
+                            {
+                                new() { HostPort = "53999" }
+                            }
+                        }
+                    }
+                }
             },
             cancellationToken);
 
@@ -117,6 +134,18 @@ public class DockerIsolationStrategy() : IIsolationStrategy
         
         return new DockerIsolationContext(
             _containerId, 
-            _dockerClientConfiguration);
+            new DockerClientConfiguration(
+                _dockerClientConfiguration.EndpointBaseUri,
+                _dockerClientConfiguration.Credentials,
+                _dockerClientConfiguration.DefaultTimeout,
+                _dockerClientConfiguration.NamedPipeConnectTimeout,
+                _dockerClientConfiguration.DefaultHttpRequestHeaders));
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        _dockerClientConfiguration.Dispose();
+        
+        return ValueTask.CompletedTask;
     }
 }

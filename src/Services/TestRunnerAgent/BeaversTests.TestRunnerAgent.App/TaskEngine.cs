@@ -1,6 +1,6 @@
 ﻿using BeaversTests.Common.CQRS.Commands;
 using BeaversTests.Isolation;
-using BeaversTests.Isolation.Contract;
+using BeaversTests.Isolation.Contracts;
 using BeaversTests.TestRunnerAgent.App.Commands;
 using BeaversTests.TestRunnerAgent.Core.Tasks;
 using Microsoft.Extensions.Configuration;
@@ -93,6 +93,11 @@ public class TaskEngine(
             try
             {
                 _isolationContext = await isolationStrategy.PrepareIsolationContextAsync(cancellationToken);
+
+                if (!await _isolationContext.IsAliveAsync(cancellationToken))
+                {
+                    throw new TestRunnerAgentException("Prepared isolation context is not alive.");
+                }
             }
             catch (Exception ex)
             {
@@ -107,6 +112,8 @@ public class TaskEngine(
                 isolationStrategy = await isolationService.FindPossibleStrategy(exclusions, cancellationToken);
             }
         }
+
+        await isolationStrategy.DisposeAsync();
     }
     
     public async ValueTask DisposeAsync()

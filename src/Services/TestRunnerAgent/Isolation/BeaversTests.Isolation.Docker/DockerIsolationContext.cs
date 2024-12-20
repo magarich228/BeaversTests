@@ -1,4 +1,4 @@
-﻿using BeaversTests.Isolation.Contract;
+﻿using BeaversTests.Isolation.Contracts;
 using Docker.DotNet;
 
 namespace BeaversTests.Isolation.Docker;
@@ -7,9 +7,15 @@ public class DockerIsolationContext(
     string? containerId, 
     DockerClientConfiguration dockerClientConfiguration) : IIsolationContext
 {
-    public Task<bool> IsAliveAsync()
+    public async Task<bool> IsAliveAsync(CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        using var client = dockerClientConfiguration.CreateClient();
+
+        var containerInfo = await client.Containers.InspectContainerAsync(
+            containerId, 
+            cancellationToken);
+
+        return !containerInfo.State.Dead && !containerInfo.State.Paused;
     }
     
     public async ValueTask DisposeAsync()

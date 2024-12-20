@@ -1,4 +1,5 @@
-using BeaversTests.Isolation;
+using BeaversTests.Common.Binary;
+using BeaversTests.TestRunner;
 using BeaversTests.TestRunnerAgent.Api;
 using BeaversTests.TestRunnerAgent.App;
 using BeaversTests.TestRunnerAgent.Infrastructure;
@@ -25,6 +26,28 @@ using (var scope = app.Services.CreateScope())
 
     appLifetime.ApplicationStopping.Register(LifetimeActions.OnStopping, app);
     appLifetime.ApplicationStarted.Register(LifetimeActions.OnStarted, app);
+
+    using var runnerClient = scope.ServiceProvider.GetRequiredService<RunnerClient>();
+    
+    var bytes = "Hello world!"u8.ToArray();
+    await runnerClient.SendAsync(new DriverValidationCommand()
+    {
+        DriverKey = "Test",
+        AgId = Guid.NewGuid(),
+        Driver = new TestDriverContent()
+        {
+            Files = new List<BeaversTestsFile>()
+            {
+                new BeaversTestsFile()
+                {
+                    Content = bytes,
+                    Length = bytes.Length,
+                    Name = "testfile",
+                    MediaType = "application/octet-stream"
+                }
+            }
+        }
+    });
 }
 
 await app.RunAsync();

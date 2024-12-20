@@ -1,5 +1,5 @@
 ﻿using BeaversTests.Common.CQRS.Commands;
-using BeaversTests.Isolation.Contract;
+using BeaversTests.Isolation.Contracts;
 using BeaversTests.TestRunnerAgent.Core.Tasks;
 
 namespace BeaversTests.TestRunnerAgent.App.Commands;
