@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.Binary\BeaversTests.Common.Binary.csproj" />
+      <ProjectReference Include="..\BeaversTests.TestDrivers.Registry\BeaversTests.TestDrivers.Registry.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -121,6 +121,10 @@ public class DockerIsolationStrategy() : IIsolationStrategy
             new()
             {
                 Detach = false,
+                WorkingDir = "/runner",
+                AttachStderr = true,
+                AttachStdout = true,
+                Cmd = new[] { "dotnet", "BeaversTests.TestRunner.dll" },
                 Tty = true
             }, cancellationToken);
 

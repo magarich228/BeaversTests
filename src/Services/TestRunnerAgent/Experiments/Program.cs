@@ -4,7 +4,7 @@ using Experiments;
 var path = args.FirstOrDefault() ??
            @"C:\Users\kiril\RiderProjects\TMSNet\src\BuildingBlocks\Drivers\BeaversTests.NUnit.Driver\bin\Release\net8.0\publish";
 
-var registry = new TestDriversRegistry();
+var registry = new TestDriversRegistry(new RegistryConfiguration());
 
 var entity = TestDriverContentFactory.CreateFromDirectory(path);
 

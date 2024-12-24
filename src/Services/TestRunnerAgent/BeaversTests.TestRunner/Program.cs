@@ -1,7 +1,8 @@
 ﻿using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using BeaversTests.TestRunner;
+
+Console.Out.WriteLine("Starting...");
 
 using Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -25,10 +26,9 @@ while (true)
         
         continue;
     }
+
+    var result = command!.Execute();
+    byte[] responseBytes = result.Serialize();
     
-    
-    
-    string response = "Hello from server!";
-    byte[] responseBytes = Encoding.UTF8.GetBytes(response);
     await clientSocket.SendAsync(responseBytes);
 }

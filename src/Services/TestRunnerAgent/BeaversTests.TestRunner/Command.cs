@@ -18,7 +18,9 @@ public abstract class Command
         return Encoding.UTF8.GetBytes(json);
     }
     
-    public static bool TryDeserialize(byte[] bytes, out Command? command, out Exception? exception)
+    internal abstract CommandResult Execute();
+    
+    internal static bool TryDeserialize(byte[] bytes, out Command? command, out Exception? exception)
     {
         try
         {
@@ -31,7 +33,8 @@ public abstract class Command
             
             var type = Type.GetType(info.TypeFullName, true, true);
             
-            command = (Command?)JsonConvert.DeserializeObject(json, type!);
+            command = (Command?)JsonConvert.DeserializeObject(json, type!) ??
+                      throw new TestRunnerException("Failed to deserialize command");
             exception = null;
             
             return true;

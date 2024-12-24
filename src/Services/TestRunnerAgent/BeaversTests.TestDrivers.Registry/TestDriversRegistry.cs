@@ -1,11 +1,14 @@
 ﻿using System.Reflection;
+using System.Runtime.Loader;
 using BeaversTests.Common.Binary;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BeaversTests.TestDrivers.Registry;
 
-public class TestDriversRegistry
+public class TestDriversRegistry : IDisposable
 {
+    private readonly DirectoryInfo _driversDirectory;
+
     private const string DriverKeyPropertyName = "DriverKey";
 
     private readonly Type _keyedTestExplorerInterfaceType = typeof(ITestsExplorer<>);
@@ -13,7 +16,19 @@ public class TestDriversRegistry
     private readonly Type _driverKeyInterfaceType = typeof(IDriverKey);
     private readonly Type _keyedDriverServerInterfaceType = typeof(IKeyedDriverService<>);
 
+    private readonly List<RegistrationContext> _contexts = new();
     private readonly IServiceCollection _services = new ServiceCollection();
+
+    public TestDriversRegistry(RegistryConfiguration configuration)
+    {
+        _driversDirectory = new DirectoryInfo(configuration.DriversPath ??
+                                              Path.GetTempPath() + "test-drivers-registry");
+
+        if (!Path.Exists(configuration.DriversPath))
+        {
+            _driversDirectory.Create();
+        }
+    }
 
     public ITestsExplorer? GetDriverTestExplorer(string key, Guid agId, bool required = false)
     {
@@ -21,42 +36,52 @@ public class TestDriversRegistry
 
         using var provider = _services.BuildServiceProvider();
 
-        return required ? provider.GetRequiredKeyedService<ITestsExplorer>(serviceKey) : 
-            provider.GetKeyedService<ITestsExplorer>(serviceKey);
+        return required
+            ? provider.GetRequiredKeyedService<ITestsExplorer>(serviceKey)
+            : provider.GetKeyedService<ITestsExplorer>(serviceKey);
     }
 
     public void Register(string key, Guid agId, TestDriverContent driverContent)
     {
-        var assemblies1 = AppDomain.CurrentDomain.GetAssemblies();
+        ArgumentException.ThrowIfNullOrWhiteSpace(key, nameof(key));
         
-        RegisterFromDirectories(driverContent.Directories, key, agId);
-        RegisterFromFiles(driverContent.Files, key, agId);
+        var driverDirectory = GetDriverDirectory(key, agId);
+        var context = new RegistrationContext()
+        {
+            Key = key,
+            AgId = agId,
+            DriverDirectory = driverDirectory,
+            LoadContext = new AssemblyLoadContext(driverDirectory.Name, true)
+        };
+
+        _contexts.Add(context);
         
-        var assemblies2 = AppDomain.CurrentDomain.GetAssemblies();
+        RegisterFromDirectories(context, driverContent.Directories);
+        RegisterFromFiles(context, driverContent.Files);
     }
 
-    private void RegisterFromDirectories(IEnumerable<BeaversTestsDirectory> directories, string key, Guid agId)
+    private void RegisterFromDirectories(RegistrationContext context, IEnumerable<BeaversTestsDirectory> directories)
     {
         foreach (var directory in directories)
         {
-            RegisterFromDirectories(directory.Directories, key, agId);
-            RegisterFromFiles(directory.TestFiles, key, agId);
+            RegisterFromDirectories(context, directory.Directories);
+            RegisterFromFiles(context, directory.TestFiles);
         }
     }
 
-    private void RegisterFromFiles(IEnumerable<BeaversTestsFile> files, string key, Guid agId)
+    private void RegisterFromFiles(RegistrationContext context, IEnumerable<BeaversTestsFile> files)
     {
         foreach (var file in files)
         {
-            if (TryLoadAssembly(file, out var assembly) &&
+            if (TryLoadAssembly(context, file, out var assembly) &&
                 assembly != null)
             {
-                RegisterDriversFromAssembly(assembly, key, agId);
+                RegisterDriversFromAssembly(context, assembly);
             }
         }
     }
 
-    private bool TryLoadAssembly(BeaversTestsFile file, out Assembly? assembly)
+    private bool TryLoadAssembly(RegistrationContext context, BeaversTestsFile file, out Assembly? assembly)
     {
         if (!file.Name.EndsWith(".dll"))
         {
@@ -67,23 +92,9 @@ public class TestDriversRegistry
 
         try
         {
-            // assembly = Assembly.Load(file.Content);
-            assembly = AppDomain.CurrentDomain.Load(file.Content);
-            
-            var references = assembly.GetReferencedAssemblies();
-            
-            foreach (var reference in references)
-            {
-                try
-                {
-                    AppDomain.CurrentDomain.Load(reference);
-                }
-                catch (Exception)
-                {
-                    // ignore
-                }
-            }
-            
+            using var ms = new MemoryStream(file.Content);
+            assembly = context.LoadContext.LoadFromStream(ms);
+
             return true;
         }
         catch (Exception ex)
@@ -95,13 +106,13 @@ public class TestDriversRegistry
         }
     }
 
-    private void RegisterDriversFromAssembly(Assembly assembly, string key, Guid agId)
+    private void RegisterDriversFromAssembly(RegistrationContext context, Assembly assembly)
     {
         if (assembly.FullName != null && !assembly.FullName.Contains("BeaversTests"))
         {
             return;
         }
-        
+
         var keyProperty = _keyedDriverServerInterfaceType.GetProperty(DriverKeyPropertyName) ??
                           throw new ApplicationException("DriverKey property not found"); // TODO: custom exception
 
@@ -138,14 +149,50 @@ public class TestDriversRegistry
                 continue;
             }
 
-            if (driverKey.Key != key)
+            if (driverKey.Key != context.Key)
                 continue;
 
-            var serviceKey = driverKey.Key + agId;
+            var serviceKey = driverKey.Key + context.AgId;
 
             _services.AddKeyedScoped(_testExplorerInterfaceType, serviceKey, asmTestExplorerType);
 
             return;
+        }
+    }
+
+    private DirectoryInfo GetDriverDirectory(string key, Guid agId)
+    {
+        string directoryName = key;
+
+        foreach (var invalidChar in Path.GetInvalidPathChars())
+        {
+            directoryName = directoryName.Replace($"{invalidChar}", string.Empty);
+        }
+        
+        return _driversDirectory.CreateSubdirectory(agId + directoryName);
+    }
+
+    class RegistrationContext
+    {
+        public required string Key { get; init; }
+        public required Guid AgId { get; init; }
+        public required DirectoryInfo DriverDirectory { get; init; }
+        public required AssemblyLoadContext LoadContext { get; init; }
+    }
+
+    public void Dispose()
+    {
+        _driversDirectory.Refresh();
+        _driversDirectory.Delete(true);
+
+        foreach (var context in _contexts)
+        {
+            if (context.DriverDirectory.Exists)
+            {
+                context.DriverDirectory.Delete(true);
+            }
+            
+            context.LoadContext.Unload();
         }
     }
 }
