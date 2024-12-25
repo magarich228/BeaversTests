@@ -25,6 +25,7 @@ public abstract class Command
         try
         {
             var json = Encoding.UTF8.GetString(bytes);
+            Console.WriteLine(json);
             
             var info = JsonConvert.DeserializeObject<CommandInfoInternal>(json);
             

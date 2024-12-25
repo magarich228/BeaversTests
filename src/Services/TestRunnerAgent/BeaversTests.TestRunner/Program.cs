@@ -2,7 +2,7 @@
 using System.Net.Sockets;
 using BeaversTests.TestRunner;
 
-Console.Out.WriteLine("Starting...");
+Console.WriteLine("Starting...");
 
 using Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 
@@ -14,13 +14,18 @@ while (true)
 {
     using var clientSocket = await s.AcceptAsync();
 
-    byte[] buffer = new byte[1024];
+    byte[] buffer = new byte[100000000];
     int bytesRead = await clientSocket.ReceiveAsync(buffer);
     
     if (bytesRead == 0)
         continue;
 
-    if (!Command.TryDeserialize(buffer, out var command, out var exception))
+    var messageBytes = new byte[bytesRead];
+    Array.Copy(buffer, messageBytes, bytesRead);
+
+    Console.WriteLine($"Command received. ({bytesRead} bytes)");
+    
+    if (!Command.TryDeserialize(messageBytes, out var command, out var exception))
     {
         Console.WriteLine(exception);
         

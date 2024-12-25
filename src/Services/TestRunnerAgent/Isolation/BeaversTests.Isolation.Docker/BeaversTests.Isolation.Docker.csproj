@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <PackageReference Include="Docker.DotNet" />
+      <PackageReference Include="SharpZipLib" />
     </ItemGroup>
 
 </Project>

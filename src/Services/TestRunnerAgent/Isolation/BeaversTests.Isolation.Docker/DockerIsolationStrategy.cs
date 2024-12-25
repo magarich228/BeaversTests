@@ -1,16 +1,15 @@
-﻿using System.Diagnostics;
+﻿using System.Text;
 using BeaversTests.Isolation.Contracts;
 using Docker.DotNet;
 using Docker.DotNet.Models;
+using ICSharpCode.SharpZipLib.Tar;
 
 namespace BeaversTests.Isolation.Docker;
 
 [Strategy(Name)]
-public class DockerIsolationStrategy() : IIsolationStrategy
+public class DockerIsolationStrategy : IIsolationStrategy
 {
-    // TODO: from configuration
-    private readonly string _imageName = "mcr.microsoft.com/dotnet/sdk:8.0";
-    private readonly string _runnerPath = Path.Combine(Environment.CurrentDirectory, @"..\..\..\..\BeaversTests.TestRunner\bin\Debug\net8.0\");
+    private readonly string _imageName = "beavers-tests-runner";
         
     private const string Name = "Docker";
 
@@ -42,96 +41,56 @@ public class DockerIsolationStrategy() : IIsolationStrategy
     public async Task<IIsolationContext> PrepareIsolationContextAsync(CancellationToken cancellationToken = default)
     {
         using var client = _dockerClientConfiguration.CreateClient();
-
-        var images = await client.Images.ListImagesAsync(new(), cancellationToken);
-
-        if (!images.Any(i => i.RepoTags.Any(t => t.Contains(_imageName))))
-        {
-            await client.Images.CreateImageAsync(new()
-            {
-                FromImage = _imageName,
-                Tag = "latest"
-            }, new AuthConfig(), new Progress<JSONMessage>(), cancellationToken);
-        }
         
-        var response = await client.Containers.CreateContainerAsync(
-            new()
+        var tarball = CreateTarballForDockerfileDirectory(Environment.CurrentDirectory);
+
+        var imageBuildParams = new ImageBuildParameters()
+        {
+            Tags = new[] { _imageName },
+            Dockerfile = "RuntimeDockerfile"
+        };
+        
+        await client.Images.BuildImageFromDockerfileAsync(
+            imageBuildParams,
+            tarball,
+        null,
+        new Dictionary<string, string>(),
+            new Progress<JSONMessage>(),
+            cancellationToken);
+
+        var containerParams = new CreateContainerParameters()
+        {
+            Image = _imageName,
+            Name = "beavers-tests-runner",
+            ExposedPorts = new Dictionary<string, EmptyStruct>
             {
-                Image = _imageName,
-                Tty = true,
-                Cmd = new[] {"bash"},
-                ExposedPorts = new Dictionary<string, EmptyStruct>
+                { "53999/tcp", new EmptyStruct() }
+            },
+            HostConfig = new HostConfig
+            {
+                PortBindings = new Dictionary<string, IList<PortBinding>>
                 {
-                    { "53999/tcp", new EmptyStruct() }
-                },
-                HostConfig = new HostConfig
-                {
-                    PortBindings = new Dictionary<string, IList<PortBinding>>
-                    {
-                        { 
-                            "53999/tcp", 
-                            new List<PortBinding>
-                            {
-                                new() { HostPort = "53999" }
-                            }
+                    { 
+                        "53999/tcp", 
+                        new List<PortBinding>
+                        {
+                            new() { HostPort = "53999" }
                         }
                     }
                 }
-            },
-            cancellationToken);
-
-        _containerId = response.ID;
-
-        var copyProcess = Process.Start(new ProcessStartInfo()
-        {
-            FileName = "docker",
-            Arguments = $"cp {_runnerPath} {_containerId}:/runner",
-        }) ?? throw new Exception("Failed to start copy runner files process.");
-
-        copyProcess.ErrorDataReceived += (sender, args) =>
-        {
-            if (args.Data != null)
-            {
-                Console.WriteLine(args.Data);
             }
         };
-        
-        await copyProcess.WaitForExitAsync(cancellationToken);
-        
-        if (copyProcess == null || copyProcess.ExitCode != 0)
-            throw new Exception("Failed to copy runner files");
+
+        var response = await client.Containers.CreateContainerAsync(containerParams, cancellationToken);
+
+        _containerId = response.ID;
         
         var started = await client.Containers.StartContainerAsync(
             _containerId,
-            new(),
+            new ContainerStartParameters(),
             cancellationToken);
-
-        var execResponse = await client.Exec.ExecCreateContainerAsync(
-            _containerId, 
-            new()
-            {
-                WorkingDir = "/runner",
-                AttachStderr = true,
-                AttachStdout = true,
-                Cmd = new[] { "dotnet", "BeaversTests.TestRunner.dll" }
-            }, cancellationToken);
         
-        var startedExec = await client.Exec.StartWithConfigContainerExecAsync(
-            execResponse.ID,
-            new()
-            {
-                Detach = false,
-                WorkingDir = "/runner",
-                AttachStderr = true,
-                AttachStdout = true,
-                Cmd = new[] { "dotnet", "BeaversTests.TestRunner.dll" },
-                Tty = true
-            }, cancellationToken);
-
-        // var output= await startedExec.ReadOutputToEndAsync(cancellationToken);
-        // Console.WriteLine($"{output.stdout}\n{output.stderr}");
-        
-        if (!started || startedExec == null)
+        if (!started)
         {
             throw new Exception("Failed to start container");
         }
@@ -151,5 +110,42 @@ public class DockerIsolationStrategy() : IIsolationStrategy
         _dockerClientConfiguration.Dispose();
         
         return ValueTask.CompletedTask;
+    }
+    
+    private static Stream CreateTarballForDockerfileDirectory(string directory)
+    {
+        var tarball = new MemoryStream();
+        var files = Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories);
+
+        using var archive = new TarOutputStream(tarball, Encoding.UTF8);
+        archive.IsStreamOwner = false;
+
+        foreach (var file in files)
+        {
+            string tarName = file.Substring(directory.Length).Replace('\\', '/').TrimStart('/');
+		
+            var entry = TarEntry.CreateTarEntry(tarName);
+            using var fileStream = File.OpenRead(file);
+            
+            entry.Size = fileStream.Length;
+            archive.PutNextEntry(entry);
+
+            byte[] localBuffer = new byte[32 * 1024];
+            while (true)
+            {   
+                int numRead = fileStream.Read(localBuffer, 0, localBuffer.Length);
+                if (numRead <= 0)
+                    break;
+
+                archive.Write(localBuffer, 0, numRead);
+            }
+		
+            archive.CloseEntry();
+        }
+        
+        archive.Close();
+
+        tarball.Position = 0;
+        return tarball;
     }
 }
