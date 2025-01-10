@@ -2,5 +2,5 @@
 
 public abstract class CommandResult
 {
-    internal byte[] Serialize() => TestRunnerSerialization.Serialize(this);
+    internal Stream Serialize() => TestRunnerSerialization.Serialize(this);
 }

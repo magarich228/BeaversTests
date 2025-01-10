@@ -11,15 +11,16 @@ public class RunnerClient : IDisposable
     public async Task<TCommandResult> SendAsync<TCommandResult>(Command command) 
         where TCommandResult : CommandResult
     {
-        await _socket.ConnectAsync("127.0.0.1", 53999);
+        using HttpClient client = new HttpClient();
 
-        var messageBytes = command.Serialize();
-        _socket.Send(messageBytes);
+        var commandData = command.Serialize();
+        
+        var response = await client.PostAsync("http://localhost:53999/", new StringContent(commandData));
 
-        byte[] buffer = new byte[1024];
-        int bytesRead = _socket.Receive(buffer);
+        response.EnsureSuccessStatusCode();
 
-        var result = TestRunnerSerialization.DeserializeResult<TCommandResult>(buffer);
+        var responseContent = await response.Content.ReadAsByteArrayAsync();
+        var result = TestRunnerSerialization.DeserializeResult<TCommandResult>(responseContent);
 
         return result;
     }

@@ -12,19 +12,18 @@ public abstract class Command
         TypeFullName = GetType().FullName!;
     }
 
-    public byte[] Serialize()
+    public string Serialize()
     {
         var json = JsonConvert.SerializeObject(this);
-        return Encoding.UTF8.GetBytes(json);
+        return json;
     }
     
     internal abstract CommandResult Execute();
     
-    internal static bool TryDeserialize(byte[] bytes, out Command? command, out Exception? exception)
+    internal static bool TryDeserialize(string json, out Command? command, out Exception? exception)
     {
         try
         {
-            var json = Encoding.UTF8.GetString(bytes);
             Console.WriteLine(json);
             
             var info = JsonConvert.DeserializeObject<CommandInfoInternal>(json);

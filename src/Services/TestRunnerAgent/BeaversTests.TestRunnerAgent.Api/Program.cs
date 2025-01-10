@@ -26,7 +26,7 @@ app.MapPost("/validate-driver", async (c) =>
         DriverKey = "Test",
         AgId = Guid.NewGuid(),
         Driver = TestDriverContentFactory.CreateFromDirectory(
-            @"C:\Users\kiril\RiderProjects\TMSNet\src\BuildingBlocks\Drivers\BeaversTests.NUnit.Driver\bin\Release\net8.0\publish")
+            @"C:\Users\k.groshev\RiderProjects\TMSNet\src\BuildingBlocks\Drivers\BeaversTests.NUnit.Driver\bin\Release\net8.0\publish")
     };
     
     var result = await runnerClient.SendAsync<DriverValidationCommand.Result>(command);

@@ -5,10 +5,10 @@ namespace BeaversTests.TestRunner;
 
 public static class TestRunnerSerialization
 {
-    public static byte[] Serialize(object @object)
+    public static Stream Serialize(object @object)
     {
         var json = JsonConvert.SerializeObject(@object);
-        return Encoding.UTF8.GetBytes(json);
+        return new MemoryStream(Encoding.UTF8.GetBytes(json));
     }
 
     public static TResult DeserializeResult<TResult>(byte[] bytes) where TResult : CommandResult
