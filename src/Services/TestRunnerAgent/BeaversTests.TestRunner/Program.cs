@@ -1,28 +1,21 @@
 ﻿using System.Net;
-using System.Net.Sockets;
 using BeaversTests.TestRunner;
-
-
-// using Socket s = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-//
-// s.Bind(new IPEndPoint(IPAddress.Any, 53999));
-//
-// s.Listen(10);
 
 using HttpListener httpListener = new();
 
-httpListener.Prefixes.Add("http://localhost:53999/");
+httpListener.Prefixes.Add("http://+:53999/cmd/");
+
 httpListener.Start();
 
 Console.WriteLine("Starting...");
 
-while (true)
+while (httpListener.IsListening)
 {
     try
     {
-        var context = httpListener.GetContext();
+        var context = await httpListener.GetContextAsync();
 
-        if (context.Request.HttpMethod != "POST" &&
+        if (context.Request.HttpMethod != "POST" && 
             !context.Request.IsLocal)
             continue;
 
@@ -32,7 +25,15 @@ while (true)
         var content = await sr.ReadToEndAsync();
 
         if (!content.Any())
+        {
+            var responseMessage = "Command is empty."u8.ToArray();
+            await context.Response.OutputStream.WriteAsync(responseMessage, 0, responseMessage.Length);
+            
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            context.Response.Close();
+            
             continue;
+        }
 
         Console.WriteLine($"Command received. ({content.Length} length)");
 
@@ -40,17 +41,25 @@ while (true)
         {
             Console.WriteLine(exception);
 
+            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.Close();
+            
             continue;
         }
 
+        Console.WriteLine("Command deserialized. Execution..");
         var result = command!.Execute();
-        var responseContent = result.Serialize();
 
+        Console.WriteLine("Command executed. Serialization and response..");
+        var responseContent = result.Serialize();
+        
         await using var response = context.Response.OutputStream;
         await responseContent.CopyToAsync(response);
 
         context.Response.StatusCode = (int)HttpStatusCode.OK;
         context.Response.Close();
+
+        Console.WriteLine("Response sent.");
     }
     catch (Exception ex)
     {

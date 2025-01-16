@@ -3,6 +3,7 @@ using BeaversTests.TestRunner;
 using BeaversTests.TestRunnerAgent.Api;
 using BeaversTests.TestRunnerAgent.App;
 using BeaversTests.TestRunnerAgent.Infrastructure;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +20,6 @@ var app = builder.Build();
 
 app.MapPost("/validate-driver", async (c) =>
 {
-    using var runnerClient = c.RequestServices.GetRequiredService<RunnerClient>();
-
     var command = new DriverValidationCommand()
     {
         DriverKey = "Test",
@@ -29,9 +28,9 @@ app.MapPost("/validate-driver", async (c) =>
             @"C:\Users\k.groshev\RiderProjects\TMSNet\src\BuildingBlocks\Drivers\BeaversTests.NUnit.Driver\bin\Release\net8.0\publish")
     };
     
-    var result = await runnerClient.SendAsync<DriverValidationCommand.Result>(command);
+    var result = await command.SendAsync<DriverValidationCommand.Result>();
     
-    Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(result));
+    Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(result, Formatting.Indented));
 });
 
 app.MapGet("/", () => "Alive.");

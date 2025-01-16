@@ -1,5 +1,4 @@
-﻿using System.Text;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace BeaversTests.TestRunner;
 
@@ -12,10 +11,22 @@ public abstract class Command
         TypeFullName = GetType().FullName!;
     }
 
-    public string Serialize()
+    public async Task<TCommandResult> SendAsync<TCommandResult>() 
+        where TCommandResult : CommandResult
     {
-        var json = JsonConvert.SerializeObject(this);
-        return json;
+        using HttpClient client = new HttpClient();
+
+        var commandData = TestRunnerSerialization.Serialize(this);
+        var content = new StreamContent(commandData);
+        
+        using var response = await client.PostAsync("http://localhost:53999/cmd/", content);
+
+        response.EnsureSuccessStatusCode();
+
+        var responseContent = await response.Content.ReadAsByteArrayAsync();
+        var result = TestRunnerSerialization.DeserializeResult<TCommandResult>(responseContent);
+
+        return result;
     }
     
     internal abstract CommandResult Execute();
@@ -24,8 +35,6 @@ public abstract class Command
     {
         try
         {
-            Console.WriteLine(json);
-            
             var info = JsonConvert.DeserializeObject<CommandInfoInternal>(json);
             
             if (info is null)

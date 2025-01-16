@@ -27,6 +27,7 @@ public class TestDriversRegistry : IDisposable
         if (!Path.Exists(configuration.DriversPath))
         {
             _driversDirectory.Create();
+            Console.WriteLine($"Drivers directory {_driversDirectory.FullName}.");
         }
     }
 
@@ -51,7 +52,7 @@ public class TestDriversRegistry : IDisposable
             Key = key,
             AgId = agId,
             DriverDirectory = driverDirectory,
-            LoadContext = new AssemblyLoadContext(driverDirectory.Name, true)
+            LoadContext = new RegistryAssemblyLoadContext(driverDirectory.Name, true)
         };
 
         _contexts.Add(context);

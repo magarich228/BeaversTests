@@ -24,7 +24,7 @@ public class DriverValidationCommand : Command
             return new Result
             {
                 ValidationStatus = "Failure",
-                ValidationMessage = ex.Message
+                ValidationMessage = ex.ToString()
             };
         }
 

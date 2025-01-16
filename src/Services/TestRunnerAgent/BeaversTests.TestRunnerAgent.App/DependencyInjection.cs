@@ -30,8 +30,6 @@ public static class DependencyInjection
         services.AddFluentValidation(new[] {executingAssembly});
 
         services.AddAutoMapper(conf => conf.AddMaps(executingAssembly));
-
-        services.AddScoped<RunnerClient>();
         
         services.AddSingleton<TasksContainer>();
         services.AddSingleton<IsolationService>();
