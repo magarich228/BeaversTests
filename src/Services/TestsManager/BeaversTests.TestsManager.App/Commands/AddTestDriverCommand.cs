@@ -48,6 +48,7 @@ public class AddTestDriverCommand
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
+            // TODO: fix this.
             logger.LogDebug("Adding test driver {Key}", command.TestDriver.Key);
             command.TestDriver.UserId = userService.GetCurrentUserId();
 

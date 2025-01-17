@@ -35,6 +35,7 @@ public class TestDriversRegistry : IDisposable
     {
         var serviceKey = key + agId;
 
+        Console.WriteLine($"Services count: {_services.Count}");
         using var provider = _services.BuildServiceProvider();
 
         return required
@@ -45,7 +46,18 @@ public class TestDriversRegistry : IDisposable
     public void Register(string key, Guid agId, TestDriverContent driverContent)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(key, nameof(key));
-        
+        ArgumentNullException.ThrowIfNull(driverContent);
+
+        if (Guid.Empty == agId)
+        {
+            throw new ArgumentException($"Invalid {nameof(agId)}");
+        }
+    
+        if (_contexts.Any(c => c.Key == key && c.AgId == agId))
+        {
+            throw new ArgumentException("Driver with this key and agId already registered.");
+        }    
+
         var driverDirectory = GetDriverDirectory(key, agId);
         var context = new RegistrationContext()
         {
@@ -56,33 +68,80 @@ public class TestDriversRegistry : IDisposable
         };
 
         _contexts.Add(context);
-        
-        RegisterFromDirectories(context, driverContent.Directories);
-        RegisterFromFiles(context, driverContent.Files);
-    }
 
-    private void RegisterFromDirectories(RegistrationContext context, IEnumerable<BeaversTestsDirectory> directories)
-    {
-        foreach (var directory in directories)
+        SaveFiles(driverDirectory, driverContent.Files);
+        SaveDirectories(driverDirectory, driverContent.Directories);
+
+        AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
         {
-            RegisterFromDirectories(context, directory.Directories);
-            RegisterFromFiles(context, directory.TestFiles);
+            Console.WriteLine($"Resolving: {args.Name}");
+            
+            var asm = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(a => a.FullName == args.Name);
+
+            if (asm is not null)
+                Console.WriteLine("Resolved");
+
+            return asm;
+        };
+        // context.LoadContext.Resolving += (loadContext, name) =>
+        // {
+        //     Console.WriteLine($"Resolving: {name.FullName}");
+        //     return loadContext.Assemblies.FirstOrDefault(a => a.FullName == name.FullName);
+        // };
+
+        RegisterFromDriverDirectory(context, driverDirectory);
+
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())//context.LoadContext.Assemblies)
+        {
+            RegisterDriversFromAssembly(context, asm);
         }
     }
 
-    private void RegisterFromFiles(RegistrationContext context, IEnumerable<BeaversTestsFile> files)
+    private void SaveDirectories(DirectoryInfo directoryInfo,
+        IEnumerable<BeaversTestsDirectory> directories)
+    {
+        foreach (var directory in directories)
+        {
+            var directoryPath = Path.Combine(directoryInfo.FullName, directory.DirectoryName);
+
+            var newDirectory = new DirectoryInfo(directoryPath);
+            newDirectory.Create();
+
+            SaveDirectories(newDirectory, directory.Directories);
+            SaveFiles(newDirectory, directory.TestFiles);
+        }
+    }
+
+    private void SaveFiles(DirectoryInfo directoryInfo,
+        IEnumerable<BeaversTestsFile> files)
     {
         foreach (var file in files)
+        {
+            var filePath = Path.Combine(directoryInfo.FullName, file.Name);
+
+            File.WriteAllBytes(filePath, file.Content);
+        }
+    }
+
+    private void RegisterFromDriverDirectory(RegistrationContext context, DirectoryInfo directory)
+    {
+        foreach (var file in directory.EnumerateFiles())
         {
             if (TryLoadAssembly(context, file, out var assembly) &&
                 assembly != null)
             {
-                RegisterDriversFromAssembly(context, assembly);
+                Console.WriteLine($"Загружена сборка: {assembly.FullName}");
             }
+        }
+
+        foreach (var subDirectory in directory.EnumerateDirectories())
+        {
+            RegisterFromDriverDirectory(context, subDirectory);
         }
     }
 
-    private bool TryLoadAssembly(RegistrationContext context, BeaversTestsFile file, out Assembly? assembly)
+    private bool TryLoadAssembly(RegistrationContext context, FileInfo file, out Assembly? assembly)
     {
         if (!file.Name.EndsWith(".dll"))
         {
@@ -93,8 +152,8 @@ public class TestDriversRegistry : IDisposable
 
         try
         {
-            using var ms = new MemoryStream(file.Content);
-            assembly = context.LoadContext.LoadFromStream(ms);
+            assembly = Assembly.LoadFile(file.FullName);
+            // assembly = context.LoadContext.LoadFromAssemblyPath(file.FullName);
 
             return true;
         }
@@ -121,8 +180,9 @@ public class TestDriversRegistry : IDisposable
 
         var asmDriverKeyTypes = asmExportedTypes
             .Where(t => t.IsAssignableTo(_driverKeyInterfaceType) &&
-                        t is {IsAbstract: false, IsInterface: false})
+                        t is { IsAbstract: false, IsInterface: false })
             .ToArray();
+        
         var asmTestExplorerTypes = asmExportedTypes
             .Where(t => t.GetInterfaces()
                 .Any(i => i.IsGenericType &&
@@ -135,6 +195,7 @@ public class TestDriversRegistry : IDisposable
 
             if (driverKey is null)
             {
+                Console.WriteLine("Driver key is null");
                 continue;
             }
 
@@ -147,11 +208,15 @@ public class TestDriversRegistry : IDisposable
 
             if (asmTestExplorerType is null)
             {
+                Console.WriteLine("AsmTestExplorerType is null");
                 continue;
             }
 
             if (driverKey.Key != context.Key)
+            {
+                Console.WriteLine($"Keys not equal. Driver key: {driverKey.Key}. Context key: {context.Key}");
                 continue;
+            }
 
             var serviceKey = driverKey.Key + context.AgId;
 
@@ -169,7 +234,7 @@ public class TestDriversRegistry : IDisposable
         {
             directoryName = directoryName.Replace($"{invalidChar}", string.Empty);
         }
-        
+
         return _driversDirectory.CreateSubdirectory(agId + directoryName);
     }
 
@@ -192,8 +257,10 @@ public class TestDriversRegistry : IDisposable
             {
                 context.DriverDirectory.Delete(true);
             }
-            
+
             context.LoadContext.Unload();
         }
+        
+        _contexts.Clear();
     }
 }

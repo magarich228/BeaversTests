@@ -18,20 +18,23 @@ services.AddHostedService<TaskEngine>();
 
 var app = builder.Build();
 
-app.MapPost("/validate-driver", async (c) =>
+if (app.Environment.IsDevelopment())
 {
-    var command = new DriverValidationCommand()
+    app.MapPost("/validate-driver", async (c) =>
     {
-        DriverKey = "Test",
-        AgId = Guid.NewGuid(),
-        Driver = TestDriverContentFactory.CreateFromDirectory(
-            @"C:\Users\k.groshev\RiderProjects\TMSNet\src\BuildingBlocks\Drivers\BeaversTests.NUnit.Driver\bin\Release\net8.0\publish")
-    };
-    
-    var result = await command.SendAsync<DriverValidationCommand.Result>();
-    
-    Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(result, Formatting.Indented));
-});
+        var command = new DriverValidationCommand()
+        {
+            DriverKey = "NUnit",
+            AgId = Guid.NewGuid(),
+            Driver = TestDriverContentFactory.CreateFromDirectory(
+                @"C:\Users\k.groshev\RiderProjects\TMSNet\src\BuildingBlocks\Drivers\BeaversTests.NUnit.Driver\bin\Release\net8.0\publish")
+        };
+
+        var result = await command.SendAsync<DriverValidationCommand.Result>();
+
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(result, Formatting.Indented));
+    });
+}
 
 app.MapGet("/", () => "Alive.");
 app.UseApi();

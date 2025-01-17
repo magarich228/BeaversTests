@@ -7,7 +7,7 @@ httpListener.Prefixes.Add("http://+:53999/cmd/");
 
 httpListener.Start();
 
-Console.WriteLine("Starting...");
+Console.WriteLine("Listening...");
 
 while (httpListener.IsListening)
 {
