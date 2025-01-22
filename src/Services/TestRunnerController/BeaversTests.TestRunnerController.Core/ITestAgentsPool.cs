@@ -2,5 +2,5 @@
 
 public interface ITestAgentsPool
 {
-    Task<Guid?> GetAsync(CancellationToken cancellationToken = default);
+    Task<Guid?> GetAsync(string userId, CancellationToken cancellationToken = default);
 }

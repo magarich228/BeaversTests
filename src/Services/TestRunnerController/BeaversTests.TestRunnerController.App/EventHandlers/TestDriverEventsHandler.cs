@@ -15,8 +15,8 @@ public class TestDriverEventsHandler(
     public async Task Handle(TestDriverAddedEvent notification, CancellationToken cancellationToken)
     {
         logger.LogDebug("TestDriverAddedEvent received. Key: {Key}, AgId: {AgId}", notification.Key, notification.AgId);
-
-        var agentId = await testAgentsPool.GetAsync(cancellationToken);
+        
+        var agentId = await testAgentsPool.GetAsync(notification.UserId, cancellationToken);
 
         if (agentId is null)
         {
@@ -37,11 +37,15 @@ public class TestDriverEventsHandler(
         {
             Key = notification.Key,
             AgId = notification.AgId,
+            UserId = notification.UserId,
             TestAgentId = agentId.Value
         };
 
         await eventBus.CommitAsync(cancellationToken, validationTaskEvent);
 
-        logger.LogDebug("TestDriverValidationTaskEvent was sent. Key: {Key}, AgId: {AgId}", notification.Key, notification.AgId);
+        logger.LogDebug("TestDriverValidationTaskEvent was sent. Key: {Key}, AgId: {AgId}, User {UserId}", 
+            notification.Key, 
+            notification.AgId,
+            notification.UserId);
     }
 }

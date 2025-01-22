@@ -51,7 +51,7 @@ public class RabbitMqService : IMessageBroker
             autoDelete: false);
 
         var queueDeclareOk = channel.QueueDeclare(
-            queue: exchangeName,
+            queue: exchangeName + Guid.NewGuid(),
             exclusive: false, 
             autoDelete: false, 
             durable: true);

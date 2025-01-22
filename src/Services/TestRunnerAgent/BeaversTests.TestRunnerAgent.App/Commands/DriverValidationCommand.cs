@@ -19,7 +19,7 @@ public abstract class DriverValidationCommand
         public static Command Create(ITask task, IIsolationContext isolationContext)
         {
             var validationTask = task as DriverValidationTask ?? 
-                                 throw new ArgumentException("Task is not DriverValidationTask");
+                                 throw new ArgumentException($"Task is not {nameof(DriverValidationTask)}");
             
             return new Command
             {

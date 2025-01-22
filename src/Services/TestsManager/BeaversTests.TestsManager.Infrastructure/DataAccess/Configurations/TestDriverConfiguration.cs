@@ -9,12 +9,14 @@ public class TestDriverConfiguration : IEntityTypeConfiguration<TestDriver>
 {
     public void Configure(EntityTypeBuilder<TestDriver> builder)
     {
+        // TODO: migration for agId, complex key
         builder.HasKey(d => d.Key);
         builder.Property(d => d.Key)
             .IsRequired()
             .HasMaxLength(25);
 
-        builder.Property(d => d.AgId);
+        builder.Property(d => d.AgId)
+            .IsRequired();
 
         builder.Property(d => d.UserCreatorId)
             .HasMaxLength(50)

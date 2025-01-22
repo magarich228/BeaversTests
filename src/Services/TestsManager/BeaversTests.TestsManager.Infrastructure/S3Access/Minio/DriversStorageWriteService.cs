@@ -29,5 +29,5 @@ public class DriversStorageWriteService(
     }
     
     // TODO: move to shared, unique bucket name in minio
-    private string GetBucketName(string testDriverKey, Guid agId) => $"{agId}{testDriverKey.ToLower()}-driver";
+    private string GetBucketName(string testDriverKey, Guid agId) => $"{agId}-{testDriverKey.ToLower()}-driver";
 }
