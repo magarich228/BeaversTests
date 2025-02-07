@@ -9,8 +9,6 @@ namespace BeaversTests.Isolation.Docker;
 [Strategy(Name)]
 public class DockerIsolationStrategy : IIsolationStrategy
 {
-    private readonly string _imageName = "beavers-tests-runner";
-        
     private const string Name = "Docker";
 
     private readonly DockerClientConfiguration _dockerClientConfiguration = new();
@@ -44,42 +42,23 @@ public class DockerIsolationStrategy : IIsolationStrategy
         
         var tarball = CreateTarballForDockerfileDirectory(Environment.CurrentDirectory);
 
-        var imageBuildParams = new ImageBuildParameters()
-        {
-            Tags = new[] { _imageName },
-            Dockerfile = "RuntimeDockerfile"
-        };
+        RunnerContainerConfig config = new();
+        var imageBuildParams = config.ImageBuildParameters;
         
         await client.Images.BuildImageFromDockerfileAsync(
             imageBuildParams,
             tarball,
-        null,
-        new Dictionary<string, string>(),
+            null,
+            new Dictionary<string, string>(),
             new Progress<JSONMessage>(),
             cancellationToken);
 
-        var containerParams = new CreateContainerParameters()
-        {
-            Image = _imageName,
-            Name = "beavers-tests-runner",
-            ExposedPorts = new Dictionary<string, EmptyStruct>
-            {
-                { "53999/tcp", new EmptyStruct() }
-            },
-            HostConfig = new HostConfig
-            {
-                PortBindings = new Dictionary<string, IList<PortBinding>>
-                {
-                    { 
-                        "53999/tcp", 
-                        new List<PortBinding>
-                        {
-                            new() { HostPort = "53999" }
-                        }
-                    }
-                }
-            }
-        };
+        var containerParams = config.CreateContainerParameters;
+
+        // var containers = await client.Containers.ListContainersAsync(
+        //     new ContainersListParameters(), cancellationToken);
+
+        // TODO: Учесть наличие контейнеров других агентов на этой машине.
 
         var response = await client.Containers.CreateContainerAsync(containerParams, cancellationToken);
 
