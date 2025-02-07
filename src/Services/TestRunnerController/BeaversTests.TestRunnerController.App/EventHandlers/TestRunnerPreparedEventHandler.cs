@@ -23,8 +23,11 @@ public class TestRunnerPreparedEventHandler(
             cancellationToken: cancellationToken);
 
         if (controllerUserKey == null)
+        {
+            logger.LogDebug($"Controller user key {controllerUserKey} not found.");
             return;
             // throw new ApplicationException($"Controller user key not found. {notification.Id}");
+        }
         
         var agentAggregate = new TestAgentAggregate();
         agentAggregate.ApplyPrepared(new Events.TestRunnerPreparedEvent()

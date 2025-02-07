@@ -4,5 +4,6 @@ public class DriverValidationTask : ITask
 {
     public required string DriverKey { get; init; }
     public required Guid AgId { get; init; }
+    public required string UserId { get; init; }
     public TaskType Type => TaskType.DriverValidation;
 }

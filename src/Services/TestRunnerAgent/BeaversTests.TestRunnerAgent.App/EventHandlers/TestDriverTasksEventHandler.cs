@@ -24,7 +24,8 @@ public class TestDriverTasksEventHandler(
         tasksContainer.Register(new DriverValidationTask()
         {
             AgId = notification.AgId,
-            DriverKey = notification.Key
+            DriverKey = notification.Key,
+            UserId = notification.UserId
         });
     }
 }

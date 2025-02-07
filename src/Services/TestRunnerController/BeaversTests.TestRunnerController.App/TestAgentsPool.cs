@@ -5,14 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BeaversTests.TestRunnerController.App;
 
-public class TestAgentsPool(
-    IUserService userService,
-    ITestRunnerControllerContext db) : ITestAgentsPool
+public class TestAgentsPool(ITestRunnerControllerContext db) : ITestAgentsPool
 {
-    public async Task<Guid?> GetAsync(CancellationToken cancellationToken = default)
+    public async Task<Guid?> GetAsync(string userId, CancellationToken cancellationToken = default)
     {
-        var userId = userService.GetCurrentUserId();
-        
         var preparedTestAgent = await db.TestAgents
             .Where(a => a.OwnerId.Equals(userId))
             .FirstOrDefaultAsync(

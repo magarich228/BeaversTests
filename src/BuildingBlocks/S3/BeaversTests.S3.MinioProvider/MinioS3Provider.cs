@@ -27,7 +27,10 @@ public class MinioS3Provider(
                     .WithBucket(bucketName), 
                 cancellationToken))
         {
-            throw new ApplicationException($"Bucket with this name ({bucketName}) does not exists.");
+            var message = $"Bucket with this name ({bucketName}) does not exists.";
+
+            logger.LogError(message);
+            throw new ApplicationException(message);
         }
         
         var items = minioClient.ListObjectsEnumAsync(
