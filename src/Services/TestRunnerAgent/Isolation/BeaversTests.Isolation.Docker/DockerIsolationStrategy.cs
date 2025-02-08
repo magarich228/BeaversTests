@@ -12,6 +12,7 @@ public class DockerIsolationStrategy : IIsolationStrategy
     private const string Name = "Docker";
 
     private readonly DockerClientConfiguration _dockerClientConfiguration = new();
+    private readonly RunnerContainerConfig _config = new();
     private string? _containerId;
 
     public async Task<bool> IsPossibleAsync(CancellationToken cancellationToken = default)
@@ -25,6 +26,11 @@ public class DockerIsolationStrategy : IIsolationStrategy
             Console.WriteLine($"{version.Name} {version.OSType} {version.Isolation} {version.ServerVersion}");
 
             await client.System.PingAsync(cancellationToken);
+
+            var dockerFile = _config.ImageBuildParameters.Dockerfile;
+            
+            if (!File.Exists(dockerFile))
+                throw new FileNotFoundException($"Test runner image file not found: {dockerFile}");
 
             return true;
         }
@@ -41,9 +47,8 @@ public class DockerIsolationStrategy : IIsolationStrategy
         using var client = _dockerClientConfiguration.CreateClient();
         
         var tarball = CreateTarballForDockerfileDirectory(Environment.CurrentDirectory);
-
-        RunnerContainerConfig config = new();
-        var imageBuildParams = config.ImageBuildParameters;
+        
+        var imageBuildParams = _config.ImageBuildParameters;
         
         await client.Images.BuildImageFromDockerfileAsync(
             imageBuildParams,
@@ -53,7 +58,7 @@ public class DockerIsolationStrategy : IIsolationStrategy
             new Progress<JSONMessage>(),
             cancellationToken);
 
-        var containerParams = config.CreateContainerParameters;
+        var containerParams = _config.CreateContainerParameters;
 
         // var containers = await client.Containers.ListContainersAsync(
         //     new ContainersListParameters(), cancellationToken);

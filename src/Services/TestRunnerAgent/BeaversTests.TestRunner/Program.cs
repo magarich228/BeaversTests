@@ -1,11 +1,29 @@
 ﻿using System.Net;
 using BeaversTests.TestRunner;
 
-using HttpListener httpListener = new();
+using HttpListener allInterfacesHttpListener = new();
+using HttpListener localHttpListener = new();
 
-httpListener.Prefixes.Add("http://+:53999/cmd/");
+HttpListener httpListener = allInterfacesHttpListener;
 
-httpListener.Start();
+// TODO: Параметризация урла?
+allInterfacesHttpListener.Prefixes.Add("http://+:53999/cmd/");
+
+try
+{
+    allInterfacesHttpListener.Start();
+}
+catch (HttpListenerException)
+{
+    allInterfacesHttpListener.Close();
+    
+    localHttpListener.Prefixes.Clear();
+    localHttpListener.Prefixes.Add("http://localhost:53999/cmd/");
+    
+    localHttpListener.Start();
+
+    httpListener = localHttpListener;
+}
 
 Console.WriteLine("Listening...");
 

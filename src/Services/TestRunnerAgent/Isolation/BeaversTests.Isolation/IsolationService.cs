@@ -1,12 +1,14 @@
 ﻿using BeaversTests.Isolation.Contracts;
 using BeaversTests.Isolation.Docker;
+using BeaversTests.Isolation.HostNative;
 
 namespace BeaversTests.Isolation;
 
 public class IsolationService
 {
-    // TODO: Убрать костыль
+    // TODO: Убрать костыли
     private readonly DockerIsolationStrategy _dockerIsolationStrategy = new();
+    private readonly HostIsolationStrategy _hostIsolationStrategy = new();
     
     public async Task<IIsolationStrategy> FindPossibleStrategy(List<string>? exclusionNames = null, CancellationToken cancellationToken = default)
     {

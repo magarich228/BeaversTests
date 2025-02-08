@@ -25,8 +25,8 @@ public class TestRunnerPreparedEventHandler(
         if (controllerUserKey == null)
         {
             logger.LogDebug($"Controller user key {controllerUserKey} not found.");
+            // TODO: ack to agent.
             return;
-            // throw new ApplicationException($"Controller user key not found. {notification.Id}");
         }
         
         var agentAggregate = new TestAgentAggregate();

@@ -140,6 +140,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Isolation", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Experiments", "src\Services\TestRunnerAgent\Experiments\Experiments.csproj", "{2466CCD0-3B54-492B-BD69-54BB950D3108}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Isolation.HostNative", "src\Services\TestRunnerAgent\Isolation\BeaversTests.Isolation.HostNative\BeaversTests.Isolation.HostNative.csproj", "{7BCC462B-6465-46FF-B115-65EFFAF4B916}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,7 @@ Global
 		{984B31E4-743F-426E-86B3-733BBE963070} = {AF9A9AD3-5354-44F1-B7B8-FD0F96CBF64F}
 		{003B9FCC-36D8-4C9A-B5A6-CC9696049F9A} = {AF9A9AD3-5354-44F1-B7B8-FD0F96CBF64F}
 		{2466CCD0-3B54-492B-BD69-54BB950D3108} = {431E3AF1-CDDB-4B1F-9E01-7506E018BF72}
+		{7BCC462B-6465-46FF-B115-65EFFAF4B916} = {AF9A9AD3-5354-44F1-B7B8-FD0F96CBF64F}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{1AFABD30-2269-4719-B636-7444785C52EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -375,5 +378,9 @@ Global
 		{2466CCD0-3B54-492B-BD69-54BB950D3108}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2466CCD0-3B54-492B-BD69-54BB950D3108}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2466CCD0-3B54-492B-BD69-54BB950D3108}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BCC462B-6465-46FF-B115-65EFFAF4B916}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BCC462B-6465-46FF-B115-65EFFAF4B916}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BCC462B-6465-46FF-B115-65EFFAF4B916}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BCC462B-6465-46FF-B115-65EFFAF4B916}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
