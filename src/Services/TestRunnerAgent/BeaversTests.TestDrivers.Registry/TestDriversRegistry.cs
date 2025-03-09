@@ -79,6 +79,11 @@ public class TestDriversRegistry : IDisposable
             var asm = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.FullName == args.Name);
 
+            if (asm is null && args.RequestingAssembly is not null)
+            {
+                asm = Assembly.LoadFile(args.RequestingAssembly.Location);
+            }
+            
             if (asm is not null)
                 Console.WriteLine("Resolved");
 
@@ -143,12 +148,12 @@ public class TestDriversRegistry : IDisposable
 
     private bool TryLoadAssembly(RegistrationContext context, FileInfo file, out Assembly? assembly)
     {
-        if (!file.Name.EndsWith(".dll"))
-        {
-            assembly = null;
-
-            return false;
-        }
+        // if (!file.Name.EndsWith(".dll"))
+        // {
+        //     assembly = null;
+        //
+        //     return false;
+        // }
 
         try
         {
@@ -249,13 +254,18 @@ public class TestDriversRegistry : IDisposable
     public void Dispose()
     {
         _driversDirectory.Refresh();
-        _driversDirectory.Delete(true);
+        
+        if (!_driversDirectory.TryDelete(true, out var exception))
+        {
+            Console.WriteLine(exception);
+        }
 
         foreach (var context in _contexts)
         {
-            if (context.DriverDirectory.Exists)
+            if (context.DriverDirectory.Exists &&
+                !context.DriverDirectory.TryDelete(true, out exception))
             {
-                context.DriverDirectory.Delete(true);
+                Console.WriteLine(exception);
             }
 
             context.LoadContext.Unload();

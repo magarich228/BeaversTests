@@ -30,7 +30,7 @@ public class TestDriverConfiguration : IEntityTypeConfiguration<TestDriver>
         
         builder.Property(t => t.ValidationMessage)
             .HasDefaultValue(string.Empty)
-            .HasMaxLength(1000);
+            .HasMaxLength(10000);
         
         builder.Property(d => d.Description)
             .HasMaxLength(250);

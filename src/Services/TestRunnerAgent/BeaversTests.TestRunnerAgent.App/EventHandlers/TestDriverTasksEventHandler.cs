@@ -11,10 +11,10 @@ public class TestDriverTasksEventHandler(
     TestRunnerContext testRunnerContext,
     ILogger<TestDriverTasksEventHandler> logger) : IEventHandler<TestDriverValidationTaskEvent>
 {
-    public async Task Handle(TestDriverValidationTaskEvent notification, CancellationToken cancellationToken)
+    public Task Handle(TestDriverValidationTaskEvent notification, CancellationToken cancellationToken)
     {
         if (notification.TestAgentId != testRunnerContext.Id)
-            return;
+            return Task.CompletedTask;
         
         logger.LogDebug("Test driver validation task event received {0} ({1}). Agent id: {2}", 
             notification.Key,
@@ -27,5 +27,7 @@ public class TestDriverTasksEventHandler(
             DriverKey = notification.Key,
             UserId = notification.UserId
         });
+
+        return Task.CompletedTask;
     }
 }

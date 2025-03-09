@@ -1,29 +1,27 @@
 ﻿using System.Net;
 using BeaversTests.TestRunner;
 
-using HttpListener allInterfacesHttpListener = new();
-using HttpListener localHttpListener = new();
+var urlParam = args.FirstOrDefault();
 
-HttpListener httpListener = allInterfacesHttpListener;
-
-// TODO: Параметризация урла?
-allInterfacesHttpListener.Prefixes.Add("http://+:53999/cmd/");
-
-try
+if (string.IsNullOrWhiteSpace(urlParam))
 {
-    allInterfacesHttpListener.Start();
+    Console.WriteLine("url is required.");
+    Environment.Exit(-1); // TODO: осмысленные коды
 }
-catch (HttpListenerException)
-{
-    allInterfacesHttpListener.Close();
-    
-    localHttpListener.Prefixes.Clear();
-    localHttpListener.Prefixes.Add("http://localhost:53999/cmd/");
-    
-    localHttpListener.Start();
 
-    httpListener = localHttpListener;
+var url = new Uri(urlParam);
+
+if (url.PathAndQuery != "/")
+{
+    Console.WriteLine("the url should only be the base address.");
+    Environment.Exit(-2);
 }
+
+HttpListener httpListener = new HttpListener();
+
+httpListener.Prefixes.Add($"{urlParam}/cmd/");
+
+httpListener.Start();
 
 Console.WriteLine("Listening...");
 

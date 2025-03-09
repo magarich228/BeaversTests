@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using BeaversTests.Common.Binary;
 using BeaversTests.TestRunner;
 using BeaversTests.TestRunnerAgent.Api;
@@ -5,6 +6,7 @@ using BeaversTests.TestRunnerAgent.App;
 using BeaversTests.TestRunnerAgent.Infrastructure;
 using Newtonsoft.Json;
 
+Environment.CurrentDirectory = RuntimeEnvironment.GetRuntimeDirectory();
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;

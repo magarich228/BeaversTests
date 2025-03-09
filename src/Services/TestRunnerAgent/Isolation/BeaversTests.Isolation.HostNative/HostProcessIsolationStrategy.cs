@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
 using BeaversTests.Isolation.Contracts;
 
 namespace BeaversTests.Isolation.HostNative;
@@ -20,17 +19,22 @@ public class HostIsolationStrategy : IIsolationStrategy
         var startInfo = new ProcessStartInfo()
         {
             FileName = "dotnet",
-            Arguments = _runnerPath,
+            ArgumentList = { _runnerPath, "http://localhost:53999" },
             UseShellExecute = false,
+            // RedirectStandardOutput = true,
+            // CreateNoWindow = true
         };
 
         var runner = Process.Start(startInfo);
+        
+        if (runner is not null)
+            runner.OutputDataReceived += (_, args) => Console.WriteLine(args.Data);
         
         if (runner is null ||
             runner.HasExited)
             throw new Exception("Failed to start test runner process.");
 
-        return Task.FromResult<IIsolationContext>(new HostIsolationContext(runner));
+        return Task.FromResult<IIsolationContext>(new HostProcessIsolationContext(runner));
     }
     
     public ValueTask DisposeAsync()

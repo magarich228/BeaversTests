@@ -53,7 +53,8 @@ public class TaskEngine(
         {
             if (!tasksContainer.TryGetNextTask(out var task))
             {
-                Task.Delay(_delayMilliseconds).Wait();
+                Task.Delay(_delayMilliseconds)
+                    .Wait();
                 
                 continue;
             }

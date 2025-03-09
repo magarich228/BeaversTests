@@ -3,7 +3,7 @@ using BeaversTests.Isolation.Contracts;
 
 namespace BeaversTests.Isolation.HostNative;
 
-public class HostIsolationContext(Process runnerProcess) : IIsolationContext
+public class HostProcessIsolationContext(Process runnerProcess) : IIsolationContext
 {
     public Task<bool> IsAliveAsync(CancellationToken cancellationToken = default)
     {

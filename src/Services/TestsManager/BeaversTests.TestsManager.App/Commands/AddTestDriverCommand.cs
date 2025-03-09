@@ -8,6 +8,7 @@ using BeaversTests.TestsManager.App.Dtos.TestDriver;
 using BeaversTests.TestsManager.Core.TestDriver;
 using BeaversTests.TestsManager.Events.TestDriver;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.App.Commands;
@@ -27,7 +28,9 @@ public class AddTestDriverCommand
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(
+            ITestsManagerContext db,
+            IUserService userService)
         {
             // TODO: валидация
             RuleFor(c => c.TestDriver)
@@ -36,6 +39,13 @@ public class AddTestDriverCommand
             RuleFor(c => c.TestDriver.Key)
                 .NotNull()
                 .NotEmpty();
+
+            RuleFor(c => c.TestDriver)
+                .MustAsync(async (c, ct) => 
+                    !await db.TestDrivers
+                        .Where(d => d.UserCreatorId == userService.GetCurrentUserId())
+                        .AnyAsync(d => d.AgId == c.AgId && d.Key == c.Key, ct))
+                .WithMessage("Test driver with this key already exists.");
         }
     }
 
