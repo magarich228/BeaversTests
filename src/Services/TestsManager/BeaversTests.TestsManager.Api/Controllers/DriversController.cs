@@ -32,10 +32,10 @@ public class DriversController(
 
     [HttpPost]
     public async Task<IActionResult> AddZipAsync(
-        [FromBody] TestDriverZipDto testDriverZipDto,
+        TestDriverZipDto testDriverZipDto,
         CancellationToken cancellationToken)
     {
-        return await AddTestDriverAsync<TestDriverZipDto>(testDriverZipDto, cancellationToken);
+        return await AddTestDriverAsync<IEntityZipContent>(testDriverZipDto, cancellationToken);
     }
 
     [HttpPost]
@@ -45,19 +45,26 @@ public class DriversController(
     }
 
     [HttpDelete]
-    public async Task<IActionResult> RemoveAsync(CancellationToken cancellationToken)
+    public async Task<IActionResult> RemoveAsync(
+        [FromQuery] RemoveDriverCommand.Command commandInput, 
+        CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var result = await commandBus.SendAsync(commandInput, cancellationToken);
+
+        return Ok(result);
     }
 
     private async Task<IActionResult> AddTestDriverAsync<TInput>(
         TestDriverBase testDriverInput,
         CancellationToken cancellationToken)
-        where TInput : TestDriverBase
+        where TInput : class, IEntityContent
     {
         logger.LogDebug("Adding test driver {Key}", testDriverInput.Key);
 
-        var driverContent = extractor.ExtractContent(testDriverInput);
+        var input = testDriverInput as TInput ?? 
+                    throw new ArgumentException("Test driver input is not a valid type for the provided content type.");
+        
+        var driverContent = extractor.ExtractContent(input);
 
         var driverContentDto = new NewTestDriverContentDto()
         {

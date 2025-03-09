@@ -10,6 +10,7 @@ public class TestRunnerControllerContext(DbContextOptions<TestRunnerControllerCo
     ITestRunnerControllerContext
 {
     public DbSet<TestAgent> TestAgents { get; init; } = null!;
+    public DbSet<ControllerUserKey> ControllerUserKeys { get; init; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -19,6 +20,7 @@ public class TestRunnerControllerContext(DbContextOptions<TestRunnerControllerCo
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new TestAgentConfiguration());
+        modelBuilder.ApplyConfiguration(new ControllerUserKeyConfiguration());
         
         base.OnModelCreating(modelBuilder);
     }

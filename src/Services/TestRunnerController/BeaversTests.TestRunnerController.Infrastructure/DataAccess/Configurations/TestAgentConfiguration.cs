@@ -10,6 +10,12 @@ public class TestAgentConfiguration : IEntityTypeConfiguration<TestAgent>
     {
         builder.HasKey(x => x.Id);
 
+        builder.Property(x => x.OwnerId)
+            .IsRequired();
+
+        builder.Property(x => x.Key)
+            .IsRequired();
+
         builder.Property(x => x.Status)
             .HasConversion(t => t.ToString(),
                 t => Enum.Parse<TestAgentStatus>(t))

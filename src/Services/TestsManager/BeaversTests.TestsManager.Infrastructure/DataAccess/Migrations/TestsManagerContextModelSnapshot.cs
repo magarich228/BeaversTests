@@ -28,23 +28,31 @@ namespace BeaversTests.TestsManager.Infrastructure.DataAccess.Migrations
                         .HasMaxLength(25)
                         .HasColumnType("character varying(25)");
 
+                    b.Property<Guid>("AgId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Description")
                         .HasMaxLength(250)
                         .HasColumnType("character varying(250)");
 
-                    b.Property<bool>("IsDefault")
-                        .HasColumnType("boolean");
+                    b.Property<string>("UserCreatorId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ValidationMessage")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)")
+                        .HasDefaultValue("");
+
+                    b.Property<string>("ValidationResult")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Key");
 
                     b.ToTable("TestDrivers");
-
-                    b.HasData(
-                        new
-                        {
-                            Key = "NUnit",
-                            IsDefault = true
-                        });
                 });
 
             modelBuilder.Entity("BeaversTests.TestsManager.Core.TestPackage.BeaversTestPackage", b =>

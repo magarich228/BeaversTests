@@ -1,15 +1,17 @@
-﻿using BeaversTests.TestRunnerController.App.Abstractions;
+﻿using BeaversTests.Common.Application;
+using BeaversTests.TestRunnerController.App.Abstractions;
 using BeaversTests.TestRunnerController.Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace BeaversTests.TestRunnerController.App;
 
-public class TestAgentsPool(
-    ITestRunnerControllerContext db) : ITestAgentsPool
+public class TestAgentsPool(ITestRunnerControllerContext db) : ITestAgentsPool
 {
-    public async Task<Guid?> GetAsync(CancellationToken cancellationToken = default)
+    public async Task<Guid?> GetAsync(string userId, CancellationToken cancellationToken = default)
     {
-        var preparedTestAgent = await db.TestAgents.FirstOrDefaultAsync(
+        var preparedTestAgent = await db.TestAgents
+            .Where(a => a.OwnerId.Equals(userId))
+            .FirstOrDefaultAsync(
             a => a.Status.Equals(TestAgentStatus.Prepared), 
             cancellationToken);
 

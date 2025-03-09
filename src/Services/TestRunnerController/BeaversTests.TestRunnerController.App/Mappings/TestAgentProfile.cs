@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BeaversTests.TestRunnerController.App.Dtos;
 using BeaversTests.TestRunnerController.Core;
+using BeaversTests.TestRunnerController.Events;
 
 namespace BeaversTests.TestRunnerController.App.Mappings;
 
@@ -19,5 +20,8 @@ public class TestAgentProfile : Profile
                 a => a.Status, 
                 opt => opt.MapFrom(dto => Enum.Parse<TestAgentStatus>(dto.Status)))
             .ForMember(a => a.Id, opt => opt.MapFrom(dto => dto.Id));
+
+        CreateMap<ControllerUserKeyCreatedEvent, ControllerUserKey>();
+        CreateMap<ControllerUserKey, AgentConnectionKeyDto>();
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace BeaversTests.TestsManager.Api.Dtos;
 
-public interface IEntityZipContent
+public interface IEntityZipContent : IEntityContent
 {
     IFormFile ZipContent { get; init; }
 }

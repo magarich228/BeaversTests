@@ -1,6 +1,6 @@
 ﻿namespace BeaversTests.TestsManager.App.Abstractions;
 
-public class TestDriverBase
+public abstract class TestDriverBase
 {
     public required string Key { get; init; }
     public string? Description { get; init; }

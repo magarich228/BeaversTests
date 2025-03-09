@@ -1,6 +1,7 @@
 ﻿using BeaversTests.Common.CQRS.Events;
 using BeaversTests.TestsManager.App.Abstractions;
 using BeaversTests.TestsManager.App.Exceptions;
+using BeaversTests.TestsManager.Core;
 using BeaversTests.TestsManager.Core.TestPackage;
 using BeaversTests.TestsManager.Events.TestPackage;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ public class TestPackageAddedEventHandler(
             Description = notification.Description,
             TestDriverKey = notification.TestDriverKey,
             TestProjectId = notification.TestProjectId,
-            ValidationStatus = TestPackageValidationResult.InProgress
+            ValidationStatus = ValidationResult.InProgress
         };
         
         await db.TestPackages.AddAsync(testPackage, cancellationToken);

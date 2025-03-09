@@ -9,7 +9,7 @@ public class TestPackageAggregate : Aggregate
     public string? Description { get; private set; }
     public string TestDriverKey { get; private set; } = default!;
     public Guid TestProjectId { get; private set; }
-    public TestPackageValidationResult TestPackageValidationStatus { get; private set; } = TestPackageValidationResult.InProgress;
+    public ValidationResult TestPackageValidationStatus { get; private set; } = ValidationResult.InProgress;
     public string ValidationMessage { get; private set; } = string.Empty;
     
     public TestPackageAggregate() { }
@@ -34,7 +34,7 @@ public class TestPackageAggregate : Aggregate
             throw new ArgumentException("Test package id mismatch.", nameof(@event.Id));
         }
         
-        TestPackageValidationStatus = Enum.Parse<TestPackageValidationResult>(@event.ValidationStatus);
+        TestPackageValidationStatus = Enum.Parse<ValidationResult>(@event.ValidationStatus);
         ValidationMessage = @event.ValidationMessage;
         
         base.Enqueue(@event);

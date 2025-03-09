@@ -16,7 +16,8 @@ public class TestPackageAddedEventHandler(
     {
         logger.LogInformation("Test package {TestPackageId} added event has been received.", notification.Id);
         
-        var testAgentId = await agentsPool.GetAsync(cancellationToken);
+        // TODO: Пробросить через события UserId.
+        var testAgentId = await agentsPool.GetAsync("", cancellationToken);
         var tasksAggregate = new TestPackageTasksAggregate();
 
         if (testAgentId == null)

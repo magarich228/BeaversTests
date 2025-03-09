@@ -11,6 +11,7 @@
       <ProjectReference Include="..\..\..\BuildingBlocks\BeaversTests.Common.CQRS\BeaversTests.Common.CQRS.csproj" />
       <ProjectReference Include="..\BeaversTests.TestRunnerAgent.Core\BeaversTests.TestRunnerAgent.Core.csproj" />
       <ProjectReference Include="..\BeaversTests.TestRunner\BeaversTests.TestRunner.csproj" />
+      <ProjectReference Include="..\Isolation\BeaversTests.Isolation\BeaversTests.Isolation.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -7,6 +7,8 @@ public class TestDriverAggregate : Aggregate
 {
     public string Key { get; private set; } = null!;
     public string UserCreatorId { get; private set; } = null!;
+    public ValidationResult ValidationResult { get; private set; } = ValidationResult.Unknown;
+    public string? ValidationMessage { get; private set; }
     public string? Description { get; private set; }
     public bool IsDeleted { get; private set; }
 
@@ -19,7 +21,7 @@ public class TestDriverAggregate : Aggregate
         if (Version != 0)
             throw new InvalidOperationException("Test driver already created.");
         
-        Id = @event.Id;
+        Id = @event.AgId;
         Key = @event.Key;
         UserCreatorId = @event.UserId;
         Description = @event.Description;
@@ -28,12 +30,30 @@ public class TestDriverAggregate : Aggregate
     }
 
     [EventApplier]
+    public void ApplyValidationStatus(TestDriverValidationStatusEvent @event)
+    {
+        if (IsDeleted)
+            throw new InvalidOperationException("Test driver already deleted.");
+        
+        if (Id != @event.AgId)
+            throw new InvalidOperationException("Test driver not found.");
+
+        if (Key != @event.Key)
+            throw new InvalidOperationException("Test driver key is invalid.");
+        
+        ValidationResult = Enum.Parse<ValidationResult>(@event.ValidationStatus);
+        ValidationMessage = @event.ValidationMessage;
+        
+        base.Enqueue(@event);
+    }
+    
+    [EventApplier]
     public void ApplyDeleted(TestDriverRemovedEvent @event)
     {
         if (IsDeleted)
             throw new InvalidOperationException("Test driver already deleted.");
         
-        if (Id != @event.Id)
+        if (Id != @event.AgId)
             throw new InvalidOperationException("Test driver not found.");
 
         if (Key != @event.Key)
@@ -42,7 +62,7 @@ public class TestDriverAggregate : Aggregate
         if (UserCreatorId != @event.UserId)
             throw new InvalidOperationException("This user can't delete this test driver.");
         
-        Id = @event.Id;
+        Id = @event.AgId;
 
         IsDeleted = true;
         

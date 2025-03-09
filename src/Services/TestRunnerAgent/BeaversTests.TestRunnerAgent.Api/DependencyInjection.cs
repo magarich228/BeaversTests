@@ -24,6 +24,8 @@ public static class DependencyInjection
         var messageBroker = app.ApplicationServices.GetRequiredService<IMessageBroker>();
 
         messageBroker.SubscribeAsync<TestPackageValidationTaskEvent>();
+
+        messageBroker.SubscribeAsync<TestDriverValidationTaskEvent>();
         
         return app;
     }

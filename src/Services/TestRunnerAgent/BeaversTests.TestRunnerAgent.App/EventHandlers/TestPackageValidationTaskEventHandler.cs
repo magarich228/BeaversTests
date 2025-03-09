@@ -6,11 +6,12 @@ using Microsoft.Extensions.Logging;
 namespace BeaversTests.TestRunnerAgent.App.EventHandlers;
 
 public class TestPackageValidationTaskEventHandler(
+    TestRunnerContext runnerContext,
     ILogger<TestPackageValidationTaskEventHandler> logger) : IEventHandler<TestPackageValidationTaskEvent>
 {
     public Task Handle(TestPackageValidationTaskEvent notification, CancellationToken cancellationToken)
     {
-        if (notification.TestAgentId != TestRunnerContext.Id)
+        if (notification.TestAgentId != runnerContext.Id)
         {
             return Task.CompletedTask;
         }

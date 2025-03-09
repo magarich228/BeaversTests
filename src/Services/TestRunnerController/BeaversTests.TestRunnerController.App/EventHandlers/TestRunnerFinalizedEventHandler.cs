@@ -12,7 +12,7 @@ public class TestRunnerFinalizedEventHandler(
 {
     public async Task Handle(TestRunnerFinalizedEvent notification, CancellationToken cancellationToken)
     {
-        logger.LogInformation("TestRunnerFinalizedEventHandler: handled {Notification}", notification.Id);
+        logger.LogDebug("Test runner finalized: {Notification}", notification.Id);
 
         var agentAggregate = await eventStore.AggregateStreamAsync<TestAgentAggregate>(new AggregateInfo()
         {

@@ -1,6 +1,7 @@
 ﻿using BeaversTests.Common.CQRS.Abstractions;
 using BeaversTests.Common.CQRS.Events;
 using BeaversTests.TestRunnerController.Events;
+using BeaversTests.TestsManager.Core;
 using BeaversTests.TestsManager.Core.TestPackage;
 using BeaversTests.TestsManager.Events.TestPackage;
 using Microsoft.Extensions.Logging;
@@ -24,7 +25,7 @@ public class TestPackageValidationStatusEventsHandler(
         var validationStatusEvent = new TestPackageValidationStatusEvent()
         {
             Id = notification.Id,
-            ValidationStatus = TestPackageValidationResult.Unknown.ToString(),
+            ValidationStatus = ValidationResult.Unknown.ToString(),
             ValidationMessage = "Test package validation is not possible. Test agents pool is empty."
         };
         

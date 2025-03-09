@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using BeaversTests.Common.Application;
 using BeaversTests.Common.CQRS.Queries;
 using BeaversTests.TestsManager.App.Abstractions;
-using BeaversTests.TestsManager.App.Dtos;
 using BeaversTests.TestsManager.App.Dtos.TestDriver;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,11 +18,13 @@ public class GetDriversListQuery
 
     public class Handler(
         ITestsManagerContext db,
+        IUserService userService,
         IMapper mapper) : IQueryHandler<Query, Result>
     {
         public async Task<Result> Handle(Query request, CancellationToken cancellationToken)
         {
             var testDrivers = db.TestDrivers
+                .Where(t => t.UserCreatorId == userService.GetCurrentUserId())
                 .AsNoTracking();
 
             return new Result()

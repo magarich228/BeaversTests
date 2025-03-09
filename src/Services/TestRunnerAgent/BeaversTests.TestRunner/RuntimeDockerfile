@@ -1,0 +1,9 @@
+﻿FROM mcr.microsoft.com/dotnet/runtime:8.0
+
+USER root
+EXPOSE 53999
+
+WORKDIR /runner
+COPY . .
+
+ENTRYPOINT ["dotnet", "BeaversTests.TestRunner.dll"]

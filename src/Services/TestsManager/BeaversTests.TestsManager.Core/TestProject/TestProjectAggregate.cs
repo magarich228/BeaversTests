@@ -5,12 +5,10 @@ namespace BeaversTests.TestsManager.Core.TestProject;
 
 public class TestProjectAggregate : Aggregate
 {
-    public string UserCreatorId { get; private set; }
+    public string UserCreatorId { get; private set; } = default!;
     public string Name { get; private set; } = default!;
     public string? Description { get; private set; }
     public bool IsDeleted { get; private set; } = false;
-    
-    public TestProjectAggregate() { }
     
     [EventApplier]
     public void ApplyCreated(TestProjectAddedEvent @event)
@@ -54,10 +52,10 @@ public class TestProjectAggregate : Aggregate
         if (IsDeleted)
             throw new InvalidOperationException("Test project already deleted.");
         
-        IsDeleted = true;
-        
         if (@event.UserId != UserCreatorId)
             throw new Exception("This user can't delete test project.");
+        
+        IsDeleted = true;
         
         base.Enqueue(@event);
     }

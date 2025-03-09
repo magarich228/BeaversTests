@@ -6,5 +6,6 @@ public interface IDriversStorageReadService
 {
     public Task<TestDriverContent> GetTestDriverAsync(
         string testDriverKey,
+        Guid agId,
         CancellationToken cancellationToken = default);
 }

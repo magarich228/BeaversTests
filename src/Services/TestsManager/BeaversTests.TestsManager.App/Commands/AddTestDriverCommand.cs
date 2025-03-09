@@ -8,6 +8,7 @@ using BeaversTests.TestsManager.App.Dtos.TestDriver;
 using BeaversTests.TestsManager.Core.TestDriver;
 using BeaversTests.TestsManager.Events.TestDriver;
 using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace BeaversTests.TestsManager.App.Commands;
@@ -22,11 +23,14 @@ public class AddTestDriverCommand
     public class Result
     {
         public required string TestDriverKey { get; init; }
+        public required Guid AgId { get; init; }
     }
 
     public class Validator : AbstractValidator<Command>
     {
-        public Validator()
+        public Validator(
+            ITestsManagerContext db,
+            IUserService userService)
         {
             // TODO: валидация
             RuleFor(c => c.TestDriver)
@@ -35,6 +39,13 @@ public class AddTestDriverCommand
             RuleFor(c => c.TestDriver.Key)
                 .NotNull()
                 .NotEmpty();
+
+            RuleFor(c => c.TestDriver)
+                .MustAsync(async (c, ct) => 
+                    !await db.TestDrivers
+                        .Where(d => d.UserCreatorId == userService.GetCurrentUserId())
+                        .AnyAsync(d => d.AgId == c.AgId && d.Key == c.Key, ct))
+                .WithMessage("Test driver with this key already exists.");
         }
     }
 
@@ -47,6 +58,7 @@ public class AddTestDriverCommand
     {
         public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
+            // TODO: fix this.
             logger.LogDebug("Adding test driver {Key}", command.TestDriver.Key);
             command.TestDriver.UserId = userService.GetCurrentUserId();
 
@@ -59,13 +71,18 @@ public class AddTestDriverCommand
             var contentDto = command.TestDriver.Content;
             var content = mapper.Map<NewTestDriverContentDto, TestDriverContent>(contentDto);
             
-            await driversStorageWriteService.AddTestDriverAsync(command.TestDriver.Key, content, cancellationToken);
+            await driversStorageWriteService.AddTestDriverAsync(
+                command.TestDriver.Key, 
+                command.TestDriver.AgId,
+                content, 
+                cancellationToken);
             
             await eventStore.StoreAsync(driverAggregate, cancellationToken);
 
             return new Result()
             {
-                TestDriverKey = driverAggregate.Key
+                TestDriverKey = driverAggregate.Key,
+                AgId = driverAggregate.Id
             };
         }
     }

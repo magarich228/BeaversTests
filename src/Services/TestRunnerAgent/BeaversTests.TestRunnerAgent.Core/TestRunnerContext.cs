@@ -1,6 +1,8 @@
 ﻿namespace BeaversTests.TestRunnerAgent.Core;
 
-public static class TestRunnerContext
+public class TestRunnerContext(string controllerConnectionKey)
 {
-    public static Guid Id { get; } = Guid.NewGuid();
+    public Guid Id { get; } = Guid.NewGuid();
+
+    public string ControllerConnectionKey { get; } = controllerConnectionKey;
 }
