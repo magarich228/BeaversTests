@@ -63,6 +63,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{A0A6453E-24BE-4373-A5CA-D2110EA3E7E2}"
 	ProjectSection(SolutionItems) = preProject
 		dev\docker-compose.lite.yaml = dev\docker-compose.lite.yaml
+		dev\docker-compose.yaml = dev\docker-compose.yaml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.TestDrivers.Internal", "src\BuildingBlocks\BeaversTests.TestDrivers.Internal\BeaversTests.TestDrivers.Internal.csproj", "{2BB250BA-3AE3-4D34-8B9F-D142E64EF225}"
