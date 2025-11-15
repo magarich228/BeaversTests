@@ -25,7 +25,3 @@ bld/
 project.lock.json
 project.fragment.lock.json
 artifacts/
-
-# dev env volumes
-dev/data/
-dev/rabbitmq/

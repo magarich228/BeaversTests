@@ -5,6 +5,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "slnItems", "slnItems", "{9BC0F91C-CE94-44AF-826E-7E454905D868}"
 	ProjectSection(SolutionItems) = preProject
 		README.md = README.md
+		.gitignore = .gitignore
+		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
 Global
