@@ -9,9 +9,30 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "slnItems", "slnItems", "{9B
 		Directory.Packages.props = Directory.Packages.props
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Investigation", "Investigation", "{1CE34B9B-2CD6-4ED8-BE26-68C010859F50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTests", "src\Investigation\TestTests\TestTests.csproj", "{02606D9A-AC3A-401E-BB5B-F230E564F181}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestTestsRunner", "src\Investigation\TestTestsRunner\TestTestsRunner.csproj", "{27EE9E24-672B-4A55-B825-94A4BAABD942}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1CE34B9B-2CD6-4ED8-BE26-68C010859F50} = {19D00898-3D05-4DAF-84AB-DB9E33C1F2F8}
+		{02606D9A-AC3A-401E-BB5B-F230E564F181} = {1CE34B9B-2CD6-4ED8-BE26-68C010859F50}
+		{27EE9E24-672B-4A55-B825-94A4BAABD942} = {1CE34B9B-2CD6-4ED8-BE26-68C010859F50}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{02606D9A-AC3A-401E-BB5B-F230E564F181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02606D9A-AC3A-401E-BB5B-F230E564F181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02606D9A-AC3A-401E-BB5B-F230E564F181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02606D9A-AC3A-401E-BB5B-F230E564F181}.Release|Any CPU.Build.0 = Release|Any CPU
+		{27EE9E24-672B-4A55-B825-94A4BAABD942}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{27EE9E24-672B-4A55-B825-94A4BAABD942}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{27EE9E24-672B-4A55-B825-94A4BAABD942}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{27EE9E24-672B-4A55-B825-94A4BAABD942}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
