@@ -1,57 +1,36 @@
-﻿using System.Reflection;
-using NUnit.Framework.Api;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal;
+﻿using BeaversTests.Drivers.Abstractions;
+using BeaversTests.Drivers.Nunit;
 
 var testAssemblyPath = args.Single();
 
 Console.WriteLine($"\nLoading test assembly: {testAssemblyPath}\n");
 
-Console.WriteLine($"Context assemblies: {AppDomain.CurrentDomain.GetAssemblies().Length} " + 
-                  string.Join(", ", AppDomain.CurrentDomain.GetAssemblies()
-                      .Select(x => x.GetName().Name)));
+NUnitTestDriver driver = new NUnitTestDriver();
 
-var asm = Assembly.LoadFrom(testAssemblyPath);
+driver.Load(testAssemblyPath);
 
-Console.WriteLine($"Context assemblies: {AppDomain.CurrentDomain.GetAssemblies().Length} " + 
-                  string.Join(", ", AppDomain.CurrentDomain.GetAssemblies()
-                      .Select(x => x.GetName().Name)));
+var testSuite = driver.Explore();
 
-var runner = new NUnitTestAssemblyRunner(new DefaultTestAssemblyBuilder());
-
-// var tests = runner.Load(asm, new Dictionary<string, object>());
-var tests = runner.Load(testAssemblyPath, new Dictionary<string, object>());
-
-LogTest(tests);
-
-Console.WriteLine("\nExploring tests...\n");
-
-tests = runner.ExploreTests(TestFilter.Empty);
-
-LogTest(tests);
-
-var results = runner.Run(TestListener.NULL, TestFilter.Empty);
-
-Console.WriteLine($"\nSuccess: {results.PassCount} Failed: {results.FailCount} Total: {results.TotalCount}");
-
-LogResult(results);
-
-void LogTest(ITest test, int level = 1)
+if (!testSuite.TestSuites.Any())
 {
-    Console.WriteLine(new string(' ', level) + $"{test.Name} Cases: {test.TestCaseCount}");
-    
-    foreach (var child in test.Tests)
-    {
-        LogTest(child, level + 1);
-    }
+    Console.WriteLine("No tests found.");
+    return;
 }
 
-void LogResult(ITestResult testResult, int level = 1)
-{
-    Console.WriteLine(new string(' ', level) + $"{testResult.Name}: {testResult.ResultState.Label} {testResult.Message}");
+LogSuite(testSuite);
 
-    foreach (var child in testResult.Children)
+void LogSuite(TestSuite suite, int level = 1)
+{
+    var tab = new string(' ', level);
+    Console.WriteLine($"{tab}{suite.Id} {suite.Name} {suite.Description}");
+
+    foreach (var test in suite.Tests)
     {
-        LogResult(child, level + 1);
+        Console.WriteLine($"{tab}{test.Id} {test.Name} {test.Description}");
+    }
+
+    foreach (var subSuite in suite.TestSuites)
+    {
+        LogSuite(subSuite, level + 1);
     }
 }

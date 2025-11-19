@@ -9,8 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.NET.Test.Sdk" />
-      <PackageReference Include="NUnit" />
+      <ProjectReference Include="..\..\Blocks\Drivers\BeaversTests.Drivers.Nunit\BeaversTests.Drivers.Nunit.csproj" />
     </ItemGroup>
 
 </Project>
