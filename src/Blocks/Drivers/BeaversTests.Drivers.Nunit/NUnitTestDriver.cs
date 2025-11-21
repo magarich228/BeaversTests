@@ -2,7 +2,7 @@
 using BeaversTests.Drivers.Abstractions;
 using NUnit.Framework.Api;
 using NUnit.Framework.Interfaces;
-using ITestListener = BeaversTests.Drivers.Abstractions.ITestListener;
+using NUnit.Framework.Internal;
 using TestSuite = BeaversTests.Drivers.Abstractions.TestSuite;
 
 namespace BeaversTests.Drivers.Nunit;
@@ -10,12 +10,15 @@ namespace BeaversTests.Drivers.Nunit;
 public class NUnitTestDriver : ITestDriver
 {
     private readonly ITestAssemblyRunner _runner;
+    private readonly NUnitTestListener _nunitListener;
     private readonly TestSuite _loadedSuites;
 
     public NUnitTestDriver()
     {
         _runner = new NUnitTestAssemblyRunner(
             new DefaultTestAssemblyBuilder());
+        _nunitListener = new NUnitTestListener();
+        // TODO: Привести к единому виду на всех драйверах
         _loadedSuites = new TestSuite()
         {
             Id = "global",
@@ -38,7 +41,7 @@ public class NUnitTestDriver : ITestDriver
         
         foreach (var nunitTest in nunitTests.Tests)
         {
-            ProcessTest(nunitTest, suite);
+            LoadTestInternal(nunitTest, suite);
         }
         
         _loadedSuites.TestSuites.Add(suite);
@@ -49,32 +52,50 @@ public class NUnitTestDriver : ITestDriver
         return _loadedSuites;
     }
 
-    public async Task Run(ITestListener listener)
+    public Task RunAsync(Abstractions.ITestListener listener, RunStrategy strategy)
     {
-        throw new NotImplementedException();
+        _nunitListener.NUnitRunnerEvent += LocalEventHandler;
+
+        try
+        {
+            _runner.Run(_nunitListener, TestFilter.Empty);
+        }
+        finally
+        {
+            _nunitListener.NUnitRunnerEvent -= LocalEventHandler;
+        }
+        
+        return Task.CompletedTask;
+
+        async void LocalEventHandler(object? sender, TestEvent e) => await NUnitListenerEventHandler(sender, e, listener);
     }
 
-    private void ProcessTest(ITest nunitTest, TestSuite suite)
+    private void LoadTestInternal(ITest nunitTest, TestSuite suite)
     {
         if (nunitTest.IsTestCase())
         {
             var testCase = nunitTest.ToTestCase();
+            
             suite.Tests.Add(testCase);
         }
         else if (nunitTest.IsTestSuite() || nunitTest.IsTestFixture())
         {
             var newSuite = nunitTest.ToTestSuite();
+            
             suite.TestSuites.Add(newSuite);
             suite = newSuite;
         }
         else
         {
-            throw new Exception($"Unknown Nunit test type: {nunitTest.TestType}");
+            throw new NunitDriverException($"Unknown Nunit test type: {nunitTest.TestType}");
         }
 
         foreach (var nunitSubTest in nunitTest.Tests)
         {
-            ProcessTest(nunitSubTest, suite);
+            LoadTestInternal(nunitSubTest, suite);
         }
     }
+    
+    private async Task NUnitListenerEventHandler(object? sender, TestEvent e, Abstractions.ITestListener listener) =>
+        await listener.SendAsync(e);
 }

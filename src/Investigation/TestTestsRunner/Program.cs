@@ -1,9 +1,10 @@
 ﻿using BeaversTests.Drivers.Abstractions;
 using BeaversTests.Drivers.Nunit;
+using Newtonsoft.Json;
 
 var testAssemblyPath = args.Single();
 
-Console.WriteLine($"\nLoading test assembly: {testAssemblyPath}\n");
+Console.WriteLine($"Loading test assembly: {testAssemblyPath}\n");
 
 NUnitTestDriver driver = new NUnitTestDriver();
 
@@ -17,7 +18,17 @@ if (!testSuite.TestSuites.Any())
     return;
 }
 
+Console.WriteLine("==================== LOADED TESTS =====================");
+
 LogSuite(testSuite);
+
+Console.WriteLine("====================== RUN TESTS ======================");
+
+var listener = new TestListenerStub(Console.Out);
+
+await driver.RunAsync(listener, null!);
+
+Console.WriteLine("\nDone.");
 
 void LogSuite(TestSuite suite, int level = 1)
 {
@@ -32,5 +43,15 @@ void LogSuite(TestSuite suite, int level = 1)
     foreach (var subSuite in suite.TestSuites)
     {
         LogSuite(subSuite, level + 1);
+    }
+}
+
+class TestListenerStub(TextWriter writer) : ITestListener
+{
+    public Task SendAsync(TestEvent @event)
+    {
+        writer.WriteLine($"Event {@event.GetType().Name}: {JsonConvert.SerializeObject(@event, Formatting.Indented)}");
+
+        return Task.CompletedTask;
     }
 }

@@ -6,8 +6,6 @@ namespace BeaversTests.Drivers.Abstractions
     {
         void Load(string path);
         TestSuite Explore(); // TODO: nullable?
-        Task Run(ITestListener listener);
+        Task RunAsync(ITestListener listener, RunStrategy strategy);
     }
-    
-    // TODO: nuget package
 }
