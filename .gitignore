@@ -27,3 +27,6 @@ project.fragment.lock.json
 artifacts/
 
 *.drawio.bkp
+
+# beavers tests specified
+google-credentials.json

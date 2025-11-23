@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
-using NUnit.Framework.Internal.Execution;
 
 namespace TestTests;
 

@@ -6,4 +6,20 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Blocks\Auth\BeaversTests.Auth.AspNetCore.Shared\BeaversTests.Auth.AspNetCore.Shared.csproj" />
+      <ProjectReference Include="..\..\..\Blocks\Auth\BeaversTests.Auth.Bundle\BeaversTests.Auth.Bundle.csproj" />
+      <ProjectReference Include="..\BeaversTests.Manager.Api\BeaversTests.Manager.Api.csproj" />
+      <ProjectReference Include="..\BeaversTests.Manager.Persistence\BeaversTests.Manager.Persistence.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
+      <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
+    </ItemGroup>
+
 </Project>

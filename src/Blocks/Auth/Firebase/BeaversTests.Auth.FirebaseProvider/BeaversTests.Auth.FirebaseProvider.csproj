@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>BeaversTests.Auth.FirebaseProvider</AssemblyName>
+        <RootNamespace>BeaversTests.Auth.FirebaseProvider</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\Core\BeaversTests.Platform\BeaversTests.Platform.csproj" />
+      <ProjectReference Include="..\..\BeaversTests.Auth.Persistence\BeaversTests.Auth.Persistence.csproj">
+        <Private>False</Private>
+      </ProjectReference>
+      <ProjectReference Include="..\..\BeaversTests.Auth\BeaversTests.Auth.csproj" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <InternalsVisibleTo Include="BeaversTests.Auth.Bundle"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+      
+      <PackageReference Include="FirebaseAdmin" />
+      
+      <PackageReference Include="FirebaseAuthentication.net" />
+      
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" />
+    </ItemGroup>
+</Project>

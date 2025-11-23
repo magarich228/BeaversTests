@@ -1,0 +1,44 @@
+﻿version: '3.9'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "qwerty123"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./5. Init Database:/docker-entrypoint-initdb.d
+      - npg-data:/var/lib/postgresql/data
+    ports:
+      - "5443:5432"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+  
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7.2
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "kirillgroshev52@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "qwerty123"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "5400:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+  
+volumes:
+  npg-data:
+    driver: local
+  pgadmin-data:
