@@ -11,4 +11,12 @@ public class UserContext(IHttpContextAccessor httpContextAccessor)
 
         return httpContext.GetCurrentUserId();
     }
+
+    public UserInfo GetCurrentUserInfo()
+    {
+        var httpContext = httpContextAccessor.HttpContext ??
+            throw new Exception("Http context not found.");
+
+        return httpContext.User.GetCurrentUserInfo();
+    }
 }

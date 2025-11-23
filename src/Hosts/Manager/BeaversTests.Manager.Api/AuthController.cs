@@ -201,56 +201,25 @@ public class AuthController(
     }
 
     /// <summary>
-    /// Verifies user authentication status
+    /// Verifies user authentication status and get user info
     /// </summary>
-    /// <returns>User authentication status</returns>
-    [HttpGet("verify")]
-    [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public ActionResult VerifyAuthentication()
-    {
-        // TODO: Подумать, вероятно расширить UserContext
-        var userId = userContext.GetCurrentUserId();
-        var userEmail = User.FindFirst("email")?.Value;
-        var userName = User.FindFirst("name")?.Value;
-
-        logger.LogDebug("Authentication verification for user: {UserId} ({Email})", userId, userEmail);
-
-        return Ok(new
-        {
-            isAuthenticated = true,
-            userId,
-            email = userEmail,
-            name = userName,
-            timestamp = DateTime.UtcNow
-        });
-    }
-
-    /// <summary>
-    /// Gets current user information from authentication token
-    /// </summary>
-    /// <returns>Current user information</returns>
+    /// <returns>User info</returns>
     [HttpGet("me")]
     [Authorize]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(VerificationResult),StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public ActionResult GetCurrentUser()
     {
-        var userId = userContext.GetCurrentUserId();
-        var userEmail = User.FindFirst("email")?.Value;
-        var userName = User.FindFirst("name")?.Value;
-        var emailVerified = User.FindFirst("email_verified")?.Value ?? "false";
+        var userInfo = userContext.GetCurrentUserInfo();
 
-        logger.LogDebug("Current user info request for: {UserId}", userId);
+        logger.LogDebug("Authentication verification for user: {UserId} ({Email})", userInfo.UserId, userInfo.Email);
 
-        return Ok(new
+        return Ok(new VerificationResult()
         {
-            userId,
-            email = userEmail,
-            name = userName,
-            emailVerified = bool.Parse(emailVerified),
-            claims = User.Claims.ToDictionary(c => c.Type, c => c.Value)
+            IsAuthenticated = true,
+            UserInfo = userInfo,
+            Timestamp = DateTime.UtcNow
         });
     }
 }

@@ -8,7 +8,7 @@ public class TestsManagerDbContext(DbContextOptions<TestsManagerDbContext> optio
     DbContext(options), 
     IAuthDbContext
 {
-    public DbSet<BeaversUser> Users { get; } = null!;
+    public DbSet<BeaversUser> Users { get; init; } = null!;
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

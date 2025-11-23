@@ -7,6 +7,7 @@ using FirebaseAuthException = Firebase.Auth.FirebaseAuthException;
 
 namespace BeaversTests.Auth.FirebaseProvider;
 
+// TODO: Проверить FirebaseAuthClient, вероятно обеспечить stateless. Возможно расширить BeaversFirebaseService и заменить на него
 internal class FirebaseAuthService(
     FirebaseAuth firebaseAuthAdmin,
     FirebaseAuthClient firebaseAuthClient,
@@ -24,7 +25,7 @@ internal class FirebaseAuthService(
                 request.Email,
                 request.Password);
 
-            if (credential.User.Info.IsEmailVerified)
+            if (!credential.User.Info.IsEmailVerified)
             {
                 return new AuthResult()
                 {
@@ -50,6 +51,8 @@ internal class FirebaseAuthService(
             logger.LogTrace("User authenticated {UserId} {UserEmail}.", 
                 credential.User.Uid, credential.User.Info.Email);
 
+            firebaseAuthClient.SignOut();
+            
             return response;
         }
         catch (FirebaseAuthException ex)
@@ -82,7 +85,7 @@ internal class FirebaseAuthService(
     {
         try
         {
-            logger.LogTrace("{Email} log in attempt.", request.Email);
+            logger.LogTrace("{Email} registration attempt.", request.Email);
 
             var credential = await firebaseAuthClient.CreateUserWithEmailAndPasswordAsync(
                 request.Email,
@@ -194,37 +197,44 @@ internal class FirebaseAuthService(
         }
     }
 
-    public Task<LogoutResult> LogoutAsync(string userId)
+    public async Task<LogoutResult> LogoutAsync(string userId)
     {
         try
         {
             logger.LogTrace("User {UserId} log out attempt.", userId);
 
-            firebaseAuthClient.SignOut();
-            firebaseAuthAdmin.RevokeRefreshTokensAsync(userId);
+            if (firebaseAuthClient.User != null)
+            {
+                firebaseAuthClient.SignOut();
+            }
+
+            await firebaseAuthAdmin.RevokeRefreshTokensAsync(userId);
 
             logger.LogTrace("User {UserId} log out succeeded.", userId);
 
-            return Task.FromResult(new LogoutResult() { Success = true });
+            return new LogoutResult
+            {
+                Success = true
+            };
         }
         catch (FirebaseAdmin.Auth.FirebaseAuthException ex)
         {
             logger.LogError("User {UserId} log out failed ({ErrorCode}): {ErrorMessage}.",
                 userId, ex.ErrorCode.ToString(), ex.Message);
 
-            return Task.FromResult(new LogoutResult()
+            return new LogoutResult()
             {
                 Error = $"Error code: {ex.ErrorCode.ToString()}\nMessage: {ex.Message}"
-            });
+            };
         }
         catch (Exception ex)
         {
             logger.LogError("Unexpected error during user log out: {Message}.", ex.Message);
 
-            return Task.FromResult(new LogoutResult()
+            return new LogoutResult()
             {
                 Error = ex.Message
-            });
+            };
         }
     }
 

@@ -3,7 +3,6 @@ using BeaversTests.Platform;
 using BeaversTests.Platform.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -44,21 +43,25 @@ public static class AuthExtensions
                     ValidateAudience = true,
                     ValidAudience = authProviderInfo.Audience,
                     ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true
+                    ValidateIssuerSigningKey = true,
+                    RequireExpirationTime = true
                 };
 
                 options.Events = new JwtBearerEvents()
                 {
                     OnAuthenticationFailed = context =>
                     {
-                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger>();
+                        var loggerFactory = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
+                        var logger = loggerFactory.CreateLogger(nameof(AuthExtensions));
                         logger.LogDebug(context.Exception, "Authentication failed");
                         return Task.CompletedTask;
                     },
                     OnTokenValidated = context =>
                     {
-                        var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger>();
-                        logger.LogTrace("Token validated for user: {User}", context.Principal?.Identity?.Name);
+                        var loggerFactory = context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>();
+                        var logger = loggerFactory.CreateLogger(nameof(AuthExtensions));
+                        logger.LogTrace("Token validated for user: {UserId}", context.Principal?.GetCurrentUserInfo() ??
+                                                                              throw new AuthenticationException("Token validated, but user not found"));
                         return Task.CompletedTask;
                     }
                 };
@@ -75,12 +78,5 @@ public static class AuthExtensions
         app.UseAuthorization();
 
         return app;
-    }
-
-    public static string GetCurrentUserId(this HttpContext httpContext)
-    {
-        return httpContext.User.Claims
-                   .FirstOrDefault(c => c.Type == "user_id")?.Value ??
-               throw new AuthenticationException("User id not found");
     }
 }
