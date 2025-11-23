@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace BeaversTests.Auth.Bundle;
 
+// TODO: Requestum?
 public static class AuthModule
 {
     public static IServiceCollection AddAuthModule(

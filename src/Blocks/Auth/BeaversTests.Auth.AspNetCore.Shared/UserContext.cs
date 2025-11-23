@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BeaversTests.Auth.Public;
+using Microsoft.AspNetCore.Http;
 
 namespace BeaversTests.Auth.AspNetCore.Shared;
 

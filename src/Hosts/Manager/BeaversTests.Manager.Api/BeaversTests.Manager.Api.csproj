@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Blocks\Auth\BeaversTests.Auth.AspNetCore.Shared\BeaversTests.Auth.AspNetCore.Shared.csproj" />
+      <ProjectReference Include="..\..\..\Blocks\Auth\BeaversTests.Auth.Public\BeaversTests.Auth.Public.csproj" />
       <ProjectReference Include="..\..\..\Blocks\Auth\BeaversTests.Auth\BeaversTests.Auth.csproj" />
     </ItemGroup>
 

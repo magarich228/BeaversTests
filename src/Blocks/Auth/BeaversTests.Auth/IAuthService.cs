@@ -1,4 +1,6 @@
-﻿namespace BeaversTests.Auth;
+﻿using BeaversTests.Auth.Public;
+
+namespace BeaversTests.Auth;
 // TODO: Cancellation Tokens
 // TODO: validation
 public interface IAuthService

@@ -1,5 +1,6 @@
 ﻿using BeaversTests.Auth;
 using BeaversTests.Auth.AspNetCore.Shared;
+using BeaversTests.Auth.Public;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

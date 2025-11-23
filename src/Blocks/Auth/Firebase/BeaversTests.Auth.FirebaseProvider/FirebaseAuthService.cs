@@ -1,4 +1,5 @@
 ﻿using BeaversTests.Auth.Persistence;
+using BeaversTests.Auth.Public;
 using Firebase.Auth;
 using FirebaseAdmin.Auth;
 using Microsoft.EntityFrameworkCore;

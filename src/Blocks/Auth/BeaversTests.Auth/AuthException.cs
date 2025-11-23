@@ -1,6 +1,8 @@
-﻿namespace BeaversTests.Auth;
+﻿using BeaversTests.Platform;
 
-public class AuthException : Exception
+namespace BeaversTests.Auth;
+
+public class AuthException : BeaversTestsInternalException
 {
     public AuthException(string message) : base(message) { }
     public AuthException(string message, Exception innerException) : base(message, innerException) { }

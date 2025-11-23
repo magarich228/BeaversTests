@@ -25,11 +25,11 @@ public static class AuthExtensions
         {
             AuthConfigurationConstants.FirebaseAuthProviderName => new AuthProviderInfo()
             {
-                Audience = firebaseConfigurationSection["Audience"] ?? throw new BeaversTestsException("Firebase audience not found"),
-                Authority = firebaseConfigurationSection["Authority"] ?? throw new BeaversTestsException("Firebase authority not found"),
-                Issuer = firebaseConfigurationSection["Issuer"] ?? throw new BeaversTestsException("Firebase issuer not found")
+                Audience = firebaseConfigurationSection["Audience"] ?? throw new BeaversTestsInternalException("Firebase audience not found"),
+                Authority = firebaseConfigurationSection["Authority"] ?? throw new BeaversTestsInternalException("Firebase authority not found"),
+                Issuer = firebaseConfigurationSection["Issuer"] ?? throw new BeaversTestsInternalException("Firebase issuer not found")
             },
-            _ => throw new BeaversTestsException($"Auth provider configuration section not found: {authProvider}")
+            _ => throw new BeaversTestsInternalException($"Auth provider configuration section not found: {authProvider}")
         };
         
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

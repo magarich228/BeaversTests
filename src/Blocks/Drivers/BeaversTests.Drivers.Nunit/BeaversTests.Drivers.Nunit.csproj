@@ -13,6 +13,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Public\BeaversTests.Drivers.Abstractions\BeaversTests.Drivers.Abstractions.csproj" />
+      <ProjectReference Include="..\..\Core\BeaversTests.Platform.Public\BeaversTests.Platform.Public.csproj" />
     </ItemGroup>
 
 </Project>
