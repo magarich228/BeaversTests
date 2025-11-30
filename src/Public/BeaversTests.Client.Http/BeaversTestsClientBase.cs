@@ -206,28 +206,12 @@ public class BeaversTestsBaseClient
                 throw new BeaversTestsClientException("Endpoint not found", HttpStatusCode.NotFound);
 
             case HttpStatusCode.BadRequest:
-                try
+                return Task.FromResult(new BeaversApiResponse<T>
                 {
-                    // Try to extract error message from response
-                    var errorResponse = JsonConvert.DeserializeObject<AuthResult>(content);
-                    var errorMessage = errorResponse?.Error ?? "Bad request";
-                    
-                    return Task.FromResult(new BeaversApiResponse<T>
-                    {
-                        Success = false,
-                        Error = errorMessage,
-                        StatusCode = (int)response.StatusCode
-                    });
-                }
-                catch
-                {
-                    return Task.FromResult(new BeaversApiResponse<T>
-                    {
-                        Success = false,
-                        Error = "Bad request",
-                        StatusCode = (int)response.StatusCode
-                    });
-                }
+                    Success = false,
+                    Error = "Bad request",
+                    StatusCode = (int)response.StatusCode
+                });
 
             case (HttpStatusCode)429: // TooManyRequests
                 Logger?.LogWarning("Rate limit exceeded for {Endpoint}", endpoint);

@@ -275,7 +275,7 @@ internal class FirebaseAuthService(
     private async Task CreateLocalUser(User firebaseUser)
     {
         logger.LogTrace("Creating local user {UserId} {Email}.", firebaseUser.Uid, firebaseUser.Info?.Email);
-        
+        // TODO: Password
         var user = new BeaversUser()
         {
             Id = firebaseUser.Uid,
