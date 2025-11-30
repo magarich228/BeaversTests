@@ -26,6 +26,7 @@ project.lock.json
 project.fragment.lock.json
 artifacts/
 
-# dev env volumes
-dev/data/
-dev/rabbitmq/
+*.drawio.bkp
+
+# beavers tests specified
+google-credentials.json

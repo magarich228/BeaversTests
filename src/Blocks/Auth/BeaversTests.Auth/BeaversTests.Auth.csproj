@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Core\BeaversTests.Platform.Public\BeaversTests.Platform.Public.csproj" />
+      <ProjectReference Include="..\..\Core\BeaversTests.Platform\BeaversTests.Platform.csproj" />
+      <ProjectReference Include="..\BeaversTests.Auth.Public\BeaversTests.Auth.Public.csproj" />
+    </ItemGroup>
+
+</Project>
