@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BeaversTests.Auth.Public;
 using BeaversTests.Client.Http.Configuration;
 using BeaversTests.Client.Http.Exceptions;
 using Microsoft.Extensions.Logging;

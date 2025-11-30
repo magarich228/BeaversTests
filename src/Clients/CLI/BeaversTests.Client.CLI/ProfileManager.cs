@@ -1,10 +1,10 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using System.Text;
 using BeaversTests.Auth.Public;
+using Newtonsoft.Json;
 
 namespace BeaversTests.Client.CLI;
 
-using System.Text;
-using Newtonsoft.Json;
 
 internal class ProfileManager
 {
@@ -13,20 +13,20 @@ internal class ProfileManager
     
     public ProfileManager()
     {
-        // ~/.beavers/config (Linux/macOS) или %USERPROFILE%\.beavers\config (Windows)
+        // ~/.beavers/credentialsProfile (Linux/macOS) или %USERPROFILE%\.beavers\credentialsProfile (Windows)
         _configDir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             ".beavers"
         );
-        _profileFile = Path.Combine(_configDir, "profile");
+        _profileFile = Path.Combine(_configDir, "credentialsProfile");
     }
     
-    public void SaveTokens(AuthResult auth)
+    public void SaveTokens(AuthResult auth, string? credentialsFilePath = null)
     {
         if (!Directory.Exists(_configDir))
             Directory.CreateDirectory(_configDir);
             
-        var tokenData = new ProfileData
+        var tokenData = new ProfileCredentialsData
         {
             UserId = auth.UserId,
             Email = auth.Email,
@@ -44,7 +44,7 @@ internal class ProfileManager
         SetSecureFilePermissions(_profileFile);
     }
     
-    public ProfileData LoadProfile()
+    public ProfileCredentialsData LoadCredentialsProfile()
     {
         if (!File.Exists(_profileFile))
             throw new BeaversTestsCliException("Profile file not found");
@@ -52,7 +52,7 @@ internal class ProfileManager
         var encryptedJson = File.ReadAllText(_profileFile);
         var json = SimpleDecrypt(encryptedJson);
         
-        return JsonConvert.DeserializeObject<ProfileData>(json) ?? 
+        return JsonConvert.DeserializeObject<ProfileCredentialsData>(json) ?? 
                throw new BeaversTestsCliException("Failed to deserialize profile data");
     }
     
