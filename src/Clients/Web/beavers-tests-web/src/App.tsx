@@ -1,85 +1,35 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { observer } from 'mobx-react-lite';
-import { StoreContext, rootStore } from './stores';
-import { Landing } from './pages/Landing';
-import { AuthPage } from './pages/AuthPage';
-import { Dashboard } from './pages/Dashboard';
-import { Loader } from './components/ui/Loader';
-import './index.css';
+import { JSX, useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
-// Компонент для защищенных маршрутов
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = observer(({ children }) => {
-  const { authStore } = rootStore;
-
-  if (authStore.isLoading && !authStore.user) {
-    return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Loader />
-      </div>
-    );
-  }
-
-  if (!authStore.isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  return <>{children}</>;
-});
-
-// Компонент для публичных маршрутов
-const PublicRoute: React.FC<{ children: React.ReactNode }> = observer(({ children }) => {
-  const { authStore } = rootStore;
-
-  if (authStore.isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return <>{children}</>;
-});
-
-const App: React.FC = observer(() => {
-  const { authStore } = rootStore;
-
-  useEffect(() => {
-    authStore.initializeAuth();
-  }, [authStore]);
+function App(): JSX.Element {
+  const [count, setCount] = useState(0)
 
   return (
-    <StoreContext.Provider value={rootStore}>
-      <Router>
-        <div className="App">
-          <Routes>
-            <Route 
-              path="/" 
-              element={
-                <PublicRoute>
-                  <Landing />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="/auth" 
-              element={
-                <PublicRoute>
-                  <AuthPage />
-                </PublicRoute>
-              } 
-            />
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
-      </Router>
-    </StoreContext.Provider>
-  );
-});
+    <>
+      <div>
+        <a href="https://vite.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
+}
 
-export default App;
+export default App
