@@ -1,5 +1,11 @@
 import React from "react";
+import { AppHeader } from "../components/Header";
 
 export const TestPage: React.FC = () => {
-    return <div>Test page</div>
+    return (
+        <>
+        <AppHeader/>
+        <div>Test page</div>
+        </>
+    )
 };
