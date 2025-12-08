@@ -1,7 +1,38 @@
 import { observer } from "mobx-react-lite";
 import { AppHeader } from "../shared/components/Header";
+import { useStore } from "../shared/stores";
+import { NavigateFunction, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export const AuthPage: React.FC = observer(() => {
+    const [authData, setAuthData] = useState(
+        { 
+            email: '', 
+            password: '' 
+        });
+    
+    const { authStore } = useStore();
+    const navigate: NavigateFunction = useNavigate();
+
+    useEffect(() => {
+        if (authStore.isAuthenticated)
+            navigate('/test');
+    }, [authStore.isAuthenticated, navigate]);
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+        const { name, value } = e.target;
+        setAuthData(prev => ({ ...prev, [name]: value}));
+        authStore.clearError();
+    };
+
+    const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+        e.preventDefault();
+        await authStore.login(authData);
+    };
+
+    // TODO: Выделить компоненты форм, реализовать кастомные инпуты
+    // TODO: На формах реализовать парсинг и вывод ошибок. Возможно в зависимости от провайдера аутентификации 
+    // (возвращать с сервера или подумать над контрактом ошибок аутентификации, авторизации для всех провайдеров)
     return (
         <div style={{width: '100vw', height: '100vh', display: 'grid', gridTemplateColumns: 'auto 620px auto', gridTemplateRows: 'auto 1fr', minWidth: '620px'}}>
             <div style={{gridColumn: '1/4', border: '1px solid black'}}>
@@ -14,13 +45,15 @@ export const AuthPage: React.FC = observer(() => {
                         <h2 style={{textAlign: 'center'}}>Sing In</h2>
                     </div>
                     <div>
-                        <form style={{display: 'flex', flexDirection: 'column', padding: '18px', gap: '16px', alignItems: 'stretch'}}>
+                        <form
+                            onSubmit={handleSubmit} 
+                            style={{display: 'flex', flexDirection: 'column', padding: '18px', gap: '16px', alignItems: 'stretch'}}>
                             <div>
                                 <div>
                                     <label htmlFor="email">Email</label>
                                 </div>
                                 <div>
-                                    <input id="email" type='email' placeholder='Email' style={{width: '100%', boxSizing: 'border-box'}}/>
+                                    <input id="email" name="email" type='email' placeholder='Email' onChange={handleChange} autoComplete="on" style={{width: '100%', boxSizing: 'border-box'}}/>
                                 </div>
                             </div>
                             <div>
@@ -28,7 +61,7 @@ export const AuthPage: React.FC = observer(() => {
                                     <label htmlFor="password">Password</label>
                                 </div>
                                 <div>
-                                    <input id="password" type='password' placeholder="Password" style={{width: '100%', boxSizing: 'border-box'}}/>
+                                    <input id="password" name="password" type='password' placeholder="Password" onChange={handleChange} autoComplete="on" style={{width: '100%', boxSizing: 'border-box'}}/>
                                 </div>
                             </div>
                             <div style={{justifyItems: 'center', marginTop: '12px'}}>
