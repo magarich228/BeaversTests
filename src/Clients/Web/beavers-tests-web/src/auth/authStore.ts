@@ -183,6 +183,11 @@ class AuthStore {
     this.error = null;
   };
 
+  isEmailConfirmationError = (): boolean => {
+    // TODO: поправить после введения стандарта ответов и ошибок API аутентификации, авторизации
+    return this.error === 'Email is not verified.';
+  }
+
   // Установка состояния загрузки
   private setLoading = (loading: boolean): void => {
     this.isLoading = loading;

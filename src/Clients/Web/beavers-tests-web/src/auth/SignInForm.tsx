@@ -1,7 +1,8 @@
+import { observer } from "mobx-react-lite";
 import { useStore } from "../shared/stores";
 import { useState } from "react";
 
-export const SignInForm: React.FC = () => {
+export const SignInForm: React.FC = observer(() => {
     const [authData, setAuthData] = useState(
     { 
         email: '', 
@@ -46,6 +47,9 @@ export const SignInForm: React.FC = () => {
                             <input id="password" name="password" type='password' placeholder="Password" onChange={handleChange} autoComplete="on" style={{width: '100%', boxSizing: 'border-box'}}/>
                         </div>
                     </div>
+                    { authStore.error && (
+                            <span style={{color: 'red'}}>{authStore.error}</span>
+                    )}
                     <div style={{justifyItems: 'center', marginTop: '12px'}}>
                         <button type="submit" style={{display: 'block'}}>Sign In</button>
                     </div>
@@ -53,4 +57,4 @@ export const SignInForm: React.FC = () => {
             </div>
         </div>
     );
-};
+});

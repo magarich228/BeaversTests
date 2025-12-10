@@ -1,7 +1,8 @@
+import { observer } from "mobx-react-lite";
 import { useStore } from "../shared/stores";
 import { useState } from "react";
 
-export const SignUpForm: React.FC = () => {
+export const SignUpForm: React.FC = observer(() => {
     const [authData, setAuthData] = useState(
     { 
         email: '', 
@@ -20,6 +21,11 @@ export const SignUpForm: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
         await authStore.register(authData);
+
+        if (authStore.isEmailConfirmationError()){
+            alert('Подтвердите введённый Email и нажмите кнопку ОК для входа в приложение.');
+            await authStore.login(authData);
+        }
     };
 
     return (
@@ -55,6 +61,9 @@ export const SignUpForm: React.FC = () => {
                             <input id="displayName" name="displayName" type='displayName' placeholder="Display name" onChange={handleChange} autoComplete="on" style={{width: '100%', boxSizing: 'border-box'}}/>
                         </div>
                     </div>
+                    { authStore.error && (
+                            <span style={{color: 'red'}}>{authStore.error}</span>
+                    )}
                     <div style={{justifyItems: 'center', marginTop: '12px'}}>
                         <button type="submit" style={{display: 'block'}}>Sign Up</button>
                     </div>
@@ -62,4 +71,4 @@ export const SignUpForm: React.FC = () => {
             </div>
         </div>
     );
-};
+});
