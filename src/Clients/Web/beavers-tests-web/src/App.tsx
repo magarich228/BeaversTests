@@ -4,7 +4,7 @@ import { observer } from 'mobx-react-lite';
 import { StoreContext, rootStore } from './shared/stores';
 import { Landing } from './shared/pages/Landing';
 import { AuthPage } from './auth/AuthPage';
-import { TestPage } from './shared/pages/TestPage';
+import { ProjectPage } from './shared/pages/ProjectPage';
 
 // Компонент для защищенных маршрутов
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = observer(({ children }) => {
@@ -69,7 +69,7 @@ const App: React.FC = observer(() => {
               path="/test" 
               element={
                 <ProtectedRoute>
-                  <TestPage />
+                  <ProjectPage />
                 </ProtectedRoute>
               } 
             />
