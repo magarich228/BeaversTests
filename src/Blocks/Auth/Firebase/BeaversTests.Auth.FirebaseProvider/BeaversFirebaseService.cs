@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 namespace BeaversTests.Auth.FirebaseProvider;
 
+// TODO: Add Polly
 internal class BeaversFirebaseService(
     ILogger<BeaversFirebaseService> logger,
     FirebaseAuthConfig config)
