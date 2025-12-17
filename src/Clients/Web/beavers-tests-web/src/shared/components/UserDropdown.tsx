@@ -11,10 +11,16 @@ export const UserDropdown: React.FC = () => {
     return (
         <div style={{
             position: 'fixed',
-            right: '0%'
+            right: '2%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
         }}>
-            User menu
-            <button onClick={logOutHandle}>Log out</button>
+            <div>User menu</div>
+            <div>{authStore.user?.displayName}</div>
+            <div>
+                <button onClick={logOutHandle}>Log out</button>
+            </div>
         </div>
     );
 };
