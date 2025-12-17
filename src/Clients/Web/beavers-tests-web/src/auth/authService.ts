@@ -1,4 +1,4 @@
-import { apiService } from './apiService';
+import { apiService } from '../shared/apiService';
 import {
   LoginRequest,
   RegisterRequest,
@@ -6,7 +6,7 @@ import {
   ResetPasswordRequest,
   VerificationResult,
   LogoutResult
-} from '../types/auth';
+} from './auth';
 
 export const authService = {
   // Вход в систему

@@ -1,21 +1,20 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
-import { StoreContext, rootStore } from './stores';
-import { Landing } from './pages/Landing';
-import { AuthPage } from './pages/AuthPage';
-import { Dashboard } from './pages/Dashboard';
-import { Loader } from './components/ui/Loader';
-import './index.css';
+import { StoreContext, rootStore } from './shared/stores';
+import { Landing } from './shared/pages/Landing';
+import { AuthPage } from './auth/AuthPage';
+import { ProjectPage } from './shared/pages/ProjectPage';
 
 // Компонент для защищенных маршрутов
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = observer(({ children }) => {
   const { authStore } = rootStore;
 
   if (authStore.isLoading && !authStore.user) {
+    // TODO: нормальный Loader
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Loader />
+        <div>Loading</div>
       </div>
     );
   }
@@ -32,7 +31,7 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = observer(({ childre
   const { authStore } = rootStore;
 
   if (authStore.isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/test" replace />;
   }
 
   return <>{children}</>;
@@ -67,10 +66,10 @@ const App: React.FC = observer(() => {
               } 
             />
             <Route 
-              path="/dashboard" 
+              path="/test" 
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <ProjectPage />
                 </ProtectedRoute>
               } 
             />

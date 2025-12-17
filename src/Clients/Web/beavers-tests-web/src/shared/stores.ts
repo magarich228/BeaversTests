@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import AuthStore from './authStore';
+import AuthStore from '../auth/authStore';
 
 // Корневое хранилище объединяет все хранилища приложения
 export class RootStore {

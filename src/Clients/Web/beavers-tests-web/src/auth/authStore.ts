@@ -1,14 +1,13 @@
 import { makeAutoObservable, runInAction } from 'mobx';
-import { authService } from '../services/authService';
-import { tokenUtils } from '../utils/tokenUtils';
+import { authService } from './authService';
+import { tokenUtils } from './tokenUtils';
 import {
   LoginRequest,
   RegisterRequest,
   AuthResult,
   UserInfo,
-  VerificationResult,
-  ApiError
-} from '../types/auth';
+  VerificationResult
+} from './auth'
 
 class AuthStore {
   // Состояние хранилища
@@ -180,17 +179,22 @@ class AuthStore {
   };
 
   // Очистка ошибок
-  clearError = () => {
+  clearError = (): void => {
     this.error = null;
   };
 
+  isEmailConfirmationError = (): boolean => {
+    // TODO: поправить после введения стандарта ответов и ошибок API аутентификации, авторизации
+    return this.error === 'Email is not verified.';
+  }
+
   // Установка состояния загрузки
-  private setLoading = (loading: boolean) => {
+  private setLoading = (loading: boolean): void => {
     this.isLoading = loading;
   };
 
   // Очистка авторизации
-  private clearAuth = () => {
+  private clearAuth = (): void => {
     this.user = null;
     this.isAuthenticated = false;
     this.error = null;
@@ -198,6 +202,7 @@ class AuthStore {
 
   // Преобразование ошибки в читаемое сообщение
   private getErrorMessage = (error: any): string => {
+    // TODO: вынести в отдельный тип?
     if (error.response?.data?.error) {
       return error.response.data.error;
     }

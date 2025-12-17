@@ -1,4 +1,4 @@
-import { AuthResult } from "../types/auth";
+import { AuthResult } from "./auth";
 
 // Ключи для localStorage
 const TOKEN_KEY = 'auth_token';

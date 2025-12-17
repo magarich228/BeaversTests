@@ -1,9 +1,8 @@
 import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { tokenUtils } from '../utils/tokenUtils';
-import { AuthResult, RefreshTokenRequest } from '../types/auth';
+import { tokenUtils } from '../auth/tokenUtils';
+import { AuthResult, RefreshTokenRequest } from '../auth/auth';
 
-// Базовый URL вашего .NET API
-const API_BASE_URL = 'http://localhost:5000'; //import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = 'http://localhost:5068'; //import.meta.env.VITE_API_URL || 'http://localhost:5068';
 
 class ApiService {
   private client: AxiosInstance;
@@ -18,11 +17,12 @@ class ApiService {
       },
     });
 
+    // TODO: подумать, возможно вынести логику работы с аутентификацией в модуль auth.
     this.setupInterceptors();
   }
 
   private setupInterceptors(): void {
-    // Request interceptor - добавляем токен к каждому запросу
+    // Request interceptor - добавление токена к каждому запросу
     this.client.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         const token = tokenUtils.getToken();
@@ -61,19 +61,18 @@ class ApiService {
               throw new Error('No refresh token available');
             }
 
-            // Обновляем токен
             const newToken = await this.refreshToken(refreshToken);
             
-            // Оповещаем всех подписчиков
+            // Оповещение всех подписчиков
             this.refreshSubscribers.forEach((callback) => callback(newToken));
             this.refreshSubscribers = [];
 
-            // Повторяем оригинальный запрос
+            // Повторение оригинального запроса
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
             return this.client(originalRequest);
 
           } catch (refreshError) {
-            // Если не удалось обновить токен - разлогиниваем пользователя
+            // Если не удалось обновить токен - log out пользователя
             tokenUtils.clearTokens();
             window.location.href = '/auth';
             return Promise.reject(refreshError);
