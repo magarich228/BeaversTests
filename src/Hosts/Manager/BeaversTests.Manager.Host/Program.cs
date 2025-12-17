@@ -4,6 +4,8 @@ using BeaversTests.Manager.Persistence;
 using BeaversTests.Manager.Persistence.Dal;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,12 @@ services.AddHttpContextAccessor();
 
 services.AddAuthModule(configuration);
 services.AddBeaversTestsAuth(configuration);
+
+services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource
+        .AddService(serviceName: builder.Environment.ApplicationName))
+    .WithMetrics(metrics => metrics
+        .AddAspNetCoreInstrumentation());
 
 services.AddControllers();
 
