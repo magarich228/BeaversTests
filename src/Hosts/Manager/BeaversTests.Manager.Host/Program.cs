@@ -4,8 +4,11 @@ using BeaversTests.Manager.Persistence;
 using BeaversTests.Manager.Persistence.Dal;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +22,29 @@ services.AddHttpContextAccessor();
 services.AddAuthModule(configuration);
 services.AddBeaversTestsAuth(configuration);
 
+// TODO: http clients instrumentation?
 services.AddOpenTelemetry()
     .ConfigureResource(resource => resource
         .AddService(serviceName: builder.Environment.ApplicationName))
     .WithMetrics(metrics => metrics
-        .AddAspNetCoreInstrumentation());
+        .AddAspNetCoreInstrumentation()
+        .AddProcessInstrumentation()
+        .AddRuntimeInstrumentation()
+        .AddPrometheusExporter())
+    .WithTracing(tracing => tracing
+        .AddAspNetCoreInstrumentation()
+        .AddEntityFrameworkCoreInstrumentation()
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new("http://localhost:4317");
+            options.Protocol = OtlpExportProtocol.Grpc;
+        })) // TODO: configuration
+    .WithLogging(logging => logging
+        .AddOtlpExporter(options =>
+        {
+            options.Endpoint = new("http://localhost:4317"); // TODO: configuration
+            options.Protocol = OtlpExportProtocol.Grpc;
+        }));
 
 services.AddControllers();
 
@@ -96,6 +117,8 @@ app.UseBeaversTestsAuth();
 
 app.MapControllers();
 
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
+
 app.Run();
 
-// TODO: OpenTelemetry, OpenApiYaml endpoint check
+// TODO: OpenApiYaml endpoint check

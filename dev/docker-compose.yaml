@@ -9,11 +9,13 @@ services:
       POSTGRES_PASSWORD: "qwerty123"
       PGDATA: "/var/lib/postgresql/data/pgdata"
     volumes:
-      - ./5. Init Database:/docker-entrypoint-initdb.d
+      - ./init-database:/docker-entrypoint-initdb.d
       - npg-data:/var/lib/postgresql/data
     ports:
       - "5443:5432"
     restart: unless-stopped
+    networks:
+      - observability-network
     deploy:
       resources:
         limits:
@@ -32,13 +34,70 @@ services:
     ports:
       - "5400:80"
     restart: unless-stopped
+    networks:
+      - observability-network
     deploy:
       resources:
         limits:
           cpus: '0.5'
           memory: 1G
   
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "16686:16686"   # Web UI
+      - "4317:4317"     # OTLP gRPC порт (используется OpenTelemetry)
+      - "4318:4318"     # OTLP HTTP порт
+      - "14250:14250"   # Model gRPC
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - observability-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    networks:
+      - observability-network
+
+# TODO: Заимпорченные ASP.NET Core, .NET Runtime вынести в json файлы + реализовать другие дашборды (23179, 20568, 19924)
+# + ef core, process dashboards
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+      - jaeger
+    networks:
+      - observability-network
+
 volumes:
   npg-data:
-    driver: local
   pgadmin-data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  observability-network:
+    driver: bridge
