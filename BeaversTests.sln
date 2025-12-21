@@ -78,6 +78,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Auth.Public", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeaversTests.Platform.Public", "src\Blocks\Core\BeaversTests.Platform.Public\BeaversTests.Platform.Public.csproj", "{8BE41EF5-C9F2-4AED-A502-A987F2252C13}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dev", "dev", "{BF70D508-490E-45F1-B1B9-8C731657EEA8}"
+	ProjectSection(SolutionItems) = preProject
+		dev\docker-compose.yaml = dev\docker-compose.yaml
+		dev\prometheus.yml = dev\prometheus.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grafana", "grafana", "{55B816CE-3804-4792-939A-5317962B1A23}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "provisioning", "provisioning", "{C8F32085-0176-4FE6-8286-A2C93D3033D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "datasources", "datasources", "{F40CDB80-0219-4C58-A0A5-7E5ACF43FC76}"
+	ProjectSection(SolutionItems) = preProject
+		dev\grafana\provisioning\datasources\datasources.yml = dev\grafana\provisioning\datasources\datasources.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "dashboards", "dashboards", "{50D0CE27-AB71-4D9F-85AE-AB882E382BE5}"
+	ProjectSection(SolutionItems) = preProject
+		dev\grafana\provisioning\dashboards\dashboards.yml = dev\grafana\provisioning\dashboards\dashboards.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "beavers", "beavers", "{9DDEA162-4682-4AD3-A608-3218153C8A53}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -116,6 +138,11 @@ Global
 		{C7C2B486-D4B4-4F51-8A3E-00981DD0628F} = {5D2999A8-2FF8-4EF9-A6F9-B4ACF8A651CA}
 		{1464CFE2-7749-4AE0-878B-487FB292B13E} = {B9FCDBEA-0AB6-4A50-9981-986CD4FA84A9}
 		{8BE41EF5-C9F2-4AED-A502-A987F2252C13} = {A9D0F06B-3B15-4686-8FAD-64150BD95B03}
+		{55B816CE-3804-4792-939A-5317962B1A23} = {BF70D508-490E-45F1-B1B9-8C731657EEA8}
+		{C8F32085-0176-4FE6-8286-A2C93D3033D9} = {55B816CE-3804-4792-939A-5317962B1A23}
+		{F40CDB80-0219-4C58-A0A5-7E5ACF43FC76} = {C8F32085-0176-4FE6-8286-A2C93D3033D9}
+		{50D0CE27-AB71-4D9F-85AE-AB882E382BE5} = {C8F32085-0176-4FE6-8286-A2C93D3033D9}
+		{9DDEA162-4682-4AD3-A608-3218153C8A53} = {50D0CE27-AB71-4D9F-85AE-AB882E382BE5}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{02606D9A-AC3A-401E-BB5B-F230E564F181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

@@ -89,6 +89,16 @@ services:
     depends_on:
       - prometheus
       - jaeger
+      - loki
+    networks:
+      - observability-network
+        
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
     networks:
       - observability-network
 

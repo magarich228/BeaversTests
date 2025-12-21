@@ -22,7 +22,6 @@ services.AddHttpContextAccessor();
 services.AddAuthModule(configuration);
 services.AddBeaversTestsAuth(configuration);
 
-// TODO: http clients instrumentation?
 services.AddOpenTelemetry()
     .ConfigureResource(resource => resource
         .AddService(serviceName: builder.Environment.ApplicationName))
@@ -30,21 +29,28 @@ services.AddOpenTelemetry()
         .AddAspNetCoreInstrumentation()
         .AddProcessInstrumentation()
         .AddRuntimeInstrumentation()
+        .AddHttpClientInstrumentation()
         .AddPrometheusExporter())
     .WithTracing(tracing => tracing
         .AddAspNetCoreInstrumentation()
         .AddEntityFrameworkCoreInstrumentation()
+        .AddHttpClientInstrumentation()
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new("http://localhost:4317");
             options.Protocol = OtlpExportProtocol.Grpc;
         })) // TODO: configuration
     .WithLogging(logging => logging
         .AddOtlpExporter(options =>
         {
-            options.Endpoint = new("http://localhost:4317"); // TODO: configuration
             options.Protocol = OtlpExportProtocol.Grpc;
         }));
+
+builder.Logging.AddOpenTelemetry(options =>
+{
+    options.IncludeScopes = true;
+    options.IncludeFormattedMessage = true;
+    options.ParseStateValues = true;
+});
 
 services.AddControllers();
 
