@@ -24,7 +24,7 @@ internal static class DI
     {
         services.AddFirebaseInternal(configuration);
         
-        services.AddScoped<BeaversFirebaseService>();
+        services.AddScoped<FirebaseClientService>();
         
         services.AddScoped<IAuthService, FirebaseAuthService>();
         services.AddScoped<IUserService, FirebaseUserService>();

@@ -12,7 +12,7 @@ namespace BeaversTests.Auth.FirebaseProvider;
 internal class FirebaseAuthService(
     FirebaseAuth firebaseAuthAdmin,
     FirebaseAuthClient firebaseAuthClient,
-    BeaversFirebaseService beaversFirebaseService,
+    FirebaseClientService firebaseClientService,
     ILogger<FirebaseAuthService> logger,
     IAuthDbContext authDb) : IAuthService
 {
@@ -25,6 +25,11 @@ internal class FirebaseAuthService(
             var credential = await firebaseAuthClient.SignInWithEmailAndPasswordAsync(
                 request.Email,
                 request.Password);
+
+            // TODO:
+            // await firebaseClientService.SignInWithEmailAndPasswordAsync(
+            //     request.Email,
+            //     request.Password);
 
             if (!credential.User.Info.IsEmailVerified)
             {
@@ -92,12 +97,17 @@ internal class FirebaseAuthService(
                 request.Email,
                 request.Password,
                 request.DisplayName);
+
+            // TODO:
+            // await firebaseClientService.SignUpWithEmailAndPasswordAsync(
+            //     request.Email,
+            //     request.Password);
             
             firebaseAuthClient.SignOut();
 
             await CreateLocalUser(credential.User);
 
-            var emailToVerify = await beaversFirebaseService.SendEmailVerificationAsync(credential);
+            var emailToVerify = await firebaseClientService.SendEmailVerificationAsync(credential);
             
             var response = new AuthResult()
             {
@@ -155,7 +165,7 @@ internal class FirebaseAuthService(
         {
             logger.LogTrace("Refresh token attempt.");
 
-            var tokenResponse = await beaversFirebaseService.RefreshTokenAsync(request.RefreshToken);
+            var tokenResponse = await firebaseClientService.RefreshTokenAsync(request.RefreshToken);
 
             var userRecord = await firebaseAuthAdmin.GetUserAsync(tokenResponse.UserId);
 
