@@ -1,12 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using BeaversTests.Platform.Public;
 
 namespace BeaversTests.Auth.Public;
 
-public abstract class OperationResult
-{
-    [JsonProperty("success")]
-    public bool Success { get; set; }
-    
-    [JsonProperty("error")]
-    public string? Error { get; set; }
-}
+public abstract class OperationResult : Result { }

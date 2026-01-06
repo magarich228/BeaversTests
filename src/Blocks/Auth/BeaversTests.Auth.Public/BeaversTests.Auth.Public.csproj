@@ -11,4 +11,8 @@
       <PackageReference Include="Newtonsoft.Json" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Core\BeaversTests.Platform.Public\BeaversTests.Platform.Public.csproj" />
+    </ItemGroup>
+
 </Project>

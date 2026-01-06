@@ -1,5 +1,6 @@
 ﻿using BeaversTests.Auth.Persistence;
 using BeaversTests.Auth.Public;
+using BeaversTests.Platform.Public;
 using Firebase.Auth;
 using FirebaseAdmin.Auth;
 using Microsoft.EntityFrameworkCore;
@@ -25,12 +26,17 @@ internal class FirebaseAuthService(
             var credential = await firebaseAuthClient.SignInWithEmailAndPasswordAsync(
                 request.Email,
                 request.Password);
+            
+            var signInResult = await firebaseClientService.SignInWithEmailAndPasswordAsync(
+                request.Email,
+                request.Password);
 
-            // TODO:
-            // await firebaseClientService.SignInWithEmailAndPasswordAsync(
-            //     request.Email,
-            //     request.Password);
-
+            if (!signInResult.Success)
+            {
+                Result.MakeFailure(signInResult.Error);
+            }
+            
+            signInResult.Data.
             if (!credential.User.Info.IsEmailVerified)
             {
                 return new AuthResult()
