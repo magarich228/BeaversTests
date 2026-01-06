@@ -41,7 +41,8 @@ internal class FirebaseClientService(
 
         if (signInResponse.Registered)
         {
-            Result.MakeFailure();
+            // TODO:
+            // Result.MakeFailure();
         }
         
         return Result<FirebaseSignInResponse>.MakeSuccess(signInResponse);

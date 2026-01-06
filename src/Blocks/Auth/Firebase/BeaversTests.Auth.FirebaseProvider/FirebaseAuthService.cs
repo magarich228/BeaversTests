@@ -36,7 +36,8 @@ internal class FirebaseAuthService(
                 Result.MakeFailure(signInResult.Error);
             }
             
-            signInResult.Data.
+            // TODO:
+            // signInResult.Data.
             if (!credential.User.Info.IsEmailVerified)
             {
                 return new AuthResult()
